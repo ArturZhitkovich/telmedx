@@ -24,14 +24,11 @@ streamRunning=False
 commandQ = gevent.queue.Queue(1)
 snapshotQ = gevent.queue.Queue(1)
 
-def index(request):
-# make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #sleep(30)
-    return render_to_response('ttux/index.html', context_instance=RequestContext(request))
 
 
+##################################################################################
+# Phone Handlers
+##################################################################################
 # process a single video frame from the phone
 # csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
@@ -54,13 +51,44 @@ def rxImage(request):
     ##return HttpResponse(status="200 OK")
     return HttpResponse(command_resp)
     
-# process snapshot response from the phone
+    
+# receive snapshot response from the phone
 @csrf_exempt
 def snapshotResponse(request):
     print("got snapshot response from the phone")
+    image = request.read();
+    try:
+        snapshotQ.put_nowait(image)
+    except:
+        #logger.error("failed to queue up snapshot response")
+        print("failed to queue up snapshot response")
+        snapshotQ.get_nowait()  # empty the queue if full
+        snapshotQ.put_nowait(image)
+    
+    
     return HttpResponse("snapshotResponse")
 
 
+# handle ping request from the phone
+@csrf_exempt
+def pingRequest(request):
+    response = HttpResponse("pong")
+    response['Content-Type'] = "text/html"
+    response['Cache-Control'] = 'no-cache'
+    #response['Connection'] = 'keep-alive'
+    return(response)
+
+
+##################################################################################
+# UI Handlers
+##################################################################################
+
+def index(request):
+# make sure user is logged in
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+    #sleep(30)
+    return render_to_response('ttux/index.html', context_instance=RequestContext(request))
 
 def stream_response_generator(remote_address):
     print ("starting stream for remote_addr: " + remote_address)
@@ -84,6 +112,8 @@ def stream_response_generator(remote_address):
         session.remove_viewer( remote_address )
         print("Viewer left: ", remote_address )
         #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+
+
 
 
 # open video stream request from browser
@@ -135,7 +165,7 @@ def snapshotRequest(request):
     response['Content-Type'] = "application/json"
     return response
     
-    
+
     
 
 def logout_view(request):

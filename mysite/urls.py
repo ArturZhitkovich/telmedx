@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import login
 from django.contrib import auth
 from django.contrib import admin
-#import views
+import views
 
 admin.autodiscover()
 
@@ -13,11 +13,11 @@ urlpatterns = patterns('',
     url(r'^polls/', include('polls.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', login),
-    url(r'^crossdomain.xml$',
-    'flashpolicies.views.simple',
-    {'domains': ['*'], 'ports':['*']}),
+#    url(r'^crossdomain.xml$',
+#    'flashpolicies.views.simple',
+#    {'domains': ['*'], 'ports':['*']}),
                        
-    #url(r'^crossdomain.xml$', views.crossdomainHandler),
+    url(r'^crossdomain.xml$', views.crossdomainHandler),
     url(r'^$', login),
 )
 

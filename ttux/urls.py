@@ -9,6 +9,7 @@ urlpatterns = patterns('ttux.views',
     url(r'^invite', 'inviteRequest'),
     url(r'^stop', 'stopRequest'),
     url(r'^snapshot$', 'snapshotRequest'),
+    url(r'^ping$', 'pingRequest'),
 
     url(r'^logout$','logout_view'),
 )
