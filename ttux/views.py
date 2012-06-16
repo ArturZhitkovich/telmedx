@@ -1,6 +1,5 @@
 # TTUX views
 
-
 #from django.template import Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -18,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from polls.session import Session
 import socket
 import errno
+import base64
+import json
 
 streamRunning=False
 commandQ = gevent.queue.Queue(1)
@@ -36,27 +37,27 @@ def index(request):
 @csrf_exempt
 def rxImage(request):
     session = Session.get(0)
-    
-    print "host:" + request.get_host()
-    print "method: " + request.method
-    
-    # req.raw_post_data and req.read() will give the same data.
-    print 'raw_post_data:"%s"' % request.raw_post_data
     image = request.read();
-    print "request.read(): " + image
-    
     # distribute this frame to each watcher
     session.enqueue_frame(image)
-        
-#    if request.method == 'GET':
-#        do_something()
-#    elif request.method == 'POST':
-#        do_something_else()
-    return HttpResponse(status="200 OK")
+    
+    # see if there are any commands to send
+    try:
+        command_resp = commandQ.get_nowait();
+    except:
+        command_resp = ""
+    
+    if (command_resp != ""):
+        #logger.info("sending command to the phone: %s", command_resp)   
+        print("sending command to the phone: %s", command_resp)
+         
+    ##return HttpResponse(status="200 OK")
+    return HttpResponse(command_resp)
     
 # process snapshot response from the phone
 @csrf_exempt
 def snapshotResponse(request):
+    print("got snapshot response from the phone")
     return HttpResponse("snapshotResponse")
 
 
@@ -70,8 +71,7 @@ def stream_response_generator(remote_address):
     
     try:
         for frame in frames:
-            #yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
-            yield( '--myboundary\r\nContent-Type: text/html\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
+            yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
             yield( frame )
             yield( '\r\n')
             gevent.sleep(0) # allow other events to be processed
@@ -104,9 +104,39 @@ def inviteRequest(request):
 def stopRequest(request):
     return HttpResponse("stopRequest")
 
-# request from the UI to take a snapshot
+# POST request from the UI to take a snapshot 
+#@condition(etag_func=None)
+@csrf_exempt
 def snapshotRequest(request):
-    return HttpResponse("snapshotRequest")
+    #return HttpResponse("snapshotRequest")
+    #logger.info("Snapshot request from %s", env["REMOTE_ADDR"] )
+    print("Snapshot request from %s", request.META["REMOTE_ADDR"] )
+    
+    # send command to the phone
+    ##path = request.META["PATH_INFO"]
+    path="/snapshot" 
+    try:
+        commandQ.put_nowait(path)
+    except:
+        commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+    
+    # wait for response from the phone
+    snapshot = ""
+    try:
+        snapshot = snapshotQ.get(block=True, timeout=10)
+    except:
+        ##logger.info("failed to get snapshot from phone")
+        print("failed to get snapshot from phone")
+    
+    response = { "image" : base64.encodestring(snapshot) }
+#    start_response("200 OK", [("Content-Type", "application/json")])
+#    return [json.dumps(response)]
+    response = HttpResponse(json.dumps(response)) 
+    response['Content-Type'] = "application/json"
+    return response
+    
+    
+    
 
 def logout_view(request):
     logout(request)
