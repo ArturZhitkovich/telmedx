@@ -12,7 +12,6 @@ import gevent.queue
 from django.views.decorators.http import condition
 from django.views.decorators.csrf import csrf_exempt
 
-from polls.session import Session
 import socket
 import errno
 
@@ -69,7 +68,6 @@ def index(request):
 # csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
 def rxImage(request):
-    session = Session.get(0)
     
     print "host:" + request.get_host()
     print "method: " + request.method
@@ -98,7 +96,6 @@ def snapshotResponse(request):
 
 def stream_response_generator(remote_address):
     print ("starting stream for remote_addr: " + remote_address)
-    session = Session.get(0)
     #TODO need to use userid here and some kind of session key. remote address is not good enough.
     # this will fail if we use two viewers from the same address. This can happen in a lan/proxy 
     frames = session.add_viewer(remote_address)

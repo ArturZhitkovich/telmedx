@@ -15,7 +15,7 @@ import gevent.queue
 from django.views.decorators.http import condition
 from django.views.decorators.csrf import csrf_exempt
 
-from polls.session import Session
+from ttux.session import Session
 import socket
 import errno
 import base64
@@ -25,16 +25,16 @@ streamRunning=False
 commandQ = gevent.queue.Queue(1)
 snapshotQ = gevent.queue.Queue(1)
 
-
-
 ##################################################################################
 # Phone Handlers
 ##################################################################################
 # process a single video frame from the phone
 # csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
-def rxImage(request):
-    session = Session.get(0)
+def rxImage(request, device_name):
+    #session = Session.get(0)
+    session = Session.get( device_name )
+    
     image = request.read();
     # distribute this frame to each watcher
     session.enqueue_frame(image)
@@ -89,15 +89,20 @@ def index(request, device_name):
     # make sure user is logged in
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
-    
+    #
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
-    
+
     return render_to_response('ttux/index.html', {'dev':d}, context_instance=RequestContext(request))
 
-def stream_response_generator(remote_address):
-    print ("starting stream for remote_addr: " + remote_address)
-    session = Session.get(0)
+
+# Video stream generator
+def stream_response_generator(remote_address, device_name):
+    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
+    # get the session for this device if it is there
+    ## session = Session.get(0)
+    session = Session.get( device_name )
+    
     #TODO need to use userid here and some kind of session key. remote address is not good enough.
     # this will fail if we use two viewers from the same address. This can happen in a lan/proxy 
     frames = session.add_viewer(remote_address)
@@ -120,11 +125,11 @@ def stream_response_generator(remote_address):
 
 
 
-
 # open video stream request from browser
 @csrf_exempt
-def getStreamRequest(request):
-    res = HttpResponse(    stream_response_generator(request.META['REMOTE_ADDR']) )
+def getStreamRequest(request, device_name):
+    print("got stream start request for device " + device_name)
+    res = HttpResponse(    stream_response_generator( request.META['REMOTE_ADDR'], device_name) )
     res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
     res['Media-type'] = 'image/jpeg'
     res['Cache-Control'] = 'no-cache'
