@@ -1,12 +1,13 @@
 # TTUX views
 
-#from django.template import Context, loader
+from django.template import Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import logout
 from django.template import RequestContext
 
-from polls.models import Poll
+from ttux.models import mobileCam # get our database model
+
 #from time import sleep
 import gevent
 import gevent.queue
@@ -83,12 +84,16 @@ def pingRequest(request):
 # UI Handlers
 ##################################################################################
 
-def index(request):
-# make sure user is logged in
+# Main View Finder Device Control View
+def index(request, device_name):
+    # make sure user is logged in
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #sleep(30)
-    return render_to_response('ttux/index.html', context_instance=RequestContext(request))
+    
+    # look up this device
+    d = get_object_or_404(mobileCam, name=device_name)
+    
+    return render_to_response('ttux/index.html', {'dev':d}, context_instance=RequestContext(request))
 
 def stream_response_generator(remote_address):
     print ("starting stream for remote_addr: " + remote_address)
@@ -165,9 +170,20 @@ def snapshotRequest(request):
     response['Content-Type'] = "application/json"
     return response
     
+    
+# Device selection View
+def deviceView(request):
+    # make sure user is logged in
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+        
+    deviceList = mobileCam.objects.all().order_by('name')[:4]
+    t = loader.get_template('ttux/devices.html')
+    c = Context( { 'deviceList':deviceList} )
+    return HttpResponse(t.render(c))
 
     
-
+# Log out
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)

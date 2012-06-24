@@ -1,0 +1,9 @@
+{% if deviceList %}
+    <ul>
+    {% for d in deviceList %}
+        <li><a href="/ttux/index/{{ d.name }}">{{ d.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No devices are available.</p>
+{% endif %}
