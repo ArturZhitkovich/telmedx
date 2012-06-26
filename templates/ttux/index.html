@@ -117,7 +117,7 @@
 		}
 		
 		function takeSnapshotClicked() {
-			$.post("/ttux/snapshot", null, function(data) {
+			$.post("/ttux/snapshot/{{ dev.name }}", null, function(data) {
 				dataUri = "data:image/jpeg;base64," + data.image;
 				$("#activeSnapshot").attr("src", dataUri);
 				

@@ -22,8 +22,8 @@ import base64
 import json
 
 streamRunning=False
-commandQ = gevent.queue.Queue(1)
-snapshotQ = gevent.queue.Queue(1)
+#commandQ = gevent.queue.Queue(1)
+#snapshotQ = gevent.queue.Queue(1)
 
 ##################################################################################
 # Phone Handlers
@@ -41,33 +41,38 @@ def rxImage(request, device_name):
     
     # see if there are any commands to send
     try:
-        command_resp = commandQ.get_nowait();
+        #command_resp = commandQ.get_nowait();
+        command_resp = session.commandQ.get_nowait();
     except:
         command_resp = ""
     
     if (command_resp != ""):
         #logger.info("sending command to the phone: %s", command_resp)   
-        print("sending command to the phone: %s", command_resp)
-         
+        print "sending command " + command_resp + " to the phone: " + device_name
+    #ENDIF
     ##return HttpResponse(status="200 OK")
     return HttpResponse(command_resp)
+#END
     
     
 # receive snapshot response from the phone
 @csrf_exempt
-def snapshotResponse(request):
-    print("got snapshot response from the phone")
+def snapshotResponse(request, device_name):
+    print "got snapshot response from device: " + device_name
     image = request.read();
+    
+    session = Session.get( device_name )
     try:
-        snapshotQ.put_nowait(image)
+        session.snapshotQ.put_nowait(image)
     except:
         #logger.error("failed to queue up snapshot response")
-        print("failed to queue up snapshot response")
-        snapshotQ.get_nowait()  # empty the queue if full
-        snapshotQ.put_nowait(image)
-    
+        print "failed to queue up snapshot response from " + device_name
+        session.snapshotQ.get_nowait()  # empty the queue if full
+        session.snapshotQ.put_nowait(image)
+    #END
     
     return HttpResponse("snapshotResponse")
+#END
 
 
 # handle ping request from the phone
@@ -78,6 +83,7 @@ def pingRequest(request):
     response['Cache-Control'] = 'no-cache'
     #response['Connection'] = 'keep-alive'
     return(response)
+#END
 
 
 ##################################################################################
@@ -94,6 +100,7 @@ def index(request, device_name):
     d = get_object_or_404(mobileCam, name=device_name)
 
     return render_to_response('ttux/index.html', {'dev':d}, context_instance=RequestContext(request))
+# END
 
 
 # Video stream generator
@@ -122,7 +129,7 @@ def stream_response_generator(remote_address, device_name):
         session.remove_viewer( remote_address )
         print("Viewer left: ", remote_address )
         #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
-
+# END
 
 
 # open video stream request from browser
@@ -134,39 +141,46 @@ def getStreamRequest(request, device_name):
     res['Media-type'] = 'image/jpeg'
     res['Cache-Control'] = 'no-cache'
     return res
+# END
 
 
 # request from the UI to start a streaming session
 def inviteRequest(request):
     return HttpResponse("inviteRequest")
+#END
+
 
 # request from UI to stop the streaming session
 def stopRequest(request):
     return HttpResponse("stopRequest")
+#END
+
 
 # POST request from the UI to take a snapshot 
 #@condition(etag_func=None)
 @csrf_exempt
-def snapshotRequest(request):
+def snapshotRequest(request, device_name):
     #return HttpResponse("snapshotRequest")
     #logger.info("Snapshot request from %s", env["REMOTE_ADDR"] )
-    print("Snapshot request from %s", request.META["REMOTE_ADDR"] )
+    print "Snapshot request for device: " + device_name + " from " + request.META["REMOTE_ADDR"] 
     
     # send command to the phone
+    session = Session.get( device_name )
+    
     ##path = request.META["PATH_INFO"]
     path="/snapshot" 
     try:
-        commandQ.put_nowait(path)
+        session.commandQ.put_nowait(path)
     except:
-        commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
     
     # wait for response from the phone
     snapshot = ""
     try:
-        snapshot = snapshotQ.get(block=True, timeout=10)
+        snapshot = session.snapshotQ.get(block=True, timeout=10)
     except:
         ##logger.info("failed to get snapshot from phone")
-        print("failed to get snapshot from phone")
+        print("failed to get snapshot from phone " + device_name)
     
     response = { "image" : base64.encodestring(snapshot) }
 #    start_response("200 OK", [("Content-Type", "application/json")])
@@ -174,6 +188,7 @@ def snapshotRequest(request):
     response = HttpResponse(json.dumps(response)) 
     response['Content-Type'] = "application/json"
     return response
+#END
     
     
 # Device selection View
@@ -183,17 +198,17 @@ def deviceView(request):
         return HttpResponseRedirect('/login/?next=%s' % request.path)
         
     deviceList = mobileCam.objects.all().order_by('name')[:4]
-    t = loader.get_template('ttux/devices.html')
-    c = Context( { 'deviceList':deviceList} )
-    return HttpResponse(t.render(c))
+    #    t = loader.get_template('ttux/devices.html')
+    #    c = Context( { 'deviceList':deviceList} )
+    #    return HttpResponse(t.render(c))
+    #
+    return render_to_response('ttux/devices.html', {'deviceList':deviceList}, context_instance=RequestContext(request))
+#END
 
-    
+
 # Log out
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)
-
-
-
-
+#END
 
