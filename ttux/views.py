@@ -21,9 +21,24 @@ import errno
 import base64
 import json
 
+import string
+import random
+
+##################################################################################
+# Globals
+##################################################################################
 streamRunning=False
 #commandQ = gevent.queue.Queue(1)
 #snapshotQ = gevent.queue.Queue(1)
+
+
+##################################################################################
+# Helpers
+##################################################################################
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
+
 
 ##################################################################################
 # Phone Handlers
@@ -111,8 +126,9 @@ def stream_response_generator(remote_address, device_name):
     session = Session.get( device_name )
     
     #TODO need to use userid here and some kind of session key. remote address is not good enough.
-    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy 
-    frames = session.add_viewer(remote_address)
+    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
+    viewer_key = remote_address + ":" +  id_generator(6)
+    frames = session.add_viewer(viewer_key)
     
     try:
         for frame in frames:
@@ -126,13 +142,14 @@ def stream_response_generator(remote_address, device_name):
             raise
         
     finally:
-        session.remove_viewer( remote_address )
-        print("Viewer left: ", remote_address )
+        session.remove_viewer( viewer_key )
+        print("Viewer left: ", viewer_key )
         #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
-# END
+
+# END def
 
 
-# open video stream request from browser
+# open video stream request from browser flash app
 @csrf_exempt
 def getStreamRequest(request, device_name):
     print("got stream start request for device " + device_name)

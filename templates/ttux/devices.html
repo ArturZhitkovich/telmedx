@@ -69,13 +69,14 @@
 			</div>
 			</td>
 			<td>
-			{% if user.is_authenticated %}
-			    <p>Welcome, {{ user.username }}.  </p>
-			{% else %}
-			    <p>Welcome, new user. Please log in.</p>
-			{% endif %}				
+			
 			</td>
 			<td>
+				{% if user.is_authenticated %}
+			   	 	Welcome, {{ user.username }}.
+				{% else %}
+			    	Welcome, new user. Please log in.
+				{% endif %}	
 				<div id=logoutAction><a href="/ttux/logout">logout</a></div>
 			</td>
 		</tr>

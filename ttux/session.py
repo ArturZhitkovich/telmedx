@@ -78,6 +78,3 @@ class Session(object):
         for k in Session.REGISTRY:
             print "   k: " + k
 
-
-
-    
