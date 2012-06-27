@@ -1,7 +1,7 @@
 # Django settings for mysite project.
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -146,13 +146,22 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'null': {
+                 'level':'DEBUG',
+                 'class': 'django.utils.log.NullHandler',
+                 },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins'], # was mail_admins
             'level': 'ERROR',
             'propagate': False,
         },
+        'django.db.backends': {
+            'handlers': ['null'], #Quiet by default
+            'propagate': False,
+            'level':'DEBUG',
+            }
     }
 }
