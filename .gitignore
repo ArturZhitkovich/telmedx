@@ -1,0 +1,5 @@
+# Git files to ignore
+# These will not be tracked, changes will not be commmited
+*.pyc
+*.bk
+
