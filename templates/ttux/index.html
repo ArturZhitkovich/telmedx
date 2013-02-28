@@ -80,7 +80,8 @@
 	<script src="/static/js/swfobject.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var flashvars = {
-			ttuxkey: "192.168.1.9",
+			ttuxkey: "66.228.55.170",
+			ttuxport: "8000",
 			ttuxdev: "{{ dev.name }}",
 			ttuxuser: "{{ user.username }}"
 		};
@@ -142,12 +143,17 @@
 		<tr valign="top" >
 			<td>
 			<div id="headerx">
-				<img src="/static/img/telmedx_logo_120527.png" alt=""></img>
+				<img src="/static/img/TelVetX_final_NoTag_beta.jpg" alt=""></img>
 			</div>
 			</td>
 			<td>
 			{% if user.is_authenticated %}
-				Viewing Device: {{ dev.name }}</br>
+                            Group:
+                            {% for u in user.groups.all %}
+                                {{ u.name }}
+                            {% endfor %}
+                            </br>
+			    Viewing Device: {{ dev.name }}</br>
 			    <a href="/ttux/deviceList">Back To Device List</a>
 			{% else %}
 			    <p>- - -</p>

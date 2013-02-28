@@ -1,7 +1,9 @@
 # telmedx data model
 from django.db import models
+from django.contrib.auth.models import Group
 
 class mobileCam(models.Model):
+    groups         = models.ForeignKey(Group)
     name           = models.CharField(max_length=100)  # name of this device
     uid            = models.CharField(max_length=50)   # unique identifier, for an iphone this will be the phone number, for an iTouch it is??
     streamId       = models.CharField(max_length=50, blank=True)  # stream identifier of the currently connected stream, blank otherwise

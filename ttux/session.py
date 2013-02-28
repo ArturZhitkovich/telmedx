@@ -9,15 +9,16 @@ from util.queue import DiscardingQueue
 class Session(object):
     REGISTRY = {}
     
+    
     def __init__(self):
         logging.basicConfig(level=logging.DEBUG)
         logger.info("session:__init__")
-        self.commandQ = gevent.queue.Queue(1)
-        self.snapshotQ = gevent.queue.Queue(1)
-        self.control_greenlet = None
-        #self.fragments = {}
-        self.sequence_number = None
-        self.viewers = {}
+#        self.commandQ = gevent.queue.Queue(1)
+#        self.snapshotQ = gevent.queue.Queue(1)
+#        self.control_greenlet = None
+#        #self.fragments = {}
+#        self.sequence_number = None
+#        self.viewers = {}
 
 ####################################################################################
 # Session instance Methods for a specific device
@@ -29,7 +30,8 @@ class Session(object):
         logger.info("add_viewer address:" + address)
         return self.viewers.setdefault(address, DiscardingQueue(4))
         #NOTE: setdefault() is like get(), except that if k is missing, x is both returned and inserted into the dictionary as the value of k. x defaults to None.
-        #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html 
+        #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
+    #def 
 
 
     # add a video sream frame to a specific device session instance
@@ -38,13 +40,26 @@ class Session(object):
         logger.info("enqueue_frame")
         # ship off to any listeners out there 
         for queue in self.viewers.values():
-            queue.put(frame)        
+            queue.put(frame)
+        # save the last frame
+        self.LastFrame = frame
+        self.frameNumber += 1 
+    #def
 
+    def get_frameNumber(self):
+        return self.frameNumber
+    
+    def get_lastFrame(self):
+        return self.LastFrame
+
+    def clear_lastFrame(self):
+        self.LastFrame = ""
 
     # remove a viewer from a specific device session instance 
     def remove_viewer(self, address):
         logger.info("remove_viewer address:" + address)
         self.viewers.pop(address, None)
+    #def
 
 
 ##########################################################################################
@@ -73,7 +88,15 @@ class Session(object):
             print "key found: " + key
         else:
             Session.REGISTRY[key] = session
-        
+            session.commandQ = gevent.queue.Queue(1)
+            session.snapshotQ = gevent.queue.Queue(1)
+            session.control_greenlet = None
+            session.sequence_number = None
+            session.viewers = {}
+            session.LastFrame = "" # store the most recently received frame here?
+            session.frameNumber = 0 # frame number of the most recent frame
+        #END if
+                
         print "REGISTRY after:"
         for k in Session.REGISTRY:
             print "   k: " + k

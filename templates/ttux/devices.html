@@ -65,11 +65,17 @@
 		<tr valign="top" >
 			<td>
 			<div id="headerx">
-				<img src="/static/img/telmedx_logo_120527.png" alt=""></img>
+				<img src="/static/img/TelVetX_final_NoTag_beta.jpg" alt=""></img>
 			</div>
 			</td>
 			<td>
-			
+                        {% if user.is_authenticated %}
+                        Group: 
+                            {% for u in user.groups.all %}
+                                {{ u.name }}
+                            {% endfor %} 
+                        {% endif %}
+	
 			</td>
 			<td>
 				{% if user.is_authenticated %}
@@ -88,7 +94,7 @@ Please select a device to view:
 {% if deviceList %}
     <ul>
     {% for d in deviceList %}
-        <li><a href="/ttux/index/{{ d.name }}">{{ d.name }}</a></li>
+        <li><a href="/ttux/index3/{{ d.name }}">{{ d.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
@@ -96,6 +102,6 @@ Please select a device to view:
 {% endif %}
 
 
-	<div id="corp">Copyright 2012 telmedx </div>
+	<div id="corp">Copyright 2013 telvetx All Rights Reserved </div>
 </body>
 </html>
