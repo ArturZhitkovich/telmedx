@@ -1,0 +1,313 @@
+<html>
+<!-- INDEX 3 testing ajax queries -->
+
+
+<head>
+	<title>telmedx cellphone video triage Beta</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	
+	<style type="text/css">
+		html, body { height:100%; overflow: -moz-scrollbars-vertical !important; }
+		body { margin:0; }
+		
+		img {
+			vertical-align: middle;
+			height: 100%;
+		}
+		
+		div#headerx {
+			height:50px;
+		}
+		
+		div#headerBar {
+			background-color:#cccccc;
+			width:100%;
+			border:0;
+			cellpadding:0;
+			cellspacing:5;			
+		}
+		
+		div#live {
+			float: left;
+			border-width: 1px;
+			border-style: solid;
+			width: 	520px;
+		}
+		
+		div#snapshots {
+			width:720px;
+			height:480px;
+		}
+		
+		div#stream {
+			width:520px;
+			height:320px;
+		}
+	
+		div#stream_status {
+			width:360px;
+			height:240px;
+			font-family: courier;
+			font-weight: normal;
+			font-size: small;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;		
+		}
+	
+		div#pastSnapshots {
+			height: 100px;
+			width: 720px;
+			overflow: auto;
+			white-space: nowrap;
+		}
+
+		div#hollywood_div {
+			height: 50%;
+			width: 50%;
+		}
+				
+		div#controls {
+		}
+		
+		div#corp {
+			font-family: sans-serif;
+			font-weight: normal;
+			font-size: small;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;		
+		}
+		
+		div#ui_label  {
+			font-family: sans-serif;
+			font-weight: normal;
+			font-variant: small-caps;			
+			font-size: small;
+			font-size: 18px;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;
+		}
+
+	</style>
+
+
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript">
+	// User Interface Elements
+
+		function inviteClicked() {
+			jQuery.post("/ttux/invite");
+		}
+		
+		function select(id) {
+			$(".snapshot").css("border", "none");
+			$("#" + id).css("border", "4px solid");
+		}
+		
+		function showSnapshot(id) {
+			var selected = $("#" + id);
+			
+			$("#activeSnapshot").attr("src", selected.attr("src"));
+			select(id);
+		}
+		
+		function takeSnapshotClicked() {
+			$.post("/ttux/snapshot/{{ dev.name }}", null, function(data) {
+				dataUri = "data:image/jpeg;base64," + data.image;
+				$("#activeSnapshot").attr("src", dataUri);
+				
+				var id = "snapshot-" + new Date().getTime().toString();
+				var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
+				
+				$("#pastSnapshots").append(imageElement);
+				
+				select(id);
+			});
+			
+			$("#activeSnapshot").attr("src", "/static/img/spinner.gif")
+		}
+
+		function saveCurrentImage() {
+			console.log("save image selected");
+		}
+
+		function printCurrentImage() {
+			console.log("print image selected");
+		}
+
+
+		var ff=0;
+		var lastFrame = 0;
+		var fCounter = 0;
+		var startTime = new Date();
+
+		function frameOne()
+		{
+		    var xhr = new XMLHttpRequest();
+		    var url = "/ttux/lastFrame/test/" + lastFrame;
+		    ff++;
+		    
+		    //setTimeout("frameTwo()", 150); // kick off our second fill in frame
+		   
+		    xhr.open("GET", url, true); // this is defined as synchronous?
+		    xhr.onreadystatechange = function () {
+		        if (xhr.readyState == xhr.DONE) {
+		            var test = xhr.responseText;
+		            // peel off the first 8 bytes which are the frame number
+		            var fnumber = test.substring(0,8);
+		            // log it
+		            //var log = document.getElementById('log');
+		            //log.innerHTML += fnumber + "\n";
+
+		            lastFrame = fnumber;
+		            
+		            videoSrc = "data:image/jpg;base64," + test.substring(8);
+		            var video = document.getElementById("hollywood");
+		            video.src = videoSrc;
+		            //document.getElementById("hollywood").src = xhr.responseText;
+		            setTimeout("frameOne()", 1);            
+		        }
+		    }
+		    xhr.send();
+		}
+
+		// jquery test
+		function frameOne_jq()
+		{
+			var r = $.ajax({
+				url: "/ttux/lastFrame/{{ dev.name }}/" + lastFrame
+			});
+			
+			r.done( function(msg) {
+				var fnumber = msg.substring(0,8);
+				lastFrame = fnumber;
+
+				if (msg.substring(8).length > 0) {
+	            			videoSrc = "data:image/jpg;base64," + msg.substring(8);
+	            			$("#hollywood").attr("src", videoSrc);
+	            			var now = new Date();
+	            			var min = Math.floor( ( (now - startTime)/1000) );
+	            			var sec = (now - startTime)%1000;
+	            			$("#stream_status").html("{{ dev.name }}: Connected:" + min + "." + sec + " f:" + fCounter);
+	            			fCounter++;
+				}
+	            
+				//console.log("got frame: " + fnumber);
+				//setTimeout("frameOne_jq()", 100);
+				frameOne_jq();
+			});
+
+			// error handler, wait 1/2 second
+			r.error( function(msg) {
+				console.log("got error");
+				setTimeout("frameOne_jq()", 500);
+			});
+
+		}		
+</script>
+
+
+</head>
+<body onload="setTimeout('frameOne_jq()', 500)">
+
+	<div id="headerBar">
+	<table border="0" cellpadding="0" cellspacing="5" width="100%">
+		<tr valign="top" >
+			<td>
+			<div id="headerx">
+				<img src="/static/img/TelVetX_final_NoTag_beta.jpg" alt=""></img>
+			</div>
+			</td>
+			<td>
+			{% if user.is_authenticated %}
+				Viewing Device: {{ dev.name }}</br>
+			    <a href="/ttux/deviceList">Back To Device List</a>
+			{% else %}
+			    <p>- - -</p>
+			{% endif %}				
+			</td>
+			<td>
+			{% if user.is_authenticated %}
+			    Welcome, {{ user.username }}.
+			{% else %}
+			    <p>Welcome, new user. Please log in.</p>
+			{% endif %}	
+				<div id=logoutAction><a href="/ttux/logout">logout</a></div>
+			</td>
+		</tr>
+	</table>
+	</div>
+	
+	<table border="0" cellpadding="0" cellspacing="5">
+		<tr valign="top">
+			<td style="border-style: solid; border-width: 1px">
+			<div id="controls">
+				<b>Video Quality:</b>
+				<input type="Radio" name="vidQ" value="Good" checked onclick="imageQ_Good()"/>Good
+				<input type="Radio" name="vidQ" value="Bad"          onclick="imageQ_Bad()"/>Bad
+				<input type="Radio" name="vidQ" value="Ugly"         onclick="imageQ_Ugly()"/>Ugly
+				</br>
+				<b>Camera:</b>
+				<input type="Radio" name="camSel" value="Back" checked onclick="selectCam_Back()"/>Back
+				<input type="Radio" name="camSel" value="Front"        onclick="selectCam_Front()"/>Front
+				</br>
+				<b>Rear Light:</b>
+				<input type="Radio" name="lightSel" value="On"          onclick="selectLight_On()"/>On
+				<input type="Radio" name="lightSel" value="Off" checked onclick="selectLight_Off()"/>Off
+				</br>
+				<input type="button" value="Rotate" onclick="rotateImage()"/>
+				
+			</div>
+			</td>
+			<td style="border-style: solid; border-width: 1px">
+				<div id="controls">
+					<input type="button" value="Capture Image" onclick="takeSnapshotClicked()"/>
+					<input type="button" value="Save As..."    onclick="saveCurrentImage()"/>
+					<input type="button" value="Print..."      onclick="printCurrentImage()"/>
+				</div>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<td style="border-style: solid; border-width: 1px">
+				<div id="ui_label">Live Video</div><br>
+				<div id="stream">
+					<img id="hollywood" src="/static/img/spinner.gif" ></img>
+				</div>
+				<div id="stream_status">{{ dev.name }}: Waiting...</div>
+		
+			</td>
+			<td style="border-style: solid; border-width: 1px">
+				<div id="snapshots">
+					<div id="ui_label">Image</div><br>
+					<img id="activeSnapshot" width="720" height="480" src="/static/img/telmedx_320icon.png" alt="" />
+					<div id="pastSnapshots"></div>
+				</div>
+			</td>
+		</tr>
+
+			
+	</table>
+	
+
+	<div id="corp">Copyright 2013 telvetx All Rights Reserved </div>
+</body>
+</html>
