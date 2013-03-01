@@ -6,7 +6,9 @@
 # Copyright 2013 telmedx
 #  
 # Major Revision History
-#    Date          Author          Description
+#    Date         Author          Description
+#    2011         Matt Green      initial implementation
+#    July 2012    Tereus Scott    Refactored: added support for single frames and control channel
 #################################################################################
  
 import gevent.queue
@@ -18,16 +20,12 @@ from util.queue import DiscardingQueue
 class Session(object):
     REGISTRY = {}
     
-    
+    # initialize this object
     def __init__(self):
         logging.basicConfig(level=logging.DEBUG)
         logger.info("session:__init__")
-#        self.commandQ = gevent.queue.Queue(1)
-#        self.snapshotQ = gevent.queue.Queue(1)
-#        self.control_greenlet = None
-#        #self.fragments = {}
-#        self.sequence_number = None
-#        self.viewers = {}
+    #def
+
 
 ####################################################################################
 # Session instance Methods for a specific device
@@ -55,14 +53,21 @@ class Session(object):
         self.frameNumber += 1 
     #def
 
+    # get the frame number of the current video frame stored for this session instance
     def get_frameNumber(self):
         return self.frameNumber
+    #def
     
+    # get the most recent frame for this session instance
     def get_lastFrame(self):
         return self.LastFrame
+    #def
 
+    #remove the most recent frame for this session instance
     def clear_lastFrame(self):
         self.LastFrame = ""
+    #def
+
 
     # remove a viewer from a specific device session instance 
     def remove_viewer(self, address):

@@ -1,4 +1,14 @@
-# TTUX views
+#################################################################################
+# @file views.py
+# @brief  Telmedx url handlers. This is the main code for the site
+# @author Tereus Scott
+# Creation Date  Sept 28, 2011
+# Copyright 2013 telmedx
+#  
+# Major Revision History
+#    Date         Author          Description
+#    July 2012    Tereus Scott    Initial implementation
+#################################################################################
 
 from django.template import Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
@@ -28,14 +38,10 @@ import random
 # Globals
 ##################################################################################
 streamRunning=False
-#commandQ = gevent.queue.Queue(1)
-#snapshotQ = gevent.queue.Queue(1)
-
 
 ##################################################################################
 # Helpers
 ##################################################################################
-
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 

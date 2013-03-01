@@ -1,4 +1,14 @@
-# ttux application urls
+#################################################################################
+# @file urls.py
+# @brief  url and handler linkage
+# @author Tereus Scott
+# Creation Date  Sept 28, 2011
+# Copyright 2013 telmedx
+#  
+# Major Revision History
+#    Date         Author          Description
+#    July 2012    Tereus Scott    Initial implementation
+#################################################################################
 
 #from django.conf.urls import patterns, include, url
 from django.conf.urls import patterns, url
