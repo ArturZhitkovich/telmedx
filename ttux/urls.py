@@ -16,7 +16,7 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns('ttux.views',
     url(r'^$', 'deviceView'),
     url(r'^index/(?P<device_name>\w+)$', 'index'),
-    url(r'^index3/(?P<device_name>\w+)$', 'index3'),
+    url(r'^viewmaster/(?P<device_name>\w+)$', 'viewmaster'),
     url(r'^img/(?P<device_name>\w+)/img\d+.jpg$', 'rxImage'),
     url(r'^snapshotResponse/(?P<device_name>\w+)/snap\d+.jpg', 'snapshotResponse'),
     url(r'^stream/(?P<device_name>\w+)$','getStreamRequest'),

@@ -1,7 +1,11 @@
 # Django settings for mysite project.
 
-DEBUG = False
-TEMPLATE_DEBUG = False
+# for development
+DEBUG = True
+TEMPLATE_DEBUG = True
+#TODO for live server
+#DEBUG = False
+#TEMPLATE_DEBUG = False
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -12,8 +16,8 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # database engine
-        #'NAME': '/sites/telmedx/wip/mysite/sqlite.db',  # path to production sqllite db
-        'NAME': '/home/developer/workspace/telvetx/mysite/sqlite.db',  # path to production sqllite db
+        #'NAME': '/sites/telmedx/wip/mysite/sqlite.db',  # TODO path to production sqllite db
+        'NAME': '/home/developer/workspace/telvetx/mysite/sqlite.db',  # path to development sqllite db
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -66,10 +70,21 @@ STATIC_ROOT = ''
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
+# TODO - need a better way to select this, or separate server from development configuration 
+# Production Configuration
+## Additional locations of static files
+#STATICFILES_ROOT = '/sites/telmedx/static/'
+#STATICFILES_DIRS = (
+#                    '/sites/telmedx/static/',
+#    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+#    # Always use forward slashes, even on Windows.
+#    # Don't forget to use absolute paths, not relative paths.
+#)
+
 # Additional locations of static files
-STATICFILES_ROOT = '/sites/telmedx/static/'
+STATICFILES_ROOT = '/home/developer/workspace/telvetx/static/'
 STATICFILES_DIRS = (
-                    '/sites/telmedx/static/',
+                    '/home/developer/workspace/telvetx/static/',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -109,7 +124,9 @@ ROOT_URLCONF = 'mysite.urls'
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 TEMPLATE_DIRS = (
-    '/sites/telmedx/wip/templates',
+    #TODO live server configuration, need better way to manage this
+    #'/sites/telmedx/wip/templates', #live server
+    '/home/developer/workspace/telvetx/templates' # development
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

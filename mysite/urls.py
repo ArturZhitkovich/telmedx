@@ -1,3 +1,16 @@
+#################################################################################
+# @file urls.py
+# @brief  Telmedx main site url configuraiton
+# @author Tereus Scott
+# Creation Date  Sept 28, 2011
+# Copyright 2013 telmedx
+#  
+# Major Revision History
+#    Date         Author          Description
+#    July 2012    Tereus Scott    Initial implementation
+#################################################################################
+"""Main site url configuration"""
+
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import login
 from django.contrib import auth
@@ -7,16 +20,10 @@ import views
 
 admin.autodiscover()
 
-#import ttux
-
 urlpatterns = patterns('',
     url(r'^ttux/', include('ttux.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', login),
-#    url(r'^crossdomain.xml$',
-#    'flashpolicies.views.simple',
-#    {'domains': ['*'], 'ports':['*']}),
-                       
     #url(r'^crossdomain.xml$', views.crossdomainHandler),
     url(r'^$', login),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATICFILES_ROOT}),

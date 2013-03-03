@@ -9,6 +9,7 @@
 #    Date         Author          Description
 #    July 2012    Tereus Scott    Initial implementation
 #################################################################################
+"""Administration console"""
 
 from ttux.models import mobileCam
 from django.contrib import admin

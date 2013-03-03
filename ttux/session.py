@@ -10,7 +10,11 @@
 #    2011         Matt Green      initial implementation
 #    July 2012    Tereus Scott    Refactored: added support for single frames and control channel
 #################################################################################
- 
+"""Module session.py
+   main session handler. This links the phone and the browser and 
+   controls all aspects of the session
+"""
+
 import gevent.queue
 import logging
 logger = logging.getLogger("session");
@@ -18,22 +22,20 @@ logger = logging.getLogger("session");
 from util.queue import DiscardingQueue
 
 class Session(object):
-    REGISTRY = {}
-    
+    REGISTRY = {}   # this is where we will store the list of sessions
     # initialize this object
     def __init__(self):
         logging.basicConfig(level=logging.DEBUG)
         logger.info("session:__init__")
     #def
 
-
-####################################################################################
-# Session instance Methods for a specific device
-####################################################################################
-
-    # add a video stream viewer for this specific device session instance
-    # create a discarding queue, add it to self.viwerers and return a handle to that queue.
+    ####################################################################################
+    # Session instance Methods for a specific device (instance)
+    ####################################################################################
     def add_viewer(self, address):
+        """ add a video stream viewer for this specific device session instance
+        create a discarding queue, add it to self.viwerers and return a handle to that queue. 
+        """
         logger.info("add_viewer address:" + address)
         return self.viewers.setdefault(address, DiscardingQueue(4))
         #NOTE: setdefault() is like get(), except that if k is missing, x is both returned and inserted into the dictionary as the value of k. x defaults to None.
@@ -41,9 +43,10 @@ class Session(object):
     #def 
 
 
-    # add a video sream frame to a specific device session instance
-    # this frame will be broadcast to all viewers via their queues.
+
     def enqueue_frame(self, frame):
+        """add a video stream frame to a specific device session instance
+        this frame will be broadcast to all viewers via their queues."""
         logger.info("enqueue_frame")
         # ship off to any listeners out there 
         for queue in self.viewers.values():
@@ -53,46 +56,43 @@ class Session(object):
         self.frameNumber += 1 
     #def
 
-    # get the frame number of the current video frame stored for this session instance
     def get_frameNumber(self):
+        """get the frame number of the current video frame stored for this session instance"""
         return self.frameNumber
     #def
     
-    # get the most recent frame for this session instance
     def get_lastFrame(self):
+        """get the most recent frame for this session instance"""
         return self.LastFrame
     #def
 
-    #remove the most recent frame for this session instance
     def clear_lastFrame(self):
+        """remove the most recent frame for this session instance"""
         self.LastFrame = ""
     #def
 
-
-    # remove a viewer from a specific device session instance 
     def remove_viewer(self, address):
+        """remove a viewer from a specific device session instance"""
         logger.info("remove_viewer address:" + address)
         self.viewers.pop(address, None)
     #def
 
-
-##########################################################################################
-# Static Methods
-##########################################################################################
-
-    # get Session instance for a given device (key)
+    ##########################################################################################
+    # Static Methods
+    ##########################################################################################
     @staticmethod
     def get(key):
+        """static method: get Session instance for a given device (key)"""
         logger.info("get key:" + str(key))
         return Session.REGISTRY.get(key)
 
-
-    # add a session for a device name (key), but only add it 
-    # if there is not already a session for this device.
-    # this is called at startup to initialize the session objects
-    # for each device.
     @staticmethod
     def put(key, session):
+        """static method: add a session for a device name (key), but only add it 
+        if there is not already a session for this device.
+        this is called at startup to initialize the session objects
+        for each device.
+        """        
         logger.info("put key: " + str(key) )
         print "REGISTRY before:"
         for k in Session.REGISTRY:
@@ -110,7 +110,6 @@ class Session(object):
             session.LastFrame = "" # store the most recently received frame here?
             session.frameNumber = 0 # frame number of the most recent frame
         #END if
-                
         print "REGISTRY after:"
         for k in Session.REGISTRY:
             print "   k: " + k

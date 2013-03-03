@@ -9,8 +9,10 @@
 #    Date         Author          Description
 #    July 2012    Tereus Scott    Initial implementation
 #################################################################################
-
-from django.template import Context, loader
+"""Module views.py
+The main view handlers for all incoming http requests
+"""
+#from django.template import Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import logout
@@ -20,9 +22,9 @@ from ttux.models import mobileCam # get our database model
 
 #from time import sleep
 import gevent
-import gevent.queue
+#import gevent.queue
 
-from django.views.decorators.http import condition
+#from django.views.decorators.http import condition
 from django.views.decorators.csrf import csrf_exempt
 
 from ttux.session import Session
@@ -43,6 +45,7 @@ streamRunning=False
 # Helpers
 ##################################################################################
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    """generate a random six digit string"""
     return ''.join(random.choice(chars) for x in range(size))
 
 
@@ -53,14 +56,12 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 # csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
 def rxImage(request, device_name):
-    #session = Session.get(0)
+    """handler to receive a single video frame from the phone"""
     #print "got img for device " + device_name
     session = Session.get( device_name )
-    
     image = request.read();
     # distribute this frame to each watcher
     session.enqueue_frame(image)
-    
     # see if there are any commands to send
     try:
         #command_resp = commandQ.get_nowait();
@@ -71,7 +72,7 @@ def rxImage(request, device_name):
     if (command_resp != ""):
         #logger.info("sending command to the phone: %s", command_resp)   
         print "sending command " + command_resp + " to the phone: " + device_name
-    #ENDIF
+    #endif
     ##return HttpResponse(status="200 OK")
     return HttpResponse(command_resp)
 #END
@@ -80,6 +81,8 @@ def rxImage(request, device_name):
 # receive snapshot response from the phone
 @csrf_exempt
 def snapshotResponse(request, device_name):
+    """handler to receive the snapshot response from the phone. This will be posted to the snapshot queue in the session.
+    There will be one and only one listener for this snapshot"""
     print "got snapshot response from device: " + device_name
     image = request.read();
     
@@ -100,6 +103,7 @@ def snapshotResponse(request, device_name):
 # handle ping request from the phone
 @csrf_exempt
 def pingRequest(request):
+    """handler to receive the ping request from the phone"""
     response = HttpResponse("pong")
     response['Content-Type'] = "text/html"
     response['Cache-Control'] = 'no-cache'
@@ -112,36 +116,37 @@ def pingRequest(request):
 # UI Handlers
 ##################################################################################
 
+## Main View Finder Device Control View
+#def index(request, device_name):
+#    # make sure user is logged in
+#    if not request.user.is_authenticated():
+#        return HttpResponseRedirect('/login/?next=%s' % request.path)
+#    #
+#    # look up this device
+#    d = get_object_or_404(mobileCam, name=device_name)
+#
+#    return render_to_response('ttux/index.html', {'dev':d}, context_instance=RequestContext(request))
+## END
+#
+#
+## Main View Finder Device Control View
+## for testing XHR
+#def index2(request, device_name):
+#    # make sure user is logged in
+#    if not request.user.is_authenticated():
+#        return HttpResponseRedirect('/login/?next=%s' % request.path)
+#    #
+#    # look up this device
+#    d = get_object_or_404(mobileCam, name=device_name)
+#
+#    return render_to_response('ttux/index2.html', {'dev':d}, context_instance=RequestContext(request))
+## END
+
+
 # Main View Finder Device Control View
-def index(request, device_name):
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index.html', {'dev':d}, context_instance=RequestContext(request))
-# END
-
-
-# Main View Finder Device Control View
-# for testing XHR
-def index2(request, device_name):
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index2.html', {'dev':d}, context_instance=RequestContext(request))
-# END
-
-
-# Main View Finder Device Control View
-# for testing jquery XHR
-def index3(request, device_name):
+#def index3(request, device_name):
+def viewmaster(request, device_name):
+    """handler for the video viewfinder view"""    
     # make sure user is logged in
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
@@ -152,76 +157,76 @@ def index3(request, device_name):
     # this will create a slight artifact for current viewers
     session = Session.get( device_name )
     session.clear_lastFrame()
-
-    return render_to_response('ttux/index3.html', {'dev':d}, context_instance=RequestContext(request))
+    
+    return render_to_response('ttux/viewmaster.html', {'dev':d}, context_instance=RequestContext(request))
 # END
 
 
 
-# Video stream generator
-def stream_response_generator(remote_address, device_name):
-    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
-    # get the session for this device if it is there
-    ## session = Session.get(0)
-    session = Session.get( device_name )
-    
-    #TODO need to use userid here and some kind of session key. remote address is not good enough.
-    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
-    viewer_key = remote_address + ":" +  id_generator(6)
-    frames = session.add_viewer(viewer_key)
-    
-    try:
-        for frame in frames:
-            yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
-            yield( frame )
-            yield( '\r\n')
-            gevent.sleep(0) # allow other events to be processed
-            
-    except socket.error, e:
-        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
-            raise
-        
-    finally:
-        session.remove_viewer( viewer_key )
-        print("Viewer left: ", viewer_key )
-        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+## Video stream generator
+#def stream_response_generator(remote_address, device_name):
+#    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
+#    # get the session for this device if it is there
+#    ## session = Session.get(0)
+#    session = Session.get( device_name )
+#    
+#    #TODO need to use userid here and some kind of session key. remote address is not good enough.
+#    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
+#    viewer_key = remote_address + ":" +  id_generator(6)
+#    frames = session.add_viewer(viewer_key)
+#    
+#    try:
+#        for frame in frames:
+#            yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
+#            yield( frame )
+#            yield( '\r\n')
+#            gevent.sleep(0) # allow other events to be processed
+#            
+#    except socket.error, e:
+#        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
+#            raise
+#        
+#    finally:
+#        session.remove_viewer( viewer_key )
+#        print("Viewer left: ", viewer_key )
+#        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+#
+## END def
 
-# END def
 
-
-# XHR video stream generator SOF/EOF: sends back binary data
-def stream_response_generator_XHR_SOFEOF(remote_address, device_name):
-    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
-    # get the session for this device if it is there
-    ## session = Session.get(0)
-    session = Session.get( device_name )
-    
-    #TODO need to use userid here and some kind of session key. remote address is not good enough.
-    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
-    viewer_key = remote_address + ":" +  id_generator(6)
-    frames = session.add_viewer(viewer_key)
-    
-    try:
-        for frame in frames:
-            encodedResp = base64.encodestring(frame)
-            ## yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
-            yield( '--SOF--' )
-            ## yield( frame )
-            yield(encodedResp)
-            yield( '--EOF--')
-            ## yield( '\r\n')
-            gevent.sleep(0) # allow other events to be processed
-            
-    except socket.error, e:
-        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
-            raise
-        
-    finally:
-        session.remove_viewer( viewer_key )
-        print("Viewer left: ", viewer_key )
-        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
-
-# END def
+## XHR video stream generator SOF/EOF: sends back binary data
+#def stream_response_generator_XHR_SOFEOF(remote_address, device_name):
+#    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
+#    # get the session for this device if it is there
+#    ## session = Session.get(0)
+#    session = Session.get( device_name )
+#    
+#    #TODO need to use userid here and some kind of session key. remote address is not good enough.
+#    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
+#    viewer_key = remote_address + ":" +  id_generator(6)
+#    frames = session.add_viewer(viewer_key)
+#    
+#    try:
+#        for frame in frames:
+#            encodedResp = base64.encodestring(frame)
+#            ## yield( '--myboundary\r\nContent-Type: image/jpeg\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
+#            yield( '--SOF--' )
+#            ## yield( frame )
+#            yield(encodedResp)
+#            yield( '--EOF--')
+#            ## yield( '\r\n')
+#            gevent.sleep(0) # allow other events to be processed
+#            
+#    except socket.error, e:
+#        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
+#            raise
+#        
+#    finally:
+#        session.remove_viewer( viewer_key )
+#        print("Viewer left: ", viewer_key )
+#        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+#
+## END def
 
 
 
@@ -232,54 +237,54 @@ def stream_response_generator_XHR_SOFEOF(remote_address, device_name):
 
 
 
-def stream_response_generator_XHR_SOFEOF_chunked(remote_address, device_name):
-    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
-    # get the session for this device if it is there
-    ## session = Session.get(0)
-    session = Session.get( device_name )
-    
-    #TODO need to use userid here and some kind of session key. remote address is not good enough.
-    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
-    viewer_key = remote_address + ":" +  id_generator(6)
-    frames = session.add_viewer(viewer_key)
-    
-    try:
-        # send chunked frame resonse
-        for frame in frames:
-            encodedResp = base64.encodestring(frame)
-            yield( '%s\r\n' % ( len(frame) ) )
-            yield( '--SOF--' )
-            ## yield( frame )
-            yield(encodedResp)
-            yield( '--EOF--')
-            ## yield( '\r\n')
-            gevent.sleep(0) # allow other events to be processed
-            
-    except socket.error, e:
-        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
-            raise
-        
-    finally:
-        session.remove_viewer( viewer_key )
-        print("Viewer left: ", viewer_key )
-        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+#def stream_response_generator_XHR_SOFEOF_chunked(remote_address, device_name):
+#    print ("starting stream for remote_addr: " + remote_address + ", device: " + device_name)
+#    # get the session for this device if it is there
+#    ## session = Session.get(0)
+#    session = Session.get( device_name )
+#    
+#    #TODO need to use userid here and some kind of session key. remote address is not good enough.
+#    # this will fail if we use two viewers from the same address. This can happen in a lan/proxy
+#    viewer_key = remote_address + ":" +  id_generator(6)
+#    frames = session.add_viewer(viewer_key)
+#    
+#    try:
+#        # send chunked frame resonse
+#        for frame in frames:
+#            encodedResp = base64.encodestring(frame)
+#            yield( '%s\r\n' % ( len(frame) ) )
+#            yield( '--SOF--' )
+#            ## yield( frame )
+#            yield(encodedResp)
+#            yield( '--EOF--')
+#            ## yield( '\r\n')
+#            gevent.sleep(0) # allow other events to be processed
+#            
+#    except socket.error, e:
+#        if e[0] not in [errno.ECONNABORTED, errno.ECONNRESET]:
+#            raise
+#        
+#    finally:
+#        session.remove_viewer( viewer_key )
+#        print("Viewer left: ", viewer_key )
+#        #logger.info("Viewer left: %s", env["REMOTE_ADDR"] )
+#
+## END def
 
-# END def
 
-
-@csrf_exempt
-def getStreamRequest_XHR_Chunked(request, device_name):
-    print("got stream start request for device " + device_name)
-    res = HttpResponse(    stream_response_generator_XHR_SOFEOF_chunked( request.META['REMOTE_ADDR'], device_name) )
-    #res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
-    res['Content-Type'] = "image/jpeg"
-    res['Content-Encoding'] = "chunked"
-    #res['Transfer-Encoding'] = "chunked"
-    #res['Media-type'] = 'image/jpeg'
-    res['Cache-Control'] = 'no-cache'
-    #res['Connection'] = 'keep-alive'
-    return res
-# END
+#@csrf_exempt
+#def getStreamRequest_XHR_Chunked(request, device_name):
+#    print("got stream start request for device " + device_name)
+#    res = HttpResponse(    stream_response_generator_XHR_SOFEOF_chunked( request.META['REMOTE_ADDR'], device_name) )
+#    #res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
+#    res['Content-Type'] = "image/jpeg"
+#    res['Content-Encoding'] = "chunked"
+#    #res['Transfer-Encoding'] = "chunked"
+#    #res['Media-type'] = 'image/jpeg'
+#    res['Cache-Control'] = 'no-cache'
+#    #res['Connection'] = 'keep-alive'
+#    return res
+## END
 
 #########################################################################################
 #########################################################################################
@@ -288,56 +293,56 @@ def getStreamRequest_XHR_Chunked(request, device_name):
 
 
 
-# XHR stream generator for testing, sends back strings.
-def stream_response_generator_XHR(remote_address, device_name):
-    print ("starting HXR stream for remote_addr: " + remote_address + ", device: " + device_name)
-    # get the session for this device if it is there
-    #session = Session.get( device_name )
-    
-    for x in range(0,9):
-        print ("say hello %d", x)
-        frame = "hello %d 12345678990123456789901234567899012345678990123456789901234567899012345678990123456789901234567899012345678990" % (x)
-        #yield( '--myboundary\r\nContent-Type: text/plain\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
-        yield( '--SOF--' )
-        gevent.sleep(1)
-        yield( frame )
-        yield( '--EOF--')
-        #yield('----EOF----'); # end of frame marker
-        #yield('extra text test, this should be in the next buffer\r\n')
-        gevent.sleep(2) # allow other events to be processed
-    #endfor      
-    print("Viewer left")
+## XHR stream generator for testing, sends back strings.
+#def stream_response_generator_XHR(remote_address, device_name):
+#    print ("starting HXR stream for remote_addr: " + remote_address + ", device: " + device_name)
+#    # get the session for this device if it is there
+#    #session = Session.get( device_name )
+#    
+#    for x in range(0,9):
+#        print ("say hello %d", x)
+#        frame = "hello %d 12345678990123456789901234567899012345678990123456789901234567899012345678990123456789901234567899012345678990" % (x)
+#        #yield( '--myboundary\r\nContent-Type: text/plain\r\nContent-Length: %s\r\n\r\n' % ( len(frame) ) )
+#        yield( '--SOF--' )
+#        gevent.sleep(1)
+#        yield( frame )
+#        yield( '--EOF--')
+#        #yield('----EOF----'); # end of frame marker
+#        #yield('extra text test, this should be in the next buffer\r\n')
+#        gevent.sleep(2) # allow other events to be processed
+#    #endfor      
+#    print("Viewer left")
+#
+#
+## END def
 
 
-# END def
 
 
+## open video stream request from browser flash app
+#@csrf_exempt
+#def getStreamRequest(request, device_name):
+#    print("got stream start request for device " + device_name)
+#    res = HttpResponse(    stream_response_generator( request.META['REMOTE_ADDR'], device_name) )
+#    res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
+#    res['Media-type'] = 'image/jpeg'
+#    res['Cache-Control'] = 'no-cache'
+#    return res
+## END
 
-
-# open video stream request from browser flash app
-@csrf_exempt
-def getStreamRequest(request, device_name):
-    print("got stream start request for device " + device_name)
-    res = HttpResponse(    stream_response_generator( request.META['REMOTE_ADDR'], device_name) )
-    res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
-    res['Media-type'] = 'image/jpeg'
-    res['Cache-Control'] = 'no-cache'
-    return res
-# END
-
-#########################################################################
-# simple text stream generator to test xmlhttprequest, 
-# this uses a multi-part response type
-@csrf_exempt
-def getStreamRequest_XHR(request, device_name):
-    print("got stream start request for device " + device_name)
-    ## res = HttpResponse(    stream_response_generator_XHR( request.META['REMOTE_ADDR'], device_name) )
-    res = HttpResponse(    stream_response_generator_XHR_SOFEOF( request.META['REMOTE_ADDR'], device_name) )
-    res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
-    res['Media-type'] = 'image/jpeg'
-    res['Cache-Control'] = 'no-cache'
-    return res
-# END
+##########################################################################
+## simple text stream generator to test xmlhttprequest, 
+## this uses a multi-part response type
+#@csrf_exempt
+#def getStreamRequest_XHR(request, device_name):
+#    print("got stream start request for device " + device_name)
+#    ## res = HttpResponse(    stream_response_generator_XHR( request.META['REMOTE_ADDR'], device_name) )
+#    res = HttpResponse(    stream_response_generator_XHR_SOFEOF( request.META['REMOTE_ADDR'], device_name) )
+#    res['Content-Type'] = "multipart/x-mixed-replace; boundary=--myboundary"
+#    res['Media-type'] = 'image/jpeg'
+#    res['Cache-Control'] = 'no-cache'
+#    return res
+## END
 
 
 
@@ -409,7 +414,8 @@ def snapshotRequest(request, device_name):
     # clear any previous frames that might be stuck in the queue 
     if not session.snapshotQ.empty():
         print "oops, found an errant snapshot, flushing the queue"
-        snapshot = session.snapshotQ.get(block=True, timeout=1)
+        #snapshot = session.snapshotQ.get(block=True, timeout=1)
+        session.snapshotQ.get(block=True, timeout=1)
     
     path="/snapshot" 
     try:
