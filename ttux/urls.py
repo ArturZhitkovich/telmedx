@@ -26,6 +26,8 @@ urlpatterns = patterns('ttux.views',
     url(r'^snapshot/(?P<device_name>\w+)$', 'snapshotRequest'),
     url(r'^ping$', 'pingRequest'),
     url(r'^deviceList$', 'deviceView'),
+    url(r'^registerKey/(?P<key>\w+)$', 'registerKey'),
+    url(r'^makeNewSession', 'makeNewSession'),
     #
     url(r'^logout$','logout_view'),
 )

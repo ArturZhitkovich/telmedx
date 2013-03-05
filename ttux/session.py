@@ -10,23 +10,30 @@
 #    2011         Matt Green      initial implementation
 #    July 2012    Tereus Scott    Refactored: added support for single frames and control channel
 #################################################################################
+from util.timers import RepeatedTimer
 """Module session.py
    main session handler. This links the phone and the browser and 
    controls all aspects of the session
 """
-
 import gevent.queue
+from util.queue import DiscardingQueue
+import random
+from util.telX_tokens import makeUniqueToken, makeOneTimeUseKey
+import util.timers
+
 import logging
 logger = logging.getLogger("session");
-
-from util.queue import DiscardingQueue
+logging.basicConfig(level=logging.DEBUG)
 
 class Session(object):
     REGISTRY = {}   # this is where we will store the list of sessions
     # initialize this object
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG)
+        #logging.basicConfig(level=logging.DEBUG)
+        #logging.basicConfig(level=logging.INFO)
         logger.info("session:__init__")
+        # seed the random number generator with the current time
+        random.seed()
     #def
 
     ####################################################################################
@@ -76,15 +83,112 @@ class Session(object):
         logger.info("remove_viewer address:" + address)
         self.viewers.pop(address, None)
     #def
+    
 
     ##########################################################################################
     # Static Methods
     ##########################################################################################
     @staticmethod
+    def get_SUID(oneTimeKey):
+        """find session that has the oneTimeKey, return it's SUID and invalidate the oneTimeKey"""
+        logger.debug("searching for key:" + oneTimeKey)
+        SUID="none"
+        for k in Session.REGISTRY:
+            s = Session.REGISTRY.get(k)
+            logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID )
+            if oneTimeKey == s.oneTimeKey:
+                logger.debug("    Found it")
+                SUID = s.SUID
+                s.oneTimeKey="0000" #clear it after first use
+        return SUID    
+    
+    @staticmethod
+    def removeSession_callback(s):
+        logger.info("timeout triggered on session SUID:" + s.SUID + ", removing this session from the list")
+        s.timer.stop()
+        try:
+            Session.REGISTRY.pop(s.SUID)
+        except:
+            logger.error("Unable to remove SUID from REGISTRY")
+        
+    #END removeSession_callback    
+    
+    @staticmethod
+    def makeSession(request):
+        """make a new session for a given authenticated user
+        This will create a new session object and assign a new OTUkey (one time use key).
+        The OTUKey is returned to the caller and should be displayed to the user. This
+        key will be entered at the phone and will be used in the get_SUID() call above to get the long token that will be 
+        used for the rest of the transaction.
+        This method must:
+            - generate a unique OTUKey (generate a random value then make sure it is not already in use)
+            - generate and store the SUID
+            - store the user name (this might be useful later)
+            - start a timer to invalidate the OTUKey after some small period of time (2-3 minutes?)
+        """
+
+        # make a new SUID, this will be the key value for our object
+        # note that the user name and password are required, so this can only be called with an authenticated user
+        key = makeUniqueToken(request)
+        #OTUKey = makeOneTimeUseKey()
+        # TODO make sure the key and OTUKey are unique.
+        # random.sample( set( range(1,10) ) - set([2,3]), 1 )
+        # get a set of the existing OTUKeys
+        logger.debug("Keys in use:")
+        OTUkeysInUse = set();
+        for k in Session.REGISTRY:
+            s = Session.REGISTRY.get(k)
+            logger.debug( "   k: " + s.oneTimeKey)
+            if s.oneTimeKey != "0000":
+                OTUkeysInUse.add( int(s.oneTimeKey) )
+        
+        logger.debug( "** TEST **")
+        logger.debug( set(range(1000,1010)) )
+        logger.debug( OTUkeysInUse )
+        logger.debug( "** END TEST **" )
+        
+        #OTUKey = str(random.sample( set( range(1000, 9999)) - OTUkeysInUse, 1)[0])
+        population= set( range(1000, 1010)) - OTUkeysInUse
+        logger.debug("keys left: ")
+        logger.debug( population )
+        if len(population) <= 0:
+            logger.error ("Error: no keys left")
+            OTUKey="0000"
+            raise LookupError
+        else:
+            OTUKey = str(random.sample( population, 1)[0])
+        
+        logger.info("New OTUK: " + OTUKey + " SUID: " + key)
+            
+        
+        # make a new session
+        session=Session()
+        Session.REGISTRY[key] = session
+        session.commandQ = gevent.queue.Queue(1)    # queue used to send commands from the browser to the phone
+        session.snapshotQ = gevent.queue.Queue(1)   # queue used to send the completed snapshot back from the phone to the browser
+        session.control_greenlet = None
+        session.sequence_number = None      
+        session.viewers = {}                # list of client browsers who are viewing this session (not used right now, need to use this to be able to kill a session after all viewers are gone
+        session.LastFrame = ""              # store the most recently received frame from the phone
+        session.frameNumber = 0             # frame number of the most recent frame
+        session.oneTimeKey = OTUKey         # four digit user session key, one time use to establish session with the phone
+        session.SUID=key 
+        
+        # add session timer
+        #TODO figure out what timeout to use here? Currently each session is limited to 60 seconds.
+        session.timer = RepeatedTimer(10, Session.removeSession_callback, session)
+        
+        return OTUKey
+    #END makeSession
+    
+
+
+    @staticmethod
     def get(key):
         """static method: get Session instance for a given device (key)"""
         logger.info("get key:" + str(key))
         return Session.REGISTRY.get(key)
+    #END get
 
     @staticmethod
     def put(key, session):
@@ -94,23 +198,46 @@ class Session(object):
         for each device.
         """        
         logger.info("put key: " + str(key) )
-        print "REGISTRY before:"
+        logger.debug("REGISTRY before:")
         for k in Session.REGISTRY:
-            print "   k: " + k
-        print "Checking for key in REGISTRY"
+            logger.debug( "   k: " + k)
+        logger.debug( "Checking for key in REGISTRY")
         if key in Session.REGISTRY:
-            print "key found: " + key
+            logger.debug( "key found: " + key)
         else:
             Session.REGISTRY[key] = session
-            session.commandQ = gevent.queue.Queue(1)
-            session.snapshotQ = gevent.queue.Queue(1)
+            session.commandQ = gevent.queue.Queue(1)    # queue used to send commands from the browser to the phone
+            session.snapshotQ = gevent.queue.Queue(1)   # queue used to send the completed snapshot back from the phone to the browser
             session.control_greenlet = None
-            session.sequence_number = None
-            session.viewers = {}
-            session.LastFrame = "" # store the most recently received frame here?
-            session.frameNumber = 0 # frame number of the most recent frame
+            session.sequence_number = None      
+            session.viewers = {}                # list of client browsers who are viewing this session (not used right now, need to use this to be able to kill a session after all viewers are gone
+            session.LastFrame = ""              # store the most recently received frame from the phone
+            session.frameNumber = 0             # frame number of the most recent frame
+            session.oneTimeKey = "1234"         # four digit user session key, one time use to establish session with the phone
+            session.SUID="SUID bong"            # Session Unique Id, long hashed unique key, will live the duration of the session
         #END if
-        print "REGISTRY after:"
+        logger.debug( "REGISTRY after:")
         for k in Session.REGISTRY:
-            print "   k: " + k
+            logger.debug( "   k: " + k)
+    #END put
+
+    @staticmethod
+    def printSessionList():
+        logger.debug("Session List:")
+        for k in Session.REGISTRY:
+            s = Session.REGISTRY.get(k)
+            logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID)
+    #END printSessionList
+    
+#END class
+
+
+
+# Unit Test Code
+# TODO: refactor this out into separate unit test file and make use of django unit test runner?
+if __name__ == '__main__':
+    logger.info("Session Unit Tests")
+    
+    
+    logger.info("Done.")
 
