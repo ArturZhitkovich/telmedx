@@ -72,7 +72,22 @@ while(1)
 
     my $ua = LWP::UserAgent->new;
     my $response = $ua->request($r);
-
+    if ($response->is_success)
+    {
+    	my $decodedResponse = $response->decoded_content;
+    	if ($decodedResponse eq "/snapshot")
+    	{
+    		print "Got request for a snapshot\n";
+		    my $url = "http://$serverAddress:$portNumber/ttux/snapshotResponse/test/snap" . $frameSeqNo . ".jpg";
+		    
+		    my $r = new HTTP::Request 'PUT', $url;
+		    $r->header('content-length'=>$numBytesRead);
+		    $r->header('content-type'=>'image/jpeg');
+		    $r->content($data);
+    		$response = $ua->request($r);
+    	}
+    }
+    	
     close (FILE);
     $numFramesSent++;
 
