@@ -14,8 +14,11 @@ def makeUniqueToken(request):
     
     timestamp = datetime.today()
     myhash = sha_constructor(settings.SECRET_KEY + unicode(request.user.id) + request.user.password + unicode(timestamp)).hexdigest()[::2]
-    t =  "%s-%s" % (timestamp, myhash)
+    t =  "%s%s" % (timestamp, myhash)
     t = t.replace(" ", "") # remove spaces
+    t = t.replace(":","")
+    t = t.replace("-", "")
+    t = t.replace(".","")    
     return t
 
 def makeOneTimeUseKey():

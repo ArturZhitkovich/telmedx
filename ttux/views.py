@@ -56,6 +56,10 @@ def rxImage(request, device_name):
     """handler to receive a single video frame from the phone"""
     #print "got img for device " + device_name
     session = Session.get( device_name )
+    if session == None:
+        print("ERROR: rxImage, no session for SUID: " + device_name)
+        return HttpResponse(status=418)
+    
     image = request.read();
     # distribute this frame to each watcher
     session.enqueue_frame(image)
@@ -71,7 +75,7 @@ def rxImage(request, device_name):
         print "sending command " + command_resp + " to the phone: " + device_name
     #endif
     ##return HttpResponse(status="200 OK")
-    return HttpResponse(command_resp)
+    return HttpResponse(status=200, content=command_resp)
 #END
     
     
@@ -121,6 +125,7 @@ def registerKey(request, key):
     response = HttpResponse("got SUID: " + SUID + "\n")
     response['Content-Type'] = "text/html"
     response['Cache-Control'] = 'no-cache'
+    response['SUID'] = SUID
     return(response)
 
 

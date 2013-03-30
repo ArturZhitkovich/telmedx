@@ -11,6 +11,7 @@
 #    July 2012    Tereus Scott    Refactored: added support for single frames and control channel
 #################################################################################
 from util.timers import RepeatedTimer
+from django.conf.urls.static import static
 """Module session.py
    main session handler. This links the phone and the browser and 
    controls all aspects of the session
@@ -20,10 +21,13 @@ from util.queue import DiscardingQueue
 import random
 from util.telX_tokens import makeUniqueToken, makeOneTimeUseKey
 import util.timers
+from threading import Timer
+from time import sleep
 
 import logging
 logger = logging.getLogger("session");
 logging.basicConfig(level=logging.DEBUG)
+
 
 class Session(object):
     REGISTRY = {}   # this is where we will store the list of sessions
@@ -93,25 +97,43 @@ class Session(object):
         """find session that has the oneTimeKey, return it's SUID and invalidate the oneTimeKey"""
         logger.debug("searching for key:" + oneTimeKey)
         SUID="none"
-        for k in Session.REGISTRY:
-            s = Session.REGISTRY.get(k)
-            logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID )
-            if oneTimeKey == s.oneTimeKey:
-                logger.debug("    Found it")
-                SUID = s.SUID
-                s.oneTimeKey="0000" #clear it after first use
-        return SUID    
+        for k in list(Session.REGISTRY):
+            try:
+                s = Session.REGISTRY.get(k)
+                logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID )
+                if oneTimeKey == s.oneTimeKey:
+                    logger.debug("    Found it")
+                    SUID = s.SUID
+                    s.oneTimeKey="0000" #clear the OTUK after first use
+                    s.oneTimeKey_timer.cancel()
+                    return SUID
+            except(KeyError):
+                logger.debug("k: " + k + " was removed while we were searching the registry")
+                pass
+        #END for
+        return SUID
+    #END get_SUID 
     
     @staticmethod
     def removeSession_callback(s):
-        logger.info("timeout triggered on session SUID:" + s.SUID + ", removing this session from the list")
-        s.timer.stop()
+        logger.info("timeout triggered on session SUID:" + s.SUID + ", removing this session from the REGISTRY list")
         try:
             Session.REGISTRY.pop(s.SUID)
         except:
-            logger.error("Unable to remove SUID from REGISTRY")
-        
-    #END removeSession_callback    
+            logger.error("Unable to remove SUID:" + s.SUID + " from REGISTRY")
+    #END removeSession_callback
+    
+    @staticmethod
+    def removeOTUK_callback(s):
+        logger.info("timeout triggered on session OTUK: " + s.oneTimeKey + ", Key has not been used, removing this session from the REGISTRY list")
+        logger.info("SUID: " + s.SUID)
+        if s.oneTimeKey == "0000":
+            logger.warning("OTUK is already in use, clearing the session anyway")
+        try:
+            Session.REGISTRY.pop(s.SUID)
+        except:
+            logger.error("Unable to remove OTUK: " + s.oneTimeKey + " from REGISTRY")
+    #END removeOTUK_callback
     
     @staticmethod
     def makeSession(request):
@@ -127,20 +149,26 @@ class Session(object):
             - start a timer to invalidate the OTUKey after some small period of time (2-3 minutes?)
         """
 
-        # make a new SUID, this will be the key value for our object
-        # note that the user name and password are required, so this can only be called with an authenticated user
-        key = makeUniqueToken(request)
-        #OTUKey = makeOneTimeUseKey()
-        # TODO make sure the key and OTUKey are unique.
+
+        
+        # make sure the key and OTUKey are unique.
         # random.sample( set( range(1,10) ) - set([2,3]), 1 )
-        # get a set of the existing OTUKeys
+        
+        # get a set of the current set of active keys
         logger.debug("Keys in use:")
         OTUkeysInUse = set();
-        for k in Session.REGISTRY:
-            s = Session.REGISTRY.get(k)
-            logger.debug( "   k: " + s.oneTimeKey)
-            if s.oneTimeKey != "0000":
-                OTUkeysInUse.add( int(s.oneTimeKey) )
+        for k in list(Session.REGISTRY):
+            try:
+                s = Session.REGISTRY.get(k)
+                logger.debug( "    k: " + s.oneTimeKey)
+                if s.oneTimeKey != "0000":
+                    OTUkeysInUse.add( int(s.oneTimeKey) )
+            except(KeyError):
+                # this will happen if a timer has come along and deleted this key from
+                # the registry while we are in this method
+                logger.debug("k: " + k + " is no longer in the registry, skipping")
+                pass
+        #END for
         
         logger.debug( "** TEST **")
         logger.debug( set(range(1000,1010)) )
@@ -157,9 +185,12 @@ class Session(object):
             raise LookupError
         else:
             OTUKey = str(random.sample( population, 1)[0])
+
+        # make a new SUID, this will be the key value for our object
+        # note that the user name and password are required, so this can only be called with an authenticated user
+        key = makeUniqueToken(request)    
         
         logger.info("New OTUK: " + OTUKey + " SUID: " + key)
-            
         
         # make a new session
         session=Session()
@@ -174,10 +205,17 @@ class Session(object):
         session.oneTimeKey = OTUKey         # four digit user session key, one time use to establish session with the phone
         session.SUID=key 
         
-        # add session timer
-        #TODO figure out what timeout to use here? Currently each session is limited to 60 seconds.
-        session.timer = RepeatedTimer(10, Session.removeSession_callback, session)
+        # add timers
+        # TODO set up constant or system defines for these timeouts, using 30 sec for testing
+        # one time use key timeout, the phone has a short window of time to use the key, otherwise the session is removed.
+        # TODO need to work out what the browser will do when the session goes away?
+        session.oneTimeKey_timer = Timer(30, Session.removeOTUK_callback, [session] )  # one shot timer
+        session.oneTimeKey_timer.start()
         
+        # Global session timeout: this keeps sessions from running forever.
+        #session.timer = RepeatedTimer(10, Session.removeSession_callback, session)
+        session.removeSessiontimer = Timer(10, Session.removeSession_callback, [session] ) # one shot timer
+        session.removeSessiontimer.start()
         return OTUKey
     #END makeSession
     
@@ -199,7 +237,7 @@ class Session(object):
         """        
         logger.info("put key: " + str(key) )
         logger.debug("REGISTRY before:")
-        for k in Session.REGISTRY:
+        for k in list(Session.REGISTRY):
             logger.debug( "   k: " + k)
         logger.debug( "Checking for key in REGISTRY")
         if key in Session.REGISTRY:
@@ -217,18 +255,39 @@ class Session(object):
             session.SUID="SUID bong"            # Session Unique Id, long hashed unique key, will live the duration of the session
         #END if
         logger.debug( "REGISTRY after:")
-        for k in Session.REGISTRY:
+        for k in list(Session.REGISTRY):
             logger.debug( "   k: " + k)
     #END put
 
     @staticmethod
     def printSessionList():
         logger.debug("Session List:")
-        for k in Session.REGISTRY:
-            s = Session.REGISTRY.get(k)
+        for k in list(Session.REGISTRY):
+            try:
+                s = Session.REGISTRY.get(k)
+            except(KeyError):
+                pass
             logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID)
     #END printSessionList
     
+    
+    # for unit testing support, remove all sessions
+    @staticmethod
+    def removeAllSessions():
+        logger.info("removing all active sessions:")
+        #NOTE: use list() to get a copy of the registry key list and iterate over that copy.
+        # This is important because we are using timers which can fire at any time and delete an entry from the registry
+        # if this happens while we are iterating through the registry we will get a runtime error complaining that
+        # the size of the dictionary changed while were were iterating through it.
+        for k in list(Session.REGISTRY):
+            try:
+                s = Session.REGISTRY.pop(k)
+                logger.debug("popped k: " + k)
+                logger.debug( "remove OTUK: " + s.oneTimeKey + " SUID: " + s.SUID)
+            except(KeyError):
+                logger.error("can't pop session k:" + k)
+                pass #ignore this error
+            sleep(1)     
 #END class
 
 
@@ -236,8 +295,4 @@ class Session(object):
 # Unit Test Code
 # TODO: refactor this out into separate unit test file and make use of django unit test runner?
 if __name__ == '__main__':
-    logger.info("Session Unit Tests")
-    
-    
-    logger.info("Done.")
-
+    logger.info("unit test are in separate file")
