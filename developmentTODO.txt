@@ -1,0 +1,68 @@
+Tel*X Server Development ToDo
+-----------------------------
+updated: April 1, 2013 (no kidding)
+
+1. Session Timeout management
+Session timeout: currently session has a fixed overall timeout (24 hours). This prevents old sessions from staying around and using up memory.
+We need to add a way to timeout the session earlier, after the last viewer has left.
+This should be around 5 minutes? This would allow time for someone to open the browser again if the accidentally closed it.
+This can be implemented by detecting that the last viewer has left and then:
+- cancel the current session.removeSessiontimer
+- start a new timer with the 5 minute timeout
+
+If the viewer comes back, we can start the long timer again.
+
+
+2.Update Browser UI (viewmaster)
+- page needs to automatically get the ticket and display to the user: or we can use the url makeNewSession (see unit tests)
+- viewmaster needs to handle ticket timeout
+- viewmaster needs to refresh as soon as the device checks in with it's Ticket and gets its SUID
+
+
+3. Add protocol version number to protocol urls
+- add handler for invalid protocol version
+
+
+4. return status codes
+- it seems like our result code is redundant. We need to see if we can just use the http status instead?
+
+
+5. Need to update simulator to support the new urls after unit tests are complete
+
+
+6. Need to refactor image delivery: currently the file is prepeneded with the frame number.
+This needs to be efficient so I don't think we should use json here. This method may be good enough
+for our performance needs.
+
+
+7. Add https to Apache front end and device. We need to do some performance testing here
+- we should be able to test this with a self-signed cert. 
+- we may be able to get away with a self-signed cert if we bundle it with the iphone app - need to look into this
+- make sure this does not add significant latency
+
+
+8. viewer management (related to #1)
+- need to add the ability for the session instance to keep track of viewers and be able to detect when there is no longer any viewers for a given video stream.
+When that happens we want to have the session time out relatively soon.
+We can do this by restarting the removeSession timer (normally set to 24 hrs) to a small value - say 2 minutes.
+
+
+9. Add database support for device info that is delivered in the register device message. 
+This is not currently being parsed or stored.
+
+
+10. Billing
+- we need to define a basic call detail record (CDR) that is written to a flat file on the server
+- for now we do not need to burden the database with this information. 
+- each video call event will be recorded and logged. The file needs to be in a structured format that can be exported to a billing system.
+- for now we will use this for diagnostics, but in the future this will serve as the basis of our billing engine (where we bill by call)
+
+
+11. Backend maintenance
+- we need a 'master-admin' page where server administrators can log in and see the server/application status.
+This would include number of currently active sessions, errors, etc.
+We need to think about the best way to do this?
+It may be simpler to make some command line tools for now that can get the data directly from our logs, billing logs or database files?
+
+
+
