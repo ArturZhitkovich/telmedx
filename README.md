@@ -13,6 +13,12 @@ change DATABASES:NAME to server db path
 
 Release Notes
 -------------
+April 1 2013 tscott
+Tag:
+- added session Ticket management
+- added unit tests
+- first iteration of device protocol implementation (see developmentTODO.txt)
+
 Feb 23 2013 tscott
 - demo server, support multiple users and devices
 - baseline github commit
