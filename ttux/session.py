@@ -6,16 +6,20 @@
 # Copyright 2013 telmedx
 #  
 # Major Revision History
-#    Date         Author          Description
-#    2011         Matt Green      initial implementation
-#    July 2012    Tereus Scott    Refactored: added support for single frames and control channel
+#    Date         Version     Author          Description
+#    2011         1.0.0       Matt Green      initial implementation
+#    July 2012    1.0.1       Tereus Scott    Refactored: added support for single frames and control channel
+#    March 2013   1.0.2       Tereus Scott    Added Ticket and key handling
 #################################################################################
-from util.timers import RepeatedTimer
-from django.conf.urls.static import static
+
+__version__ = '1.0.2'
 """Module session.py
    main session handler. This links the phone and the browser and 
    controls all aspects of the session
 """
+
+# from util.timers import RepeatedTimer
+from django.conf.urls.static import static
 import gevent.queue
 from util.queue import DiscardingQueue
 import random
@@ -274,6 +278,10 @@ class Session(object):
     # for unit testing support, remove all sessions
     @staticmethod
     def removeAllSessions():
+        """Remove all currently active session and stop all timers. This is here to support
+        unit testing. This should be called to clear all previous sessions prior to starting 
+        a test case"""
+         
         logger.info("removing all active sessions:")
         #NOTE: use list() to get a copy of the registry key list and iterate over that copy.
         # This is important because we are using timers which can fire at any time and delete an entry from the registry
@@ -282,6 +290,8 @@ class Session(object):
         for k in list(Session.REGISTRY):
             try:
                 s = Session.REGISTRY.pop(k)
+                s.oneTimeKey_timer.cancel()
+                s.removeSessiontimer.cancel()
                 logger.debug("popped k: " + k)
                 logger.debug( "remove OTUK: " + s.oneTimeKey + " SUID: " + s.SUID)
             except(KeyError):

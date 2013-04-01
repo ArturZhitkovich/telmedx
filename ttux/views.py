@@ -28,10 +28,23 @@ import base64
 import json
 import string
 import random
+import json
 
 import logging
 logger = logging.getLogger("views")
 logging.basicConfig(level=logging.INFO)
+
+import ttux_constants as C
+
+##################################################################################
+# Constants
+##################################################################################
+## RETURN CODES
+#RC_BAD_SUID = "BAD_SUID"
+#
+## HTTP STATUS CODES
+#HSTAT_OK        = 200
+#HSTAT_AUTH_FAIL = 418
 
 ##################################################################################
 # Globals
@@ -58,7 +71,7 @@ def rxImage(request, device_name):
     session = Session.get( device_name )
     if session == None:
         print("ERROR: rxImage, no session for SUID: " + device_name)
-        return HttpResponse(status=418)
+        return HttpResponse(status=C.HSTAT_AUTH_FAIL, content=C.RC_BAD_SUID)
     
     image = request.read();
     # distribute this frame to each watcher
@@ -75,7 +88,7 @@ def rxImage(request, device_name):
         print "sending command " + command_resp + " to the phone: " + device_name
     #endif
     ##return HttpResponse(status="200 OK")
-    return HttpResponse(status=200, content=command_resp)
+    return HttpResponse(status=C.HSTAT_OK, content=command_resp)
 #END
     
     
@@ -116,16 +129,48 @@ def pingRequest(request):
 # TODO need to add some authentication for the phone itself here?
 @csrf_exempt
 def registerKey(request, key):
-    """get four digit session key from the phone and return the SUID from the session object"""
+    """get four digit session key from the phone and return the SUID from the session object
+    If we fail to find the key, then we must return an empty SUID
+    """
     logger.info("got key: " + key )
     
     # look up key in session list
-    SUID = Session.get_SUID(key)
+    resp_SUID=""
+    resp_RESULT=""
+    http_response = C.HSTAT_OK
+    try:
+        resp_SUID = Session.get_SUID(key)
+        # TODO need to replace the string 'none' with a constant here and in get_SUID()
+        if (resp_SUID == "none"):
+            resp_RESULT = C.RC_REGISTER_FAIL
+            resp_SUID=""
+            http_response = C.HSTAT_OK
+            # TODO should we return a different http status here?
+        else:
+            # SUCCESS, we found the Ticket and got a valid SUID
+            resp_RESULT = C.RC_REGISTER_OK
+            http_response = C.HSTAT_OK
+    except:
+        resp_RESULT = C.RC_REGISTER_FAIL
+        resp_SUID=""
+        http_response = C.HSTAT_OK        
+    
     # format and send http response
-    response = HttpResponse("got SUID: " + SUID + "\n")
-    response['Content-Type'] = "text/html"
-    response['Cache-Control'] = 'no-cache'
-    response['SUID'] = SUID
+    respData = json.dumps( [ { 'result':resp_RESULT, 'SUID':resp_SUID } ] )
+    response = HttpResponse(status=http_response, content=respData)
+    response['Content-Type'] = "application/json"
+    response['Cache-Control'] = 'no-cache'    
+    
+    #respData = json.dumps( [ { 'result':C.RC_REGISTER_OK, 'SUID':SUID } ] )
+    #respData = json.dumps( [ { 'result':resp_RESULT, 'SUID':resp_SUID } ] )
+    #response(content=respData)
+
+    #response = HttpResponse(status=C.HSTAT_OK, content=respData)
+#    response['Content-Type'] = "application/json"
+#    response['Cache-Control'] = 'no-cache'
+#    response['SUID'] = SUID
+    
+    
     return(response)
 
 
