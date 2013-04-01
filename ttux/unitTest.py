@@ -41,9 +41,8 @@ class TestSessionKeys(unittest.TestCase):
     #Test: send an image with no active session, verify handling of bad SUID
     def test_imageReceive_noSession(self):
         # skip this test
-        self.assertTrue(True) 
-        return
-        #DONE#
+        #self.assertTrue(True) 
+        #return
     
         print("unit test: receive an image for an invalid OTUK")
         
@@ -58,9 +57,8 @@ class TestSessionKeys(unittest.TestCase):
     #Test: send an image with a valid SUID
     def test_imageReceive_success(self):
         # skip this test
-        self.assertTrue(True) 
-        return
-        #DONE#
+        #self.assertTrue(True) 
+        #return
     
         print("unit test: post an image for a valid SUID")
         
@@ -75,8 +73,17 @@ class TestSessionKeys(unittest.TestCase):
         print("Get ticket")
         response = c.get('/ttux/makeNewSession')
         self.assertTrue(response.status_code == C.HSTAT_OK)
-        print "got OTUK:" + response['OTUK']
-        deviceName = response['OTUK']
+        self.assertTrue(response['Content-Type'] == "application/json")
+        resp_data = json.loads( response.content )
+        self.assertTrue( 'OTUK' in resp_data[0] )
+        self.assertTrue( resp_data[0]['result'] == C.RC_SESSION_OK )
+        # verify that the OTUK is not empty
+        self.assertTrue( len(resp_data[0]['OTUK']) != 0 )
+        deviceName = resp_data[0]['OTUK']
+        print "KEY IS: " + deviceName
+                
+#        print "got OTUK:" + response['OTUK']
+#        deviceName = response['OTUK']
         
         # register Ticket and get SUID
         response = c.get('/ttux/registerKey/' + deviceName)
@@ -102,9 +109,8 @@ class TestSessionKeys(unittest.TestCase):
     # Test: verify handling of invalid OTUK
     def test_invalidTicket(self):
         # skip this test
-        self.assertTrue(True) 
-        return
-        #DONE#
+        #self.assertTrue(True) 
+        #return
         
         print("unit test: invalid ticket")
         
@@ -134,8 +140,8 @@ class TestSessionKeys(unittest.TestCase):
     # slot is used up
     def test_maxSessions(self):
         # skip this test
-        self.assertTrue(True) 
-        return
+        #self.assertTrue(True) 
+        #return
     
         print("unit test: test_maxSessions")
         
@@ -250,7 +256,6 @@ class TestSessionKeys(unittest.TestCase):
         print("Number of sessions active: " + str( len( Session.REGISTRY) ) )
         self.assertTrue( len( Session.REGISTRY) == 0)
     #END
-    
     
 #END class
 
