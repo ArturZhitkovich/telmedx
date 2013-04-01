@@ -17,7 +17,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # database engine
         #'NAME': '/sites/telmedx/wip/mysite/sqlite.db',  # TODO path to production sqllite db
-        'NAME': '/home/developer/workspace/telvetx/mysite/sqlite.db',  # path to development sqllite db
+        'NAME': '/home/developer/db/sqlite.db',  # path to development sqllite db
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
