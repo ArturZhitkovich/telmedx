@@ -136,40 +136,30 @@ def registerKey(request, key):
     
     # look up key in session list
     resp_SUID=""
-    resp_RESULT=""
+    resp_result=""
     http_response = C.HSTAT_OK
     try:
         resp_SUID = Session.get_SUID(key)
         # TODO need to replace the string 'none' with a constant here and in get_SUID()
         if (resp_SUID == "none"):
-            resp_RESULT = C.RC_REGISTER_FAIL
+            resp_result = C.RC_REGISTER_FAIL
             resp_SUID=""
             http_response = C.HSTAT_OK
             # TODO should we return a different http status here?
         else:
             # SUCCESS, we found the Ticket and got a valid SUID
-            resp_RESULT = C.RC_REGISTER_OK
+            resp_result = C.RC_REGISTER_OK
             http_response = C.HSTAT_OK
     except:
-        resp_RESULT = C.RC_REGISTER_FAIL
+        resp_result = C.RC_REGISTER_FAIL
         resp_SUID=""
-        http_response = C.HSTAT_OK        
+        http_response = C.HSTAT_OK
     
     # format and send http response
-    respData = json.dumps( [ { 'result':resp_RESULT, 'SUID':resp_SUID } ] )
+    respData = json.dumps( [ { 'result':resp_result, 'SUID':resp_SUID } ] )
     response = HttpResponse(status=http_response, content=respData)
     response['Content-Type'] = "application/json"
     response['Cache-Control'] = 'no-cache'    
-    
-    #respData = json.dumps( [ { 'result':C.RC_REGISTER_OK, 'SUID':SUID } ] )
-    #respData = json.dumps( [ { 'result':resp_RESULT, 'SUID':resp_SUID } ] )
-    #response(content=respData)
-
-    #response = HttpResponse(status=C.HSTAT_OK, content=respData)
-#    response['Content-Type'] = "application/json"
-#    response['Cache-Control'] = 'no-cache'
-#    response['SUID'] = SUID
-    
     
     return(response)
 
@@ -178,22 +168,24 @@ def registerKey(request, key):
 # UI Handlers
 ##################################################################################
 def makeNewSession(request):
-    logger.info("Making new session for user")
+    logger.info("Making new session for user: " + request.user.username)
     
-    #SUID = Session.makeSession(request)
     try:
-        OTUKey = Session.makeSession(request)
+        resp_OTUK = Session.makeSession(request)
+        resp_result = C.RC_SESSION_OK
+        http_status = C.HSTAT_OK
     except(LookupError):
-            response = HttpResponse(status="418", content="fail no keys left\n")
-            response['Content-Type'] = "text/html"
-            response['Cache-Control'] = 'no-cache'
-            response['OTUK'] = "0000"
-            return(response)
+        # major error: server has run out of keys
+        logger.error("Unable to generate a new ticket. Server can not create any new sessions.")
+        resp_OTUK="0000"
+        resp_result = C.RC_SESSION_FAIL
+        http_status = C.HSTAT_NO_KEYS_LEFT
     #OK
-    response = HttpResponse(OTUKey + "\n")
-    response['Content-Type'] = "text/html"
+    respData = json.dumps( [ { 'result':resp_result, 'OTUK':resp_OTUK } ] )
+    response = HttpResponse(status=http_status, content=respData )
+    response['Content-Type'] = "application/json"
     response['Cache-Control'] = 'no-cache'
-    response['OTUK'] = OTUKey
+
     return(response) 
 
 

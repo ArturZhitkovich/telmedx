@@ -18,7 +18,7 @@ def makeUniqueToken(request):
     t = t.replace(" ", "") # remove spaces
     t = t.replace(":","")
     t = t.replace("-", "")
-    t = t.replace(".","")    
+    t = t.replace(".","")
     return t
 
 def makeOneTimeUseKey():

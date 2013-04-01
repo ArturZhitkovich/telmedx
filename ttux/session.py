@@ -35,6 +35,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 class Session(object):
     REGISTRY = {}   # this is where we will store the list of sessions
+    # general timeout for all sessions. This is to prevent stale sessions from hanging around forever on the server clogging up memory
+    SESSION_TIMEOUT = (24 * 60 * 60)
+    # Ticket timeout: the user has two minutes to enter the key for a new session
+    OTUK_TIMEOUT = (2 * 60)
+    # Maximum range for Tickets: (use this for unit testing so we can shorten the range to test boundary conditions)
+    OTUK_MIN_RANGE = 1000
+    OTUK_MAX_RANGE = 9999 
+    
     # initialize this object
     def __init__(self):
         #logging.basicConfig(level=logging.DEBUG)
@@ -56,7 +64,6 @@ class Session(object):
         #NOTE: setdefault() is like get(), except that if k is missing, x is both returned and inserted into the dictionary as the value of k. x defaults to None.
         #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
     #def 
-
 
 
     def enqueue_frame(self, frame):
@@ -152,12 +159,7 @@ class Session(object):
             - store the user name (this might be useful later)
             - start a timer to invalidate the OTUKey after some small period of time (2-3 minutes?)
         """
-
-
-        
-        # make sure the key and OTUKey are unique.
-        # random.sample( set( range(1,10) ) - set([2,3]), 1 )
-        
+       
         # get a set of the current set of active keys
         logger.debug("Keys in use:")
         OTUkeysInUse = set();
@@ -174,13 +176,13 @@ class Session(object):
                 pass
         #END for
         
-        logger.debug( "** TEST **")
-        logger.debug( set(range(1000,1010)) )
-        logger.debug( OTUkeysInUse )
-        logger.debug( "** END TEST **" )
+#        logger.debug( "** TEST **")
+#        logger.debug( set(range(1000,1010)) )
+#        logger.debug( OTUkeysInUse )
+#        logger.debug( "** END TEST **" )
         
         #OTUKey = str(random.sample( set( range(1000, 9999)) - OTUkeysInUse, 1)[0])
-        population= set( range(1000, 1010)) - OTUkeysInUse
+        population= set( range(Session.OTUK_MIN_RANGE, Session.OTUK_MAX_RANGE)) - OTUkeysInUse
         logger.debug("keys left: ")
         logger.debug( population )
         if len(population) <= 0:
@@ -213,12 +215,12 @@ class Session(object):
         # TODO set up constant or system defines for these timeouts, using 30 sec for testing
         # one time use key timeout, the phone has a short window of time to use the key, otherwise the session is removed.
         # TODO need to work out what the browser will do when the session goes away?
-        session.oneTimeKey_timer = Timer(30, Session.removeOTUK_callback, [session] )  # one shot timer
+        session.oneTimeKey_timer = Timer(Session.OTUK_TIMEOUT, Session.removeOTUK_callback, [session] )  # one shot timer
         session.oneTimeKey_timer.start()
         
         # Global session timeout: this keeps sessions from running forever.
         #session.timer = RepeatedTimer(10, Session.removeSession_callback, session)
-        session.removeSessiontimer = Timer(10, Session.removeSession_callback, [session] ) # one shot timer
+        session.removeSessiontimer = Timer(Session.SESSION_TIMEOUT, Session.removeSession_callback, [session] ) # one shot timer
         session.removeSessiontimer.start()
         return OTUKey
     #END makeSession
