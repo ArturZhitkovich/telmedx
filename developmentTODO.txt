@@ -65,4 +65,82 @@ We need to think about the best way to do this?
 It may be simpler to make some command line tools for now that can get the data directly from our logs, billing logs or database files?
 
 
+12. Create functional skeleton for device and viewmaster html pages. Inputs are already defined, make sure they are complete.
+js implementation for each control is in /static/js/viewmaster.js
+implement jQuery.post() for each device control function
+
+
+13. update device and viewmaster css:
+- implement new telmedx view layout
+- add new telmedx artwork
+
+
+14. create server deployment/upgrade scripts & tools
+investigate South for database migtation: http://south.aeracode.org/
+
+
+15. implement urls for all new actions and view stubs (in ttux/urls.py and views.py)
+
+
+16. Device View updates:
+- update to show currently active Sessions
+- update to add action to add a new session
+- update to add action to delete an active session
+- add logic to create new sesion and pass ticket & suid to viewmaster view
+- add logic to allow selection of an existing session and goto viewmaster
+- add logic to show ticket id for a session that has not been established yet
+
+
+17. implement linkage of session to a specific account/group
+Any user in a given account can join any active sessions in that account
+
+18. investigate use of Apache module vs running django as middleware app behind apache?
+Are there any benefits to this: performance?
+Security is not a problem since the current dj server is behind a front end apache server and
+is accessed via reverse proxy
+
+
+19. get supervisord running correctly with django so process can be automatically restarted
+the current server does not work properly with django (it does manage normal python servers properly)
+We may need to not start dj with manage.py, which seems to spawn another process?
+
+
+20. performance testing: we need to run multiple instances of simulator and measure cpu, memory and i/o 
+and get an estimate of where we expect the botlenecks to be.
+
+
+
+
+
+Future Ideas:
+-------------
+1. Server Robustness: session persistance
+If the server reboots for any reason our current architecture will loose all active sessions.
+We can improve this by saving the essential active session data to a table.
+The table is updated when sessions are created or deleted.
+On startup we can restore all the previous session from this table.
+The result would be that users would see a halt in video while the server process restarted, and then video would keep flowing.
+The time to restart the process would likley on the order of a few seconds.
+Keep in mind that the paitent and clinician would still be talking on the phone and so would still
+have a 'session'.
+
+
+2. Server scalability:
+Our current design is bound to a single process and can not take advantage of a multi-core machine.
+We should be able to fork a new process for each new session.
+On a multi-core machine, each of these processes would be distributed on available cores by the OS.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
