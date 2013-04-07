@@ -17,3 +17,5 @@ HSTAT_AUTH_FAIL     = 418
 #HSTAT_BAD_DEVICE    = 418   # HTTP status code returned when the device SUID does not exist in the REGISTRY
 HSTAT_LOGIN_SUCCESS = 302   # HTTP status coder returned after successful login to django
 HSTAT_NO_KEYS_LEFT  = 418   # server ran out of Tickets
+HSTAT_BAD_REQUEST   = 400   # returned for an incorrectly formatted request
+HSTAT_NOT_FOUND     = 404   # returned by django for an invalid url

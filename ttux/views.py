@@ -133,6 +133,16 @@ def registerKey(request, key):
     If we fail to find the key, then we must return an empty SUID
     """
     logger.info("got key: " + key )
+    logger.info("got device_profile")
+    resp_data = request.read()
+    logger.info( resp_data )
+    try:
+        resp_data = json.loads( resp_data )
+    except:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+    
+    # TODO add device profile processing and storage in database
     
     # look up key in session list
     resp_SUID=""

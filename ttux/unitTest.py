@@ -38,12 +38,90 @@ class TestSessionKeys(unittest.TestCase):
     # Tests
     ###########################################################################################
     
+    # Test: verify registration method error handling: no json data provided
+    def test_registrationErrors(self):
+        c = Client()
+        
+        # use get instead of post with no json data provided
+        print("Verify handling of incorrect http method: get instead of post (and no json data)")
+        deviceName="1234"
+        response = c.get('/ttux/register/' + deviceName)
+        print("got status:" + str(response.status_code))
+        self.assertTrue(response.status_code == C.HSTAT_BAD_REQUEST)
+
+        # use post but do not provide json data
+        print("Verify handling of post but with missing json data")
+        deviceName="1234"
+        respData=""
+        response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')
+        print("got status:" + str(response.status_code))
+        self.assertTrue(response.status_code == C.HSTAT_BAD_REQUEST)
+    
+        # no device name provided: this will fail url parsing
+        print("Verify handling of url error: missing ticket number parameter")
+        deviceName=""
+        response = c.get('/ttux/register/' + deviceName)
+        print("got status:" + str(response.status_code))
+        self.assertTrue(response.status_code == C.HSTAT_NOT_FOUND)    
+        
+    #END
+    
+    
+    #Test: register a ticket and get an SUID back
+    def test_sessionKey(self):
+        print("unit test: send a ticket and get an SUID")
+        
+        # set up smaller session defaults for testing
+        Session.SESSION_TIMEOUT=30
+        Session.OTUK_TIMEOUT=10
+        Session.OTUK_MIN_RANGE=1000
+        Session.OTUK_MAX_RANGE=1010        
+        
+        c = Client()
+        response=c.post('/login/', {'username': self.TEST_USER_ID, 'password':self.TEST_USER_PASS})
+        self.assertTrue(response.status_code == C.HSTAT_LOGIN_SUCCESS)
+        #test
+        
+        #get a ticket
+        print("Get ticket")
+        response = c.get('/ttux/makeNewSession')
+        self.assertTrue(response.status_code == C.HSTAT_OK)
+        self.assertTrue(response['Content-Type'] == "application/json")
+        resp_data = json.loads( response.content )
+        self.assertTrue( 'OTUK' in resp_data[0] )
+        self.assertTrue( resp_data[0]['result'] == C.RC_SESSION_OK )
+        # verify that the OTUK is not empty
+        self.assertTrue( len(resp_data[0]['OTUK']) != 0 )
+        deviceName = resp_data[0]['OTUK']
+        print "KEY IS: " + deviceName
+        
+        # create device profile to send with the registration message
+        device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
+        respData = json.dumps( [ { 'device_profile':device_profile } ] )
+                
+        # register Ticket and get SUID
+        #response = c.get('/ttux/register/' + deviceName)
+        response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')
+                
+        print("status: expect 200, got:" + str(response.status_code) )
+        self.assertTrue(response.status_code == C.HSTAT_OK)
+        self.assertTrue(response['Content-Type'] == "application/json")
+        resp_data = json.loads( response.content )
+        self.assertTrue( resp_data[0]['result'] == C.RC_REGISTER_OK )
+        # verify that the SUID element was returned
+        self.assertTrue( 'SUID' in resp_data[0] )
+        # verify that the SUID is not empty
+        self.assertTrue( len(resp_data[0]['SUID']) != 0 )
+        SUID = resp_data[0]['SUID']
+        print("got SUID: " + SUID)
+        
+        
+        
+    #END 
+
+
     #Test: send an image with no active session, verify handling of bad SUID
     def test_imageReceive_noSession(self):
-        # skip this test
-        #self.assertTrue(True) 
-        #return
-    
         print("unit test: receive an image for an invalid OTUK")
         
         c = Client()
@@ -54,12 +132,9 @@ class TestSessionKeys(unittest.TestCase):
         self.assertTrue( response.content == C.RC_BAD_SUID)
     #END test_imageReceive
     
+    
     #Test: send an image with a valid SUID
     def test_imageReceive_success(self):
-        # skip this test
-        #self.assertTrue(True) 
-        #return
-    
         print("unit test: post an image for a valid SUID")
         
         c = Client()
@@ -86,7 +161,7 @@ class TestSessionKeys(unittest.TestCase):
 #        deviceName = response['OTUK']
         
         # register Ticket and get SUID
-        response = c.get('/ttux/registerKey/' + deviceName)
+        response = c.get('/ttux/register/' + deviceName)
         print("status: expect 200, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_OK)
         self.assertTrue(response['Content-Type'] == "application/json")
@@ -108,10 +183,6 @@ class TestSessionKeys(unittest.TestCase):
     
     # Test: verify handling of invalid OTUK
     def test_invalidTicket(self):
-        # skip this test
-        #self.assertTrue(True) 
-        #return
-        
         print("unit test: invalid ticket")
         
         c = Client()
@@ -120,7 +191,7 @@ class TestSessionKeys(unittest.TestCase):
         
         # the registry is empty now, try to register an invalid OTUK
         print("try to send an invalid key")
-        response = c.get('/ttux/registerKey/' + "9876")
+        response = c.get('/ttux/register/' + "9876")
         print response
         print("response: status: " + str(response.status_code) )
         self.assertTrue( response.status_code == C.HSTAT_OK, "expected status:" + str(C.HSTAT_OK) + " got status:" + str(response.status_code) )
@@ -139,10 +210,6 @@ class TestSessionKeys(unittest.TestCase):
     # Test: generate the maximum number of sessions and verify we get an error after the last 
     # slot is used up
     def test_maxSessions(self):
-        # skip this test
-        #self.assertTrue(True) 
-        #return
-    
         print("unit test: test_maxSessions")
         
         # set up smaller session defaults for testing
@@ -197,9 +264,6 @@ class TestSessionKeys(unittest.TestCase):
     # Test: verify that keys are cleared as soon as they are used to establish a connection to a
     # session.
     def test_sessionKeyReuse(self):
-        # skip this test
-        #self.assertTrue(True) 
-        #return
         print("unit test: test_sessionKeyReuse")
         
         # set up smaller session defaults for testing
@@ -229,9 +293,9 @@ class TestSessionKeys(unittest.TestCase):
             OTUKey = resp_data[0]['OTUK']
             print "KEY IS: " + OTUKey
 
-            print("Test: registerKey")
+            print("Test: register")
             # register Ticket and get SUID
-            response = c.get('/ttux/registerKey/' + OTUKey)
+            response = c.get('/ttux/register/' + OTUKey)
             self.assertTrue(response.status_code == C.HSTAT_OK)
             self.assertTrue(response['Content-Type'] == "application/json")
             resp_data = json.loads( response.content )
@@ -262,7 +326,13 @@ class TestSessionKeys(unittest.TestCase):
 if __name__ == '__main__':
     print("Session Unit Tests")
 
-    unittest.main()
+    # run single tests    
+    suite = unittest.TestSuite()
+    suite.addTest(TestSessionKeys('test_registrationErrors'))
+    unittest.TextTestRunner().run(suite)
+    
+    # Run all Tests
+    #unittest.main()
 
     print("Done.")
 #END __main__
