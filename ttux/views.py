@@ -115,10 +115,13 @@ def snapshotResponse(request, device_name):
 
 
 # handle ping request from the phone
+#TODO complete the implementation of PING handling:
+# add ability to send back commands like we do in rxImage, both of these methods have the ability to send a command back to the phone
 @csrf_exempt
-def pingRequest(request):
+def pingRequest(request, device_name):
     """handler to receive the ping request from the phone"""
-    response = HttpResponse("pong")
+    logger.info("PING: got key: " + device_name )
+    response = HttpResponse("OK_PONG")
     response['Content-Type'] = "text/html"
     response['Cache-Control'] = 'no-cache'
     #response['Connection'] = 'keep-alive'

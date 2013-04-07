@@ -138,9 +138,7 @@ class TestSessionKeys(unittest.TestCase):
         print("unit test: post an image for a valid SUID")
         
         c = Client()
-        #response=c.post('/login/', {'username':'developer', 'password':'rootroot'})
         response=c.post('/login/', {'username': self.TEST_USER_ID, 'password':self.TEST_USER_PASS})
-        #print("login: expect 302, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_LOGIN_SUCCESS)
         #test
         
@@ -321,6 +319,71 @@ class TestSessionKeys(unittest.TestCase):
         self.assertTrue( len( Session.REGISTRY) == 0)
     #END
     
+    
+    
+    
+    
+    def test_pingResponse(self):
+        # set up smaller session defaults for testing
+        Session.SESSION_TIMEOUT=30
+        Session.OTUK_TIMEOUT=10
+        Session.OTUK_MIN_RANGE=1000
+        Session.OTUK_MAX_RANGE=1010
+                
+        c = Client()
+        response=c.post('/login/', {'username': self.TEST_USER_ID, 'password':self.TEST_USER_PASS})
+        self.assertTrue(response.status_code == C.HSTAT_LOGIN_SUCCESS)
+        
+        #get a ticket
+        print("Get ticket")
+        response = c.get('/ttux/makeNewSession')
+        self.assertTrue(response.status_code == C.HSTAT_OK)
+        self.assertTrue(response['Content-Type'] == "application/json")
+        resp_data = json.loads( response.content )
+        self.assertTrue( 'OTUK' in resp_data[0] )
+        self.assertTrue( resp_data[0]['result'] == C.RC_SESSION_OK )
+        # verify that the OTUK is not empty
+        self.assertTrue( len(resp_data[0]['OTUK']) != 0 )
+        deviceName = resp_data[0]['OTUK']
+        print "KEY IS: " + deviceName
+                
+        # register Ticket and get SUID
+        # create device profile to send with the registration message
+        device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
+        respData = json.dumps( [ { 'device_profile':device_profile } ] )
+                
+        # register Ticket and get SUID
+        #response = c.get('/ttux/register/' + deviceName)
+        response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')
+        
+        print("status: expect 200, got:" + str(response.status_code) )
+        self.assertTrue(response.status_code == C.HSTAT_OK)
+        self.assertTrue(response['Content-Type'] == "application/json")
+        resp_data = json.loads( response.content )
+        self.assertTrue( resp_data[0]['result'] == C.RC_REGISTER_OK )
+        # verify that the SUID element was returned
+        self.assertTrue( 'SUID' in resp_data[0] )
+        # verify that the SUID is not empty
+        self.assertTrue( len(resp_data[0]['SUID']) != 0 )
+        SUID = resp_data[0]['SUID']
+        print("got SUID: " + SUID)
+
+        # ping test
+        print("PING the server")
+        device_state = { 'camera_state':'front', 'light_state':'off', 'flash_state':'off'}
+        respData = json.dumps( [ device_state ] )
+        response = c.post('/ttux/ping/' + SUID, data=respData, content_type='application/json')
+        self.assertTrue(response.status_code == C.HSTAT_OK)
+        print("response: " + str(response.status_code))
+        print("response data: " + response.content)
+        self.assertTrue(response.content == "OK_PONG")
+        # TODO expand this to check all possible responses once views.pingRequest() is fully implemented.
+     
+    #END
+    
+    
+    
+    
 #END class
 
 if __name__ == '__main__':
@@ -328,7 +391,7 @@ if __name__ == '__main__':
 
     # run single tests    
     suite = unittest.TestSuite()
-    suite.addTest(TestSessionKeys('test_registrationErrors'))
+    suite.addTest(TestSessionKeys('test_pingResponse'))
     unittest.TextTestRunner().run(suite)
     
     # Run all Tests

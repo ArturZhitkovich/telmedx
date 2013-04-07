@@ -108,7 +108,11 @@ We may need to not start dj with manage.py, which seems to spawn another process
 20. performance testing: we need to run multiple instances of simulator and measure cpu, memory and i/o 
 and get an estimate of where we expect the botlenecks to be.
 
-
+21. Refactor rxImage() handling to take frame number as a parameter
+Currently the frame number is embedded in the delivered jpg binary. This requires the server
+to process the binary data to separate the frame number and jpg data.
+Now the frame number will be passed as a parameter in the post request and the video frame will 
+be a complete jpg image and will require no processing on the server.
 
 
 
