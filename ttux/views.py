@@ -121,6 +121,10 @@ def snapshotResponse(request, device_name):
 def pingRequest(request, device_name):
     """handler to receive the ping request from the phone"""
     logger.info("PING: got key: " + device_name )
+    
+    #TODO add payload parsing for device state information: this information needs to be passed back to the UI
+    
+    # TODO add command handling here: check the command queue and send next command to device if there is one
     response = HttpResponse("OK_PONG")
     response['Content-Type'] = "text/html"
     response['Cache-Control'] = 'no-cache'

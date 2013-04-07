@@ -155,11 +155,13 @@ class TestSessionKeys(unittest.TestCase):
         deviceName = resp_data[0]['OTUK']
         print "KEY IS: " + deviceName
                 
-#        print "got OTUK:" + response['OTUK']
-#        deviceName = response['OTUK']
-        
         # register Ticket and get SUID
-        response = c.get('/ttux/register/' + deviceName)
+        # create device profile to send with the registration message
+        device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
+        respData = json.dumps( [ { 'device_profile':device_profile } ] )
+        response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')        
+        #response = c.get('/ttux/register/' + deviceName)
+        
         print("status: expect 200, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_OK)
         self.assertTrue(response['Content-Type'] == "application/json")
@@ -189,7 +191,10 @@ class TestSessionKeys(unittest.TestCase):
         
         # the registry is empty now, try to register an invalid OTUK
         print("try to send an invalid key")
-        response = c.get('/ttux/register/' + "9876")
+        device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
+        respData = json.dumps( [ { 'device_profile':device_profile } ] )
+        deviceName="9876"
+        response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')           
         print response
         print("response: status: " + str(response.status_code) )
         self.assertTrue( response.status_code == C.HSTAT_OK, "expected status:" + str(C.HSTAT_OK) + " got status:" + str(response.status_code) )
@@ -274,6 +279,11 @@ class TestSessionKeys(unittest.TestCase):
         response=c.post('/login/', {'username': self.TEST_USER_ID, 'password':self.TEST_USER_PASS})
         self.assertTrue(response.status_code == C.HSTAT_LOGIN_SUCCESS)
         
+        # create device profile to use in registration requests below
+        device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
+        respData = json.dumps( [ { 'device_profile':device_profile } ] )
+        #response = c.post('/ttux/register/' + deviceName, data=respData, content_type='application/json')    
+        
         # loop for five more than the maximum number of elements in the range
         # this will ensure that each ticket gets cleared when it is registered
         # and is available for reuse.
@@ -293,7 +303,8 @@ class TestSessionKeys(unittest.TestCase):
 
             print("Test: register")
             # register Ticket and get SUID
-            response = c.get('/ttux/register/' + OTUKey)
+            response = c.post('/ttux/register/' + OTUKey, data=respData, content_type='application/json')
+            #response = c.get('/ttux/register/' + OTUKey)
             self.assertTrue(response.status_code == C.HSTAT_OK)
             self.assertTrue(response['Content-Type'] == "application/json")
             resp_data = json.loads( response.content )
@@ -389,13 +400,13 @@ class TestSessionKeys(unittest.TestCase):
 if __name__ == '__main__':
     print("Session Unit Tests")
 
-    # run single tests    
-    suite = unittest.TestSuite()
-    suite.addTest(TestSessionKeys('test_pingResponse'))
-    unittest.TextTestRunner().run(suite)
+#    # run single tests    
+#    suite = unittest.TestSuite()
+#    suite.addTest(TestSessionKeys('test_sessionKeyReuse'))
+#    unittest.TextTestRunner().run(suite)
     
     # Run all Tests
-    #unittest.main()
+    unittest.main()
 
     print("Done.")
 #END __main__
