@@ -21,7 +21,7 @@ import views
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^ttux/', include('ttux.urls')),
+    url(r'^ttux/01/', include('ttux.urls')),    # ttux version 01 protocol
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', login),
     #url(r'^crossdomain.xml$', views.crossdomainHandler),
