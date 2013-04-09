@@ -3,6 +3,7 @@ Tel*X Server Development ToDo
 updated: April 1, 2013 (no kidding)
 
 1. Session Timeout management
+=Small Effort: 1d
 Session timeout: currently session has a fixed overall timeout (24 hours). This prevents old sessions from staying around and using up memory.
 We need to add a way to timeout the session earlier, after the last viewer has left.
 This should be around 5 minutes? This would allow time for someone to open the browser again if the accidentally closed it.
@@ -11,47 +12,87 @@ This can be implemented by detecting that the last viewer has left and then:
 - start a new timer with the 5 minute timeout
 
 If the viewer comes back, we can start the long timer again.
+- set a timer, after 5 minutes if we are not delivering any frames to the browser, then kill the session.
 
 
-2.Update Browser UI (viewmaster)
-- page needs to automatically get the ticket and display to the user: or we can use the url makeNewSession (see unit tests)
-- viewmaster needs to handle ticket timeout
-- viewmaster needs to refresh as soon as the device checks in with it's Ticket and gets its SUID
-
-
-3. Add protocol version number to protocol urls
-- add handler for invalid protocol version
-
-
-4. return status codes
-- it seems like our result code is redundant. We need to see if we can just use the http status instead?
-
-
-5. Need to update simulator to support the new urls after unit tests are complete
-
-
-6. Need to refactor image delivery: currently the file is prepeneded with the frame number.
-This needs to be efficient so I don't think we should use json here. This method may be good enough
-for our performance needs.
-
-
-7. Add https to Apache front end and device. We need to do some performance testing here
-- we should be able to test this with a self-signed cert. 
-- we may be able to get away with a self-signed cert if we bundle it with the iphone app - need to look into this
-- make sure this does not add significant latency
-
-
-8. viewer management (related to #1)
+1.1. viewer management (related to #1)
 - need to add the ability for the session instance to keep track of viewers and be able to detect when there is no longer any viewers for a given video stream.
 When that happens we want to have the session time out relatively soon.
 We can do this by restarting the removeSession timer (normally set to 24 hrs) to a small value - say 2 minutes.
 
 
-9. Add database support for device info that is delivered in the register device message. 
+
+2.Update Browser UI (viewmaster)
+=Medium Effort = 2-3 day
+- page needs to automatically get the ticket and display to the user: or we can use the url makeNewSession (see unit tests)
+- viewmaster needs to handle ticket timeout
+- viewmaster needs to refresh as soon as the device checks in with it's Ticket and gets its SUID
+- implement long polling to browser to query the server until the phone responds back to register it's ticket and get the SUID
+
+
+
+3. Add protocol version number to protocol urls
+= Done
+
+- add handler for invalid protocol version
+= Easy = 2-3 hrs
+- we can do this using our mysite/urls.py mapping file
+** TODO: implement handler in the phone for out of date version and return msg from server and test it
+
+
+
+4. return status codes?
+- it seems like our result code is redundant. We need to see if we can just use the http status instead?
+= Done - 
+
+
+5. Need to update simulator to support the new urls after unit tests are complete
+= Phil, estimate?
+- add session, Ticket handling
+
+
+
+6. Need to refactor image delivery: currently the file is prepeneded with the frame number.
+= Easy
+= Phone work
+This needs to be efficient so I don't think we should use json here. This method may be good enough
+for our performance needs.
+TODO add video streaming to protocol doc
+
+- Refactor rxImage() handling to take frame number as a parameter
+Currently the frame number is embedded in the delivered jpg binary. This requires the server
+to process the binary data to separate the frame number and jpg data.
+Now the frame number will be passed as a parameter in the post request and the video frame will 
+be a complete jpg image and will require no processing on the server.
+
+
+
+7. Add https to Apache front end and device. We need to do some performance testing here
+= Medium: plumbing & testing
+- need to get real cert,
+- put it in the phone
+- make sure this does not add significant latency
+
+
+7.1 Set up real domain names for our servers
+= Brad
+- configure domain name mapping
+
+
+9. Add database support for device info that is delivered in the register device message.
+= Easy: 1d
 This is not currently being parsed or stored.
+- need to update protocol spec and remove future items from the current version
+- remove speakerphone
+
+9.1. create server deployment/upgrade scripts & tools
+= Easy: 2d
+investigate South for database migtation: http://south.aeracode.org/
 
 
 10. Billing
+= Medium: 2-3 days?
+= Phil
 - we need to define a basic call detail record (CDR) that is written to a flat file on the server
 - for now we do not need to burden the database with this information. 
 - each video call event will be recorded and logged. The file needs to be in a structured format that can be exported to a billing system.
@@ -59,42 +100,67 @@ This is not currently being parsed or stored.
 
 
 11. Backend maintenance
+= spend 1-2 days to understand basic admin module support and how we would add different monitors
+- basic admin module support: super-user?
+
+= High: large effort to expand new features
 - we need a 'master-admin' page where server administrators can log in and see the server/application status.
-This would include number of currently active sessions, errors, etc.
-We need to think about the best way to do this?
-It may be simpler to make some command line tools for now that can get the data directly from our logs, billing logs or database files?
+- This would include number of currently active sessions, errors, etc.
+  We need to think about the best way to do this?
+  It may be simpler to make some command line tools for now that can get the data directly from our logs, billing logs or database files?
+- list of all active sessions
+- how many viewers and how many patients
+- average video rate
+- timeouts for sessions
+- everything the session object knows
+- incomplete session attempts
+- how many clinicians are currently logged in
+
+Server logs and maintenance: Apache, Django. ?
+- create docs so that someone can troubleshoot?
+- can Zb do this?
 
 
 12. Create functional skeleton for device and viewmaster html pages. Inputs are already defined, make sure they are complete.
+= Easy, almost done
 js implementation for each control is in /static/js/viewmaster.js
 implement jQuery.post() for each device control function
 
 
-13. update device and viewmaster css:
+13. UI: update device and viewmaster css:
+= Big:?
+= Mobiz
 - implement new telmedx view layout
 - add new telmedx artwork
 
 
-14. create server deployment/upgrade scripts & tools
-investigate South for database migtation: http://south.aeracode.org/
-
 
 15. implement urls for all new actions and view stubs (in ttux/urls.py and views.py)
+= Tereus To DO?
 
 
-16. Device View updates:
+
+16. Dashboard View updates:
+= Medium: 1-2d
 - update to show currently active Sessions
 - update to add action to add a new session
 - update to add action to delete an active session
-- add logic to create new sesion and pass ticket & suid to viewmaster view
+- add logic to create new session and pass ticket & suid to viewmaster view
 - add logic to allow selection of an existing session and goto viewmaster
 - add logic to show ticket id for a session that has not been established yet
 
 
 17. implement linkage of session to a specific account/group
+= Easy: 1d
 Any user in a given account can join any active sessions in that account
 
+17.1 User & Account Management:
+= Medium: 2-3 d
+- Clinician Administrator 
+
+
 18. investigate use of Apache module vs running django as middleware app behind apache?
+= Effort: 1 d to investigate
 Are there any benefits to this: performance?
 Security is not a problem since the current dj server is behind a front end apache server and
 is accessed via reverse proxy
@@ -103,29 +169,30 @@ is accessed via reverse proxy
 19. get supervisord running correctly with django so process can be automatically restarted
 the current server does not work properly with django (it does manage normal python servers properly)
 We may need to not start dj with manage.py, which seems to spawn another process?
+= Effort: 1d
 
 
 20. performance testing: we need to run multiple instances of simulator and measure cpu, memory and i/o 
-and get an estimate of where we expect the botlenecks to be.
+and get an estimate of where we expect the bottlenecks to be.
+= Effort: 3-4d
 
-21. Refactor rxImage() handling to take frame number as a parameter
-Currently the frame number is embedded in the delivered jpg binary. This requires the server
-to process the binary data to separate the frame number and jpg data.
-Now the frame number will be passed as a parameter in the post request and the video frame will 
-be a complete jpg image and will require no processing on the server.
+
+21. Gatekeeper implementation
+= High: 5-10d??
+
 
 
 
 Future Ideas:
 -------------
-1. Server Robustness: session persistance
+1. Server Robustness: session persistence
 If the server reboots for any reason our current architecture will loose all active sessions.
 We can improve this by saving the essential active session data to a table.
 The table is updated when sessions are created or deleted.
 On startup we can restore all the previous session from this table.
 The result would be that users would see a halt in video while the server process restarted, and then video would keep flowing.
-The time to restart the process would likley on the order of a few seconds.
-Keep in mind that the paitent and clinician would still be talking on the phone and so would still
+The time to restart the process would likely on the order of a few seconds.
+Keep in mind that the patient and clinician would still be talking on the phone and so would still
 have a 'session'.
 
 
