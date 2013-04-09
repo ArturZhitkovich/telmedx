@@ -2,6 +2,9 @@ Tel*X Server Development ToDo
 -----------------------------
 updated: April 1, 2013 (no kidding)
 
+0. fix brad's eclipse
+= DONE
+
 1. Session Timeout management
 =Small Effort: 1d
 Session timeout: currently session has a fixed overall timeout (24 hours). This prevents old sessions from staying around and using up memory.
