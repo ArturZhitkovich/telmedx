@@ -104,6 +104,26 @@ class Session(object):
     # Static Methods
     ##########################################################################################
     @staticmethod
+    def peek_SUID(oneTimeKey):
+        """find session that has the oneTimeKey, return it's SUID: DO NOT invalidate the oneTimeKey"""
+        logger.debug("peek: searching for key:" + oneTimeKey)
+        SUID="none"
+        for k in list(Session.REGISTRY):
+            try:
+                s = Session.REGISTRY.get(k)
+                logger.debug( "OTUK: " + s.oneTimeKey + " SUID: " + s.SUID )
+                if oneTimeKey == s.oneTimeKey:
+                    logger.debug("    Found it")
+                    return s.SUID
+            except(KeyError):
+                logger.debug("k: " + k + " was removed while we were searching the registry")
+                pass
+        #END for
+        return SUID
+    #END get_SUID 
+        
+        
+    @staticmethod
     def get_SUID(oneTimeKey):
         """find session that has the oneTimeKey, return it's SUID and invalidate the oneTimeKey"""
         logger.debug("searching for key:" + oneTimeKey)

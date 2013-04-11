@@ -224,6 +224,32 @@ def viewmaster(request, device_name):
 # END
 
 
+# Main View Finder Device Control View: Ticket Version
+def viewmaster_ticket(request):
+    """handler for the video viewfinder view"""    
+    # make sure user is logged in
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+
+    # Get Ticket and SUID
+    try:
+        OTUK = Session.makeSession(request)
+        SUID = Session.peek_SUID(OTUK)
+        logger.info("starting session with Ticket#: " + OTUK)
+        logger.info("SUID:" + SUID)
+    except:
+        logger.error('unable to make a new session')
+        response = HttpResponse(status=C.HSTAT_NO_KEYS_LEFT, content="Internal error: no keys left")
+        return response
+    #END
+    
+    return render_to_response('ttux/viewmaster.html', {'OTUK':OTUK, 'SUID':SUID}, context_instance=RequestContext(request))
+# END
+
+
+
+
+
 #######################################################################
 # single url to return the most recent frame
 def getLastFrameFromStream(request, device_name, fnum):

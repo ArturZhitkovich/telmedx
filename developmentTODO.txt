@@ -181,6 +181,8 @@ and get an estimate of where we expect the bottlenecks to be.
 = High: 5-10d??
 
 
+22. Backwards compatability
+- need to update register PDU so server can tell device that it needs to be upgraded
 
 
 Future Ideas:

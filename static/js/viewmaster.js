@@ -17,7 +17,7 @@
 		}
 		
 		function takeSnapshotClicked(deviceName) {
-			$.post("/ttux/snapshot/" + deviceName, null, function(data) {
+			$.post("/ttux/01/snapshot/" + deviceName, null, function(data) {
 				dataUri = "data:image/jpeg;base64," + data.image;
 				$("#activeSnapshot").attr("src", dataUri);
 				
@@ -50,7 +50,7 @@
 		function frameOne_jq(deviceName)
 		{
 			var r = $.ajax({
-				url: "/ttux/lastFrame/" + deviceName + "/" + lastFrame
+				url: "/ttux/01/lastFrame/" + deviceName + "/" + lastFrame
 			});
 			
 			r.done( function(msg) {

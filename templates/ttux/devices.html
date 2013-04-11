@@ -83,23 +83,16 @@
 				{% else %}
 			    	Welcome, new user. Please log in.
 				{% endif %}	
-				<div id=logoutAction><a href="/ttux/logout">logout</a></div>
+				<div id=logoutAction><a href="/ttux/01/logout">logout</a></div>
 			</td>
 		</tr>
 	</table>
 	</div>
 </br>
-Please select a device to view:
+<a href="/ttux/01/viewmaster_ticket">Start a New Session</a>
 </br>
-{% if deviceList %}
-    <ul>
-    {% for d in deviceList %}
-        <li><a href="/ttux/viewmaster/{{ d.name }}">{{ d.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No devices are available.</p>
-{% endif %}
+
+
 
 
 	<div id="corp">Copyright 2013 telvetx All Rights Reserved </div>
