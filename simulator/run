@@ -1,1 +1,8 @@
-./scarryTux_http.pl localhost 8000 film_
+#!/bin/sh
+die () { 
+echo >&2 "$@"
+exit 1
+}
+
+[ $# -eq 1 ] || die "Usage: ./run OTUK"
+./scarryTux_http.pl localhost 8000 film_ $1
