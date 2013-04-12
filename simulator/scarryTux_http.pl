@@ -117,7 +117,7 @@ while (1) {
 		if ( $decodedResponse eq "/snapshot" ) {
 			print "Got request for a snapshot\n";
 			my $url =
-"http://$serverAddress:$portNumber/ttux/snapshotResponse/".$SUID."/snap"
+"http://$serverAddress:$portNumber/ttux/01/snapshotResponse/".$SUID."/snap"
 			  . $frameSeqNo . ".jpg";
 
 			my $r = new HTTP::Request 'PUT', $url;
