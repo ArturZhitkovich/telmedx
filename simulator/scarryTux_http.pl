@@ -55,7 +55,7 @@ my $phone_status = {
 	'flash_state'  => 'on'
 };
 
-my $url = "http://$serverAddress:$portNumber/ttux/01/register/" . $OTUK . "\n";
+my $url = "http://$serverAddress:$portNumber/ttux/01/register?TICKET=" . $OTUK . "\n";
 print $url;
 my $data = { 'device_profile' => $device_profile };
 print to_json($data) . "\n";

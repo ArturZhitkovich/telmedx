@@ -135,10 +135,16 @@ def pingRequest(request, device_name):
 # register session key request from the phone
 # TODO need to add some authentication for the phone itself here?
 @csrf_exempt
-def registerKey(request, key):
+#def registerKey(request, key):
+def registerKey(request):
     """get four digit session key from the phone and return the SUID from the session object
     If we fail to find the key, then we must return an empty SUID
     """
+    key = request.GET.get('TICKET')
+    if key == None:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+    
     logger.info("got key: " + key )
     logger.info("got device_profile")
     resp_data = request.read()
