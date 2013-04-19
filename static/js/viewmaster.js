@@ -1,5 +1,45 @@
 // User Interface Elements
 
+		function imageQ_Good() {
+			console.log("imageQ_Good() selected");
+		}
+
+		function imageQ_Bad() {
+			console.log("imageQ_Bad() selected");
+		}
+		
+		function imageQ_Ugly() {
+			console.log("imageQ_Ugly() selected");
+		}		
+
+		function selectCam_Back() {
+			console.log("selectCam_Back() selected");
+		}
+		
+		function selectCam_Front() {
+			console.log("selectCam_Front() selected");
+		}
+		
+		function selectLight_On() {
+			console.log("selectLight_On() selected");
+		}
+		
+		function selectLight_Off() {
+			console.log("selectLight_Off() selected");
+		}
+
+		function saveCurrentImage() {
+			console.log("saveCurrentImage() selected");
+		}
+
+		function printCurrentImage() {
+			console.log("printCurrentImage() selected");
+		}
+
+		function rotateImage() {
+			console.log("rotateImage() selected");
+		}
+
 		function inviteClicked() {
 			jQuery.post("/ttux/invite");
 		}
@@ -32,21 +72,13 @@
 			$("#activeSnapshot").attr("src", "/static/img/spinner.gif")
 		}
 
-		function saveCurrentImage() {
-			console.log("save image selected");
-		}
-
-		function printCurrentImage() {
-			console.log("print image selected");
-		}
-
 
 		var ff=0;
 		var lastFrame = 0;
 		var fCounter = 0;
 		var startTime = new Date();
 
-		// jquery test
+		// jquery video driver
 		function frameOne_jq(deviceName)
 		{
 			var r = $.ajax({
@@ -63,7 +95,7 @@
 	            			var now = new Date();
 	            			var min = Math.floor( ( (now - startTime)/1000) );
 	            			var sec = (now - startTime)%1000;
-	            			$("#stream_status").html("{{ dev.name }}: Connected:" + min + "." + sec + " f:" + fCounter);
+	            			$("#stream_status").html(deviceName + ": Connected:" + min + "." + sec + " f:" + fCounter);
 	            			fCounter++;
 				}
 	            
