@@ -65,8 +65,20 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 # process a single video frame from the phone
 # csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
-def rxImage(request, device_name):
+def rxImage(request):
     """handler to receive a single video frame from the phone"""
+    device_name = request.GET.get('SUID')
+    if device_name == None:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+    
+    frameNum = request.GET.get('FRAME')
+    if frameNum == None:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+
+    logger.info("got frame # " + frameNum )
+    
     #print "got img for device " + device_name
     session = Session.get( device_name )
     if session == None:
@@ -118,12 +130,25 @@ def snapshotResponse(request, device_name):
 #TODO complete the implementation of PING handling:
 # add ability to send back commands like we do in rxImage, both of these methods have the ability to send a command back to the phone
 @csrf_exempt
-def pingRequest(request, device_name):
+def pingRequest(request):
     """handler to receive the ping request from the phone"""
+    device_name = request.GET.get('SUID')
+    if device_name == None:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+    
     logger.info("PING: got key: " + device_name )
-    
+
     #TODO add payload parsing for device state information: this information needs to be passed back to the UI
-    
+    resp_data = request.read()
+    #logger.info( resp_data )
+    try:
+        resp_data = json.loads( resp_data )
+    except:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)
+    logger.info( resp_data )
+        
     # TODO add command handling here: check the command queue and send next command to device if there is one
     response = HttpResponse("OK_PONG")
     response['Content-Type'] = "text/html"
@@ -148,7 +173,7 @@ def registerKey(request):
     logger.info("got key: " + key )
     logger.info("got device_profile")
     resp_data = request.read()
-    logger.info( resp_data )
+    #logger.info( resp_data )
     try:
         resp_data = json.loads( resp_data )
     except:
@@ -156,6 +181,7 @@ def registerKey(request):
         return(response)
     
     # TODO add device profile processing and storage in database
+    logger.info( resp_data )
     
     # look up key in session list
     resp_SUID=""

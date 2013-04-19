@@ -98,8 +98,7 @@ while (1) {
 	}
 
 	my $url =
-	  "http://$serverAddress:$portNumber/ttux/01/img/" . $SUID . "/img"
-	  . $frameSeqNo . ".jpg";
+	  "http://$serverAddress:$portNumber/ttux/01/frame?SUID=" . $SUID . "&FRAME=" . $frameSeqNo ;
 
 	#print "PUT url= $url \n";
 
@@ -139,6 +138,7 @@ while (1) {
 
 	if ( $numFramesSent % 4 == 0 ) {
 		$response = SendPing();
+		print "sending ping, (f:$numFramesSent) \n";
 		HandleResponse( $response, $data, $numBytesRead );
 	}
 }
@@ -212,7 +212,7 @@ sub SendSnapshot {
 sub SendPing {
 
 	my $url =
-	  "http://$serverAddress:$portNumber/ttux/01/ping/" . $SUID . "\n";
+	  "http://$serverAddress:$portNumber/ttux/01/ping?SUID=" . $SUID . "\n";
 	#print $url;
 	#print to_json($phone_status) . "\n";
 	my $r = new HTTP::Request 'POST', $url;
