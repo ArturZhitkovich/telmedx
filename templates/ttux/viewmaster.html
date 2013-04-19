@@ -52,18 +52,9 @@
 		<tr valign="top">
 			<td style="border-style: solid; border-width: 1px">
 			<div id="controls">
-				<b>Video Quality:</b>
-				<input type="Radio" name="vidQ" value="Good" checked onclick="imageQ_Good()"/>Good
-				<input type="Radio" name="vidQ" value="Bad"          onclick="imageQ_Bad()"/>Bad
-				<input type="Radio" name="vidQ" value="Ugly"         onclick="imageQ_Ugly()"/>Ugly
-				</br>
-				<b>Camera:</b>
-				<input type="Radio" name="camSel" value="Back" checked onclick="selectCam_Back()"/>Back
-				<input type="Radio" name="camSel" value="Front"        onclick="selectCam_Front()"/>Front
-				</br>
 				<b>Rear Light:</b>
-				<input type="Radio" name="lightSel" value="On"          onclick="selectLight_On()"/>On
-				<input type="Radio" name="lightSel" value="Off" checked onclick="selectLight_Off()"/>Off
+				<input type="Radio" name="lightSel" value="On"          onclick="selectLight_On('{{ SUID }}')"/>On
+				<input type="Radio" name="lightSel" value="Off" checked onclick="selectLight_Off('{{ SUID }}')"/>Off
 				</br>
 				<input type="button" value="Rotate" onclick="rotateImage()"/>
 				

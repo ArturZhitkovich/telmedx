@@ -338,6 +338,50 @@ def stopRequest(request):
     return HttpResponse("stopRequest")
 #END
 
+# request from UI to turn light on
+def uiLightOnRequest(request, device_name):
+    logger.info("UI: got light on request SUID:" + device_name)
+
+    session = Session.get( device_name )
+
+    # clear any previous frames that might be stuck in the queue 
+    if not session.snapshotQ.empty():
+        print "oops, found an errant snapshot, flushing the queue"
+        #snapshot = session.snapshotQ.get(block=True, timeout=1)
+        session.snapshotQ.get(block=True, timeout=1)
+    
+    path="OK_LIGHT_ON"
+    try:
+        session.commandQ.put_nowait(path)
+    except:
+        session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        session.commandQ.put_nowait(path)
+    
+    return HttpResponse(status=C.HSTAT_OK, content="lightOnRequest");
+#END
+
+# request from UI to turn light on
+def uiLightOffRequest(request, device_name):
+    logger.info("UI: got light ff request SUID:" + device_name)
+    
+    session = Session.get( device_name )
+
+    # clear any previous frames that might be stuck in the queue 
+    if not session.snapshotQ.empty():
+        print "oops, found an errant snapshot, flushing the queue"
+        #snapshot = session.snapshotQ.get(block=True, timeout=1)
+        session.snapshotQ.get(block=True, timeout=1)
+    
+    path="OK_LIGHT_OFF"
+    try:
+        session.commandQ.put_nowait(path)
+    except:
+        session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        session.commandQ.put_nowait(path)
+    
+    return HttpResponse(status=C.HSTAT_OK, content="lightOffRequest");
+#END
+
 
 # POST request from the UI to take a snapshot 
 #@condition(etag_func=None)

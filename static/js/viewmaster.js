@@ -1,32 +1,16 @@
 // User Interface Elements
 
-		function imageQ_Good() {
-			console.log("imageQ_Good() selected");
-		}
-
-		function imageQ_Bad() {
-			console.log("imageQ_Bad() selected");
-		}
 		
-		function imageQ_Ugly() {
-			console.log("imageQ_Ugly() selected");
-		}		
-
-		function selectCam_Back() {
-			console.log("selectCam_Back() selected");
-		}
-		
-		function selectCam_Front() {
-			console.log("selectCam_Front() selected");
-		}
-		
-		function selectLight_On() {
+		function selectLight_On(deviceName) {
 			console.log("selectLight_On() selected");
+			jQuery.get("/ttux/01/uiLightOn/" + deviceName);
 		}
 		
-		function selectLight_Off() {
+		function selectLight_Off(deviceName) {
 			console.log("selectLight_Off() selected");
+			jQuery.get("/ttux/01/uiLightOff/" + deviceName);
 		}
+
 
 		function saveCurrentImage() {
 			console.log("saveCurrentImage() selected");
