@@ -198,9 +198,7 @@ sub SendSnapshot {
 	my $numBytesRead = $_[1];
 
 	my $url =
-	    "http://$serverAddress:$portNumber/ttux/01/snapshotResponse/" . $SUID
-	  . "/snap"
-	  . $frameSeqNo . ".jpg";
+	    "http://$serverAddress:$portNumber/ttux/01/snapshotResponse?SUID=" . $SUID;
 
 	my $r = new HTTP::Request 'PUT', $url;
 	$r->header( 'content-length' => $numBytesRead );

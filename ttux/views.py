@@ -77,12 +77,11 @@ def rxImage(request):
         response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
         return(response)
 
-    logger.info("got frame # " + frameNum )
+    #logger.info("got frame # " + frameNum )
     
-    #print "got img for device " + device_name
     session = Session.get( device_name )
     if session == None:
-        print("ERROR: rxImage, no session for SUID: " + device_name)
+        logger.error("ERROR: rxImage, no session for SUID: " + device_name)
         return HttpResponse(status=C.HSTAT_AUTH_FAIL, content=C.RC_BAD_SUID)
     
     image = request.read();
@@ -97,7 +96,7 @@ def rxImage(request):
     
     if (command_resp != ""):
         #logger.info("sending command to the phone: %s", command_resp)   
-        print "sending command " + command_resp + " to the phone: " + device_name
+        logger.info( "sending command " + command_resp + " to the phone: " + device_name)
     #endif
     ##return HttpResponse(status="200 OK")
     return HttpResponse(status=C.HSTAT_OK, content=command_resp)
@@ -106,9 +105,15 @@ def rxImage(request):
     
 # receive snapshot response from the phone
 @csrf_exempt
-def snapshotResponse(request, device_name):
+def snapshotResponse(request):
     """handler to receive the snapshot response from the phone. This will be posted to the snapshot queue in the session.
     There will be one and only one listener for this snapshot"""
+    
+    device_name = request.GET.get('SUID')
+    if device_name == None:
+        response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
+        return(response)    
+    
     print "got snapshot response from device: " + device_name
     image = request.read();
     
@@ -353,7 +358,8 @@ def snapshotRequest(request, device_name):
         #snapshot = session.snapshotQ.get(block=True, timeout=1)
         session.snapshotQ.get(block=True, timeout=1)
     
-    path="/snapshot" 
+    #path="/snapshot" 
+    path="OK_SNAPSHOT_REQ"
     try:
         session.commandQ.put_nowait(path)
     except:

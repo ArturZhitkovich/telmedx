@@ -45,7 +45,7 @@ class TestSessionKeys(unittest.TestCase):
         # use get instead of post with no json data provided
         print("Verify handling of incorrect http method: get instead of post (and no json data)")
         deviceName="1234"
-        response = c.get('/ttux/01/register/' + deviceName)
+        response = c.get('/ttux/01/register?TICKET=' + deviceName)
         print("got status:" + str(response.status_code))
         self.assertTrue(response.status_code == C.HSTAT_BAD_REQUEST)
 
@@ -53,16 +53,16 @@ class TestSessionKeys(unittest.TestCase):
         print("Verify handling of post but with missing json data")
         deviceName="1234"
         respData=""
-        response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')
+        response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')
         print("got status:" + str(response.status_code))
         self.assertTrue(response.status_code == C.HSTAT_BAD_REQUEST)
     
         # no device name provided: this will fail url parsing
         print("Verify handling of url error: missing ticket number parameter")
         deviceName=""
-        response = c.get('/ttux/01/register/' + deviceName)
+        response = c.get('/ttux/01/register?TICKET=' + deviceName)
         print("got status:" + str(response.status_code))
-        self.assertTrue(response.status_code == C.HSTAT_NOT_FOUND)    
+        self.assertTrue(response.status_code == C.HSTAT_BAD_REQUEST)    
         
     #END
     
@@ -100,8 +100,8 @@ class TestSessionKeys(unittest.TestCase):
         respData = json.dumps( [ { 'device_profile':device_profile } ] )
                 
         # register Ticket and get SUID
-        #response = c.get('/ttux/01/register/' + deviceName)
-        response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')
+        #response = c.get('/ttux/01/register?TICKET=' + deviceName)
+        response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')
                 
         print("status: expect 200, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_OK)
@@ -125,7 +125,7 @@ class TestSessionKeys(unittest.TestCase):
         print("unit test: receive an image for an invalid OTUK")
         
         c = Client()
-        response=c.post('/ttux/01/img/badDeviceName/img1234.jpg', data = self.TEST_IMG_DATA, content_type='img/jpeg')
+        response=c.post('/ttux/01/frame?SUID=badDeviceName&FRAME=1234', data = self.TEST_IMG_DATA, content_type='img/jpeg')
         #print(" status: " + str(response.status_code) )
         self.assertTrue( response.status_code == C.HSTAT_AUTH_FAIL)
         print("response:" + str(response.content))
@@ -159,8 +159,8 @@ class TestSessionKeys(unittest.TestCase):
         # create device profile to send with the registration message
         device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
         respData = json.dumps( [ { 'device_profile':device_profile } ] )
-        response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')        
-        #response = c.get('/ttux/01/register/' + deviceName)
+        response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')        
+        #response = c.get('/ttux/01/register?TICKET=' + deviceName)
         
         print("status: expect 200, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_OK)
@@ -176,7 +176,7 @@ class TestSessionKeys(unittest.TestCase):
         
         # send image
         print("sending image")
-        response=c.post('/ttux/01/img/' + SUID + '/img1234.jpg', data = "this is not an image", content_type='img/jpeg')
+        response=c.post('/ttux/01/frame?SUID=' + SUID + '&FRAME=1234', data = "this is not an image", content_type='img/jpeg')
         self.assertTrue(response.status_code == C.HSTAT_OK)
     #END test_imageReceive
 
@@ -194,7 +194,7 @@ class TestSessionKeys(unittest.TestCase):
         device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
         respData = json.dumps( [ { 'device_profile':device_profile } ] )
         deviceName="9876"
-        response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')           
+        response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')           
         print response
         print("response: status: " + str(response.status_code) )
         self.assertTrue( response.status_code == C.HSTAT_OK, "expected status:" + str(C.HSTAT_OK) + " got status:" + str(response.status_code) )
@@ -282,7 +282,7 @@ class TestSessionKeys(unittest.TestCase):
         # create device profile to use in registration requests below
         device_profile = { 'app_version':'1.00', 'app_type':'telmedx', 'phone_number':'123-456-7890'}
         respData = json.dumps( [ { 'device_profile':device_profile } ] )
-        #response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')    
+        #response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')    
         
         # loop for five more than the maximum number of elements in the range
         # this will ensure that each ticket gets cleared when it is registered
@@ -303,8 +303,8 @@ class TestSessionKeys(unittest.TestCase):
 
             print("Test: register")
             # register Ticket and get SUID
-            response = c.post('/ttux/01/register/' + OTUKey, data=respData, content_type='application/json')
-            #response = c.get('/ttux/01/register/' + OTUKey)
+            response = c.post('/ttux/01/register?TICKET=' + OTUKey, data=respData, content_type='application/json')
+            #response = c.get('/ttux/01/register?TICKET=' + OTUKey)
             self.assertTrue(response.status_code == C.HSTAT_OK)
             self.assertTrue(response['Content-Type'] == "application/json")
             resp_data = json.loads( response.content )
@@ -364,8 +364,8 @@ class TestSessionKeys(unittest.TestCase):
         respData = json.dumps( [ { 'device_profile':device_profile } ] )
                 
         # register Ticket and get SUID
-        #response = c.get('/ttux/01/register/' + deviceName)
-        response = c.post('/ttux/01/register/' + deviceName, data=respData, content_type='application/json')
+        #response = c.get('/ttux/01/register?TICKET=' + deviceName)
+        response = c.post('/ttux/01/register?TICKET=' + deviceName, data=respData, content_type='application/json')
         
         print("status: expect 200, got:" + str(response.status_code) )
         self.assertTrue(response.status_code == C.HSTAT_OK)
@@ -383,7 +383,7 @@ class TestSessionKeys(unittest.TestCase):
         print("PING the server")
         device_state = { 'camera_state':'front', 'light_state':'off', 'flash_state':'off'}
         respData = json.dumps( [ device_state ] )
-        response = c.post('/ttux/01/ping/' + SUID, data=respData, content_type='application/json')
+        response = c.post('/ttux/01/ping?SUID=' + SUID, data=respData, content_type='application/json')
         self.assertTrue(response.status_code == C.HSTAT_OK)
         print("response: " + str(response.status_code))
         print("response data: " + response.content)
@@ -402,7 +402,7 @@ if __name__ == '__main__':
 
 #    # run single tests    
 #    suite = unittest.TestSuite()
-#    suite.addTest(TestSessionKeys('test_sessionKeyReuse'))
+#    suite.addTest(TestSessionKeys('test_registrationErrors'))
 #    unittest.TextTestRunner().run(suite)
     
     # Run all Tests
