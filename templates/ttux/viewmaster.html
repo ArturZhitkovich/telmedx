@@ -53,12 +53,8 @@
 		<tr valign="top">
 			<td style="border-style: solid; border-width: 1px">
 			<div id="controls">
+				<b>Rear Light:</b> <div id="light_state">---</div>
 				<input type="button" value="ChangeLight" onclick="changeLightState('{{ SUID }}')"/>
-				<b>Rear Light:</b>
-				<input type="Radio" name="lightSel" id="lightSelOn" value="On"          onclick="selectLight_On('{{ SUID }}')"/>On
-				<input type="Radio" name="lightSel" id="lightSelOff" value="Off" checked onclick="selectLight_Off('{{ SUID }}')"/>Off
-				</br>
-				state: <div id="light_state">---</div>
 			</div>
 			</td>
 			<td style="border-style: solid; border-width: 1px">

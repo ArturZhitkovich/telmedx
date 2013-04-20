@@ -117,7 +117,7 @@
 					console.log("light is on");
 					//$("#lightSel").value="On";
 					//$('[name=lightSel]').attr('checked', true);
-					document.getElementById("lightSelOn").checked = true;
+					//document.getElementById("lightSelOn").checked = true;
 					//document.getElementById("lightSelOff").checked = false
 				} else
 				{
@@ -125,7 +125,7 @@
 					//$("#lightSel").value="Off";
 					//$('input[value="Off"][name="lightSel"]');
 					//$('[name=lightSel]').attr('checked', true);
-					document.getElementById("lightSelOff").checked = true;
+					//document.getElementById("lightSelOff").checked = true;
 				}
 				setTimeout( function() { checkDeviceState( deviceName ) }, 1000);
 			});
