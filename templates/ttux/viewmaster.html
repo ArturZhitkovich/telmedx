@@ -18,7 +18,8 @@
 
 
 </head>
-<body onload="setTimeout('frameOne_jq( &quot;{{ SUID }}&quot; )', 500)">
+<body onload="	setTimeout('frameOne_jq( &quot;{{ SUID }}&quot; )', 500); 
+				setTimeout('checkDeviceState( &quot;{{ SUID }}&quot; )', 1000)	">
 
 	<div id="headerBar">
 	<table border="0" cellpadding="0" cellspacing="5" width="100%">
@@ -56,8 +57,7 @@
 				<input type="Radio" name="lightSel" value="On"          onclick="selectLight_On('{{ SUID }}')"/>On
 				<input type="Radio" name="lightSel" value="Off" checked onclick="selectLight_Off('{{ SUID }}')"/>Off
 				</br>
-				<input type="button" value="Rotate" onclick="rotateImage()"/>
-				
+				state: <div id="light_state">---</div>
 			</div>
 			</td>
 			<td style="border-style: solid; border-width: 1px">

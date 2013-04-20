@@ -94,4 +94,47 @@
 				setTimeout("frameOne_jq(" + deviceName + ")", 500);
 			});
 
+		}
+		
+		function checkDeviceState(deviceName)
+		{
+			console.log("checking state for device: " + deviceName);		
+			
+			var r = $.ajax({
+				dataType: "json",
+				url: "/ttux/01/getDevState/" + deviceName,
+			});
+			
+			// success handler
+			r.done( function(msg) {
+				console.log("got state: " + msg['light_state'] );
+				$("#light_state").html( msg['light_state'] );				
+			
+				//for (var key in msg) {
+				//	console.log("got: " + msg[key] );
+				//}
+				//console.log("checkDeviceState: done, device:" + deviceName );
+				//var obj = jQuery.parseJSON(msg);
+				//console.log("got state: " + msg['light_state'] );
+				//if (msg.length > 0) {
+				//if ( undefined != msg ) {
+				//			$("#device_state").html( msg['light_state'] );
+				//			console.log("got state: " + msg.device_profile);
+				//}
+				
+				//setTimeout("checkDeviceState(" + deviceName + ")", 1000);
+				
+				setTimeout( function() { checkDeviceState( deviceName ) }, 1000);
+				//console.log("checkDeviceState: timer started again");
+			});
+
+			// error handler
+			// TODO x.error is deprecated in jQuery 1.8, need to change to x.fail()
+			// see http://api.jquery.com/jQuery.getJSON/
+			r.error( function(msg) {
+				console.log("got device state error");
+				setTimeout("checkDeviceState(" + deviceName + ")", 5000);
+			});
+			
+			console.log("exit checking state for device");
 		}		

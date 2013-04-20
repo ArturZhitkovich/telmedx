@@ -144,15 +144,19 @@ def pingRequest(request):
     
     logger.info("PING: got key: " + device_name )
 
-    #TODO add payload parsing for device state information: this information needs to be passed back to the UI
-    resp_data = request.read()
+    #parse device info
+    device_state = request.read()
     #logger.info( resp_data )
     try:
-        resp_data = json.loads( resp_data )
+        device_state = json.loads( device_state )
     except:
         response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
         return(response)
-    logger.info( resp_data )
+    logger.info( device_state )
+
+    # store device info in session
+    session = Session.get( device_name )
+    session.update_deviceState( device_state )
         
     # TODO add command handling here: check the command queue and send next command to device if there is one
     response = HttpResponse("OK_PONG")
@@ -177,23 +181,23 @@ def registerKey(request):
     
     logger.info("got key: " + key )
     logger.info("got device_profile")
-    resp_data = request.read()
+    device_profile = request.read()
     #logger.info( resp_data )
     try:
-        resp_data = json.loads( resp_data )
+        device_profile = json.loads( device_profile )
     except:
         response = HttpResponse(status=C.HSTAT_BAD_REQUEST)
         return(response)
     
     # TODO add device profile processing and storage in database
-    logger.info( resp_data )
+    logger.info( device_profile )
     
     # look up key in session list
     resp_SUID=""
     resp_result=""
     http_response = C.HSTAT_OK
     try:
-        resp_SUID = Session.get_SUID(key)
+        resp_SUID = Session.get_SUID(key, device_profile)
         # TODO need to replace the string 'none' with a constant here and in get_SUID()
         if (resp_SUID == "none"):
             resp_result = C.RC_REGISTER_FAIL
@@ -243,22 +247,22 @@ def makeNewSession(request):
     return(response) 
 
 
-# Main View Finder Device Control View
-def viewmaster(request, device_name):
-    """handler for the video viewfinder view"""    
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-    # HACK: delete the most recent frame, in case one is left over from a previous session
-    # this will create a slight artifact for current viewers
-    session = Session.get( device_name )
-    session.clear_lastFrame()
-    
-    return render_to_response('ttux/viewmaster.html', {'dev':d}, context_instance=RequestContext(request))
-# END
+## Main View Finder Device Control View
+#def viewmaster(request, device_name):
+#    """handler for the video viewfinder view"""    
+#    # make sure user is logged in
+#    if not request.user.is_authenticated():
+#        return HttpResponseRedirect('/login/?next=%s' % request.path)
+#    #
+#    # look up this device
+#    d = get_object_or_404(mobileCam, name=device_name)
+#    # HACK: delete the most recent frame, in case one is left over from a previous session
+#    # this will create a slight artifact for current viewers
+#    session = Session.get( device_name )
+#    session.clear_lastFrame()
+#    
+#    return render_to_response('ttux/viewmaster.html', {'dev':d}, context_instance=RequestContext(request))
+## END
 
 
 # Main View Finder Device Control View: Ticket Version
@@ -294,6 +298,7 @@ def getLastFrameFromStream(request, device_name, fnum):
     #fnum_padded = fnum
     #print("got request for the most recent frame for device: " + device_name + "frame num: " + fnum + " " + fnum_padded)
     session = Session.get( device_name )
+    #TODO add error handling if device_name Session is not active
 
     # check if we are asking for the same frame again    
     lastFnumber = session.get_frameNumber()
@@ -325,6 +330,25 @@ def getLastFrameFromStream(request, device_name, fnum):
     return(response)
 #END
 
+def getDeviceState(request, device_name):
+
+    session = Session.get( device_name )
+    device_state = session.get_deviceState()
+    
+    # format and send http response
+    if device_state != None:
+        respData = json.dumps( device_state )
+    else:
+        #TODO we need to define defaults in the session object
+        respData = json.dumps( { 'light_state': '+++' } )
+    logger.info("getDeviceState() SUID: " + device_name )
+    logger.info("state: " + respData)
+    
+    response = HttpResponse(status=C.HSTAT_OK, content=respData)
+    response['Content-Type'] = "application/json"
+    response['Cache-Control'] = 'no-cache'    
+    
+    return(response)
 
 
 # request from the UI to start a streaming session

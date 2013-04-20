@@ -65,6 +65,12 @@ class Session(object):
         #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
     #def 
 
+    def remove_viewer(self, address):
+        """remove a viewer from a specific device session instance"""
+        logger.info("remove_viewer address:" + address)
+        self.viewers.pop(address, None)
+    #def
+
 
     def enqueue_frame(self, frame):
         """add a video stream frame to a specific device session instance
@@ -93,13 +99,13 @@ class Session(object):
         self.LastFrame = ""
     #def
 
-    def remove_viewer(self, address):
-        """remove a viewer from a specific device session instance"""
-        logger.info("remove_viewer address:" + address)
-        self.viewers.pop(address, None)
+    def update_deviceState(self, device_state):
+        self.device_state = device_state
     #def
     
-
+    def get_deviceState(self):
+        return(self.device_state)
+    
     ##########################################################################################
     # Static Methods
     ##########################################################################################
@@ -124,7 +130,7 @@ class Session(object):
         
         
     @staticmethod
-    def get_SUID(oneTimeKey):
+    def get_SUID(oneTimeKey, device_profile):
         """find session that has the oneTimeKey, return it's SUID and invalidate the oneTimeKey"""
         logger.debug("searching for key:" + oneTimeKey)
         SUID="none"
@@ -137,6 +143,7 @@ class Session(object):
                     SUID = s.SUID
                     s.oneTimeKey="0000" #clear the OTUK after first use
                     s.oneTimeKey_timer.cancel()
+                    s.device_profile = device_profile
                     return SUID
             except(KeyError):
                 logger.debug("k: " + k + " was removed while we were searching the registry")
@@ -230,9 +237,10 @@ class Session(object):
         session.frameNumber = 0             # frame number of the most recent frame
         session.oneTimeKey = OTUKey         # four digit user session key, one time use to establish session with the phone
         session.SUID=key 
-        
+        session.device_profile = None       # device_profile will be sent by the phone when it connects and registers at the beginning of a session
+        session.device_state = None         # device state is updated after each ping from the device (if it changes)
+
         # add timers
-        # TODO set up constant or system defines for these timeouts, using 30 sec for testing
         # one time use key timeout, the phone has a short window of time to use the key, otherwise the session is removed.
         # TODO need to work out what the browser will do when the session goes away?
         session.oneTimeKey_timer = Timer(Session.OTUK_TIMEOUT, Session.removeOTUK_callback, [session] )  # one shot timer
