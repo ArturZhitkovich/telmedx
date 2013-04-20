@@ -91,10 +91,13 @@
 			// error handler, wait 1/2 second
 			r.error( function(msg) {
 				console.log("got error");
-				setTimeout("frameOne_jq(" + deviceName + ")", 500);
+				//setTimeout("frameOne_jq(" + deviceName + ")", 500);
+				setTimeout( function() { frameOne_jq( deviceName ) }, 5000);
 			});
 
 		}
+		
+		var deviceLightState = "off"; // keep track of the current device light state
 		
 		function checkDeviceState(deviceName)
 		{
@@ -107,25 +110,24 @@
 			
 			// success handler
 			r.done( function(msg) {
-				console.log("got state: " + msg['light_state'] );
-				$("#light_state").html( msg['light_state'] );				
-			
-				//for (var key in msg) {
-				//	console.log("got: " + msg[key] );
-				//}
-				//console.log("checkDeviceState: done, device:" + deviceName );
-				//var obj = jQuery.parseJSON(msg);
-				//console.log("got state: " + msg['light_state'] );
-				//if (msg.length > 0) {
-				//if ( undefined != msg ) {
-				//			$("#device_state").html( msg['light_state'] );
-				//			console.log("got state: " + msg.device_profile);
-				//}
+				deviceLightState =  msg['light_state']; // remember the state
 				
-				//setTimeout("checkDeviceState(" + deviceName + ")", 1000);
-				
+				$("#light_state").html( msg['light_state'] );
+				if ( msg['light_state'] == "on" ) {
+					console.log("light is on");
+					//$("#lightSel").value="On";
+					//$('[name=lightSel]').attr('checked', true);
+					document.getElementById("lightSelOn").checked = true;
+					//document.getElementById("lightSelOff").checked = false
+				} else
+				{
+					console.log("light is off");
+					//$("#lightSel").value="Off";
+					//$('input[value="Off"][name="lightSel"]');
+					//$('[name=lightSel]').attr('checked', true);
+					document.getElementById("lightSelOff").checked = true;
+				}
 				setTimeout( function() { checkDeviceState( deviceName ) }, 1000);
-				//console.log("checkDeviceState: timer started again");
 			});
 
 			// error handler
@@ -133,8 +135,18 @@
 			// see http://api.jquery.com/jQuery.getJSON/
 			r.error( function(msg) {
 				console.log("got device state error");
-				setTimeout("checkDeviceState(" + deviceName + ")", 5000);
+				//setTimeout("checkDeviceState(" + deviceName + ")", 5000);
+				setTimeout( function() { checkDeviceState( deviceName ) }, 5000);
 			});
 			
 			console.log("exit checking state for device");
 		}		
+
+		function changeLightState(deviceName) {
+			console.log("changeLightState() selected, current state: " + deviceLightState );
+			if ( "off" == deviceLightState) {
+				jQuery.get("/ttux/01/uiLightOn/" + deviceName);
+			} else {
+				jQuery.get("/ttux/01/uiLightOff/" + deviceName);
+			}
+		}
