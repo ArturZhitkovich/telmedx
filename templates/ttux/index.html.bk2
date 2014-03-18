@@ -77,7 +77,7 @@
 
 	</style>
 	
-	<script src="/static/js/swfobject.js" type="text/javascript"></script>
+	<script src="http://66.228.55.170:8090/static/js/swfobject.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var flashvars = {
 			ttuxkey: "66.228.55.170",
@@ -96,7 +96,7 @@
 		var attributes = {
 			id:"MJPEGPlayer"
 		};
-		swfobject.embedSWF("/static/player.swf", "stream", "480px", "320px", "10.0.0", "/static/expressInstall.swf", flashvars, params, attributes);
+		swfobject.embedSWF("http://66.228.55.170:8090/static/player.swf", "stream", "480px", "320px", "10.0.0", "http://66.228.55.170:8090/static/expressInstall.swf", flashvars, params, attributes);
 	</script>
 	
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
@@ -131,7 +131,7 @@
 				select(id);
 			});
 			
-			$("#activeSnapshot").attr("src", "/static/img/spinner.gif")
+			$("#activeSnapshot").attr("src", "http://66.228.55.170:8090/static/img/spinner.gif")
 		}
 		
 	</script>
@@ -143,17 +143,12 @@
 		<tr valign="top" >
 			<td>
 			<div id="headerx">
-				<img src="/static/img/telmedx_logo_120527.png" alt=""></img>
+				<img src="http://66.228.55.170:8090/static/img/telmedx_logo_120527.png" alt=""></img>
 			</div>
 			</td>
 			<td>
 			{% if user.is_authenticated %}
-                            Group:
-                            {% for u in user.groups.all %}
-                                {{ u.name }}
-                            {% endfor %}
-                            </br>
-			    Viewing Device: {{ dev.name }}</br>
+				Viewing Device: {{ dev.name }}</br>
 			    <a href="/ttux/deviceList">Back To Device List</a>
 			{% else %}
 			    <p>- - -</p>
@@ -192,7 +187,7 @@
 			<td style="border-style: solid; border-width: 1px">
 				<div id="snapshots">
 					<div id="ui_label">Image</div><br>
-					<img id="activeSnapshot" width="720" height="480" src="/static/img/telmedx_320icon.png" alt="" />
+					<img id="activeSnapshot" width="720" height="480" src="http://66.228.55.170:8090/static/img/telmedx_320icon.png" alt="" />
 					<div id="pastSnapshots"></div>
 				</div>
 			</td>

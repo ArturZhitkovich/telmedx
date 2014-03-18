@@ -1,6 +1,9 @@
 <html>
+<!-- INDEX 3 testing ajax queries -->
+
+
 <head>
-	<title>telmedx</title>
+	<title>telX Beta</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
@@ -35,15 +38,42 @@
 		}
 		
 		div#snapshots {
+			width:720px;
+			height:480px;
 		}
 		
+		div#stream {
+			width:520px;
+			height:320px;
+		}
+	
+		div#stream_status {
+			width:360px;
+			height:240px;
+			font-family: courier;
+			font-weight: normal;
+			font-size: small;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;		
+		}
+	
 		div#pastSnapshots {
 			height: 100px;
 			width: 720px;
 			overflow: auto;
 			white-space: nowrap;
 		}
-		
+
+		div#hollywood_div {
+			height: 50%;
+			width: 50%;
+		}
+				
 		div#controls {
 		}
 		
@@ -76,32 +106,13 @@
 		}
 
 	</style>
-	
-	<script src="/static/js/swfobject.js" type="text/javascript"></script>
-	<script type="text/javascript">
-		var flashvars = {
-			ttuxkey: "66.228.55.170",
-			ttuxport: "8000",
-			ttuxdev: "{{ dev.name }}",
-			ttuxuser: "{{ user.username }}"
-		};
-		var params = {
-			menu: "false",
-			scale: "noScale",
-			allowFullscreen: "true",
-			allowScriptAccess: "always",
-			allowNetworking: "all",
-			bgcolor: "#FFFFFF"
-		};
-		var attributes = {
-			id:"MJPEGPlayer"
-		};
-		swfobject.embedSWF("/static/player.swf", "stream", "480px", "320px", "10.0.0", "/static/expressInstall.swf", flashvars, params, attributes);
-	</script>
-	
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-	<script type="text/javascript">
-	
+
+
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript">
+	// User Interface Elements
+
 		function inviteClicked() {
 			jQuery.post("/ttux/invite");
 		}
@@ -133,27 +144,93 @@
 			
 			$("#activeSnapshot").attr("src", "/static/img/spinner.gif")
 		}
-		
-	</script>
+
+
+		var ff=0;
+		var lastFrame = 0;
+		var fCounter = 0;
+		var startTime = new Date();
+
+		function frameOne()
+		{
+		    var xhr = new XMLHttpRequest();
+		    var url = "/ttux/lastFrame/test/" + lastFrame;
+		    ff++;
+		    
+		    //setTimeout("frameTwo()", 150); // kick off our second fill in frame
+		   
+		    xhr.open("GET", url, true); // this is defined as synchronous?
+		    xhr.onreadystatechange = function () {
+		        if (xhr.readyState == xhr.DONE) {
+		            var test = xhr.responseText;
+		            // peel off the first 8 bytes which are the frame number
+		            var fnumber = test.substring(0,8);
+		            // log it
+		            //var log = document.getElementById('log');
+		            //log.innerHTML += fnumber + "\n";
+
+		            lastFrame = fnumber;
+		            
+		            videoSrc = "data:image/jpg;base64," + test.substring(8);
+		            var video = document.getElementById("hollywood");
+		            video.src = videoSrc;
+		            //document.getElementById("hollywood").src = xhr.responseText;
+		            setTimeout("frameOne()", 1);            
+		        }
+		    }
+		    xhr.send();
+		}
+
+		// jquery test
+		function frameOne_jq()
+		{
+			var r = $.ajax({
+				url: "/ttux/lastFrame/{{ dev.name }}/" + lastFrame
+			});
+			
+			r.done( function(msg) {
+				var fnumber = msg.substring(0,8);
+				lastFrame = fnumber;
+
+				if (msg.substring(8).length > 0) {
+	            			videoSrc = "data:image/jpg;base64," + msg.substring(8);
+	            			$("#hollywood").attr("src", videoSrc);
+	            			var now = new Date();
+	            			var min = Math.floor( ( (now - startTime)/1000) );
+	            			var sec = (now - startTime)%1000;
+	            			$("#stream_status").html("{{ dev.name }}: Connected:" + min + "." + sec + " f:" + fCounter);
+	            			fCounter++;
+				}
+	            
+				//console.log("got frame: " + fnumber);
+				//setTimeout("frameOne_jq()", 100);
+				frameOne_jq();
+			});
+
+			// error handler, wait 1/2 second
+			r.error( function(msg) {
+				console.log("got error");
+				setTimeout("frameOne_jq()", 500);
+			});
+
+		}		
+</script>
+
+
 </head>
-<body>
+<body onload="setTimeout('frameOne_jq()', 500)">
 
 	<div id="headerBar">
 	<table border="0" cellpadding="0" cellspacing="5" width="100%">
 		<tr valign="top" >
 			<td>
 			<div id="headerx">
-				<img src="/static/img/telmedx_logo_120527.png" alt=""></img>
+				<img src="/static/img/brand-logo.png" alt=""></img>
 			</div>
 			</td>
 			<td>
 			{% if user.is_authenticated %}
-                            Group:
-                            {% for u in user.groups.all %}
-                                {{ u.name }}
-                            {% endfor %}
-                            </br>
-			    Viewing Device: {{ dev.name }}</br>
+				Viewing Device: {{ dev.name }}</br>
 			    <a href="/ttux/deviceList">Back To Device List</a>
 			{% else %}
 			    <p>- - -</p>
@@ -176,7 +253,7 @@
 			<td style="border-style: solid; border-width: 1px">
 				<div id="ui_label">Controls: </div>
 				<div id="controls">
-					{{ dev.name }}  <input type="button" value="Invite" onClick="inviteClicked()" /> <input type="button" value="Capture Image" onclick="takeSnapshotClicked()"/>
+					{{ dev.name }}  <input type="button" value="Capture Image" onclick="takeSnapshotClicked()"/>
 				</div>
 			</td>
 		</tr>
@@ -185,8 +262,9 @@
 			<td style="border-style: solid; border-width: 1px">
 				<div id="ui_label">Live Video</div><br>
 				<div id="stream">
-					<a href="http://www.adobe.com/go/getflashplayer"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" /></a></p>
+					<img id="hollywood" src="/static/img/spinner.gif" ></img>
 				</div>
+				<div id="stream_status">{{ dev.name }}: Waiting...</div>
 		
 			</td>
 			<td style="border-style: solid; border-width: 1px">

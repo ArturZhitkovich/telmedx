@@ -52,9 +52,6 @@ class Session(object):
     def get_lastFrame(self):
         return self.LastFrame
 
-    def clear_lastFrame(self):
-        self.LastFrame = ""
-
     # remove a viewer from a specific device session instance 
     def remove_viewer(self, address):
         logger.info("remove_viewer address:" + address)

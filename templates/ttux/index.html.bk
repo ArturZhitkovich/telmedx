@@ -148,12 +148,7 @@
 			</td>
 			<td>
 			{% if user.is_authenticated %}
-                            Group:
-                            {% for u in user.groups.all %}
-                                {{ u.name }}
-                            {% endfor %}
-                            </br>
-			    Viewing Device: {{ dev.name }}</br>
+				Viewing Device: {{ dev.name }}</br>
 			    <a href="/ttux/deviceList">Back To Device List</a>
 			{% else %}
 			    <p>- - -</p>

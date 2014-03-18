@@ -414,7 +414,7 @@ def snapshotRequest(request, device_name):
     # wait for response from the phone
     snapshot = ""
     try:
-        snapshot = session.snapshotQ.get(block=True, timeout=20)
+        snapshot = session.snapshotQ.get(block=True, timeout=10)
     except:
         ##logger.info("failed to get snapshot from phone")
         print("failed to get snapshot from phone " + device_name)

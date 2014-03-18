@@ -1,10 +1,9 @@
 <html>
 <head>
-	<title>telX Beta</title>
 	<style type="text/css">
 	body 
 	{
-		background-image:url('/static/img/brand-logo.png');
+		background-image:url('/static/img/telmedx_logo_120527.png');
 		background-position:70px 40px;
 		background-repeat:no-repeat;
 		background-color:#cccccc;

@@ -1,6 +1,6 @@
 # Django settings for mysite project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = False
 
 ADMINS = (
@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/tscott/projects/ttux/r+d/django/wip/mysite/sqlite.db',                      # Or path to database file if using sqlite3.
+        'NAME': '/sites/telmedx/wip/mysite/sqlite.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -66,8 +66,9 @@ STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 # Additional locations of static files
+STATICFILES_ROOT = '/sites/telmedx/static/'
 STATICFILES_DIRS = (
-                    '/home/tscott/projects/ttux/r+d/static/',
+                    '/sites/telmedx/static/',
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -107,7 +108,7 @@ ROOT_URLCONF = 'mysite.urls'
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
 TEMPLATE_DIRS = (
-    '/home/tscott/projects/ttux/r+d/django/wip/templates',
+    '/sites/telmedx/wip/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -121,7 +122,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ttux',
-    'flashpolicies',
+    #'flashpolicies',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

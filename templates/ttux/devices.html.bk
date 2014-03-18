@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>telX Beta</title>
+	<title>telmedx</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
@@ -65,17 +65,11 @@
 		<tr valign="top" >
 			<td>
 			<div id="headerx">
-				<img src="/static/img/brand-logo.png" alt=""></img>
+				<img src="http://66.228.55.170:8090/static/img/telmedx_logo_120527.png" alt=""></img>
 			</div>
 			</td>
 			<td>
-                        {% if user.is_authenticated %}
-                        Group: 
-                            {% for u in user.groups.all %}
-                                {{ u.name }}
-                            {% endfor %} 
-                        {% endif %}
-	
+			
 			</td>
 			<td>
 				{% if user.is_authenticated %}
@@ -94,7 +88,7 @@ Please select a device to view:
 {% if deviceList %}
     <ul>
     {% for d in deviceList %}
-        <li><a href="/ttux/index3/{{ d.name }}">{{ d.name }}</a></li>
+        <li><a href="/ttux/index/{{ d.name }}">{{ d.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
