@@ -1,107 +1,194 @@
-<html>
-<head>
-	<title>telX Beta</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="language" content="en" />
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	
-	<style type="text/css">
-		html, body { height:100%; overflow: -moz-scrollbars-vertical !important; }
-		body { margin:0; }
-		
-		img {
-			vertical-align: middle;
-			height: 100%;
-		}
-		
-		div#headerx {
-			height:50px;
-		}
-		
-		div#headerBar {
-			background-color:#cccccc;
-			width:100%;
-			border:0;
-			cellpadding:0;
-			cellspacing:5;			
-		}
-		
-		div#corp {
-			font-family: sans-serif;
-			font-weight: normal;
-			font-size: small;
-			line-height: 100%;
-			word-spacing: normal;
-			letter-spacing: normal;
-			text-decoration: none;
-			text-transform: none;
-			text-align: left;
-			text-indent: 0ex;		
-		}
-		
-		div#ui_label  {
-			font-family: sans-serif;
-			font-weight: normal;
-			font-variant: small-caps;			
-			font-size: small;
-			font-size: 18px;
-			line-height: 100%;
-			word-spacing: normal;
-			letter-spacing: normal;
-			text-decoration: none;
-			text-transform: none;
-			text-align: left;
-			text-indent: 0ex;
-		}
+{% extends "layout.html" %}
+{% block metatitle %}telmedx - login{% endblock %}
+{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
+{% block metastyle %}
+		<style>
+          html,
+          body {
+            height: 100%;
+            /* The html and body elements cannot have any padding or margin. */
+          }
+          /* Wrapper for page content to push down footer */
+          #wrap {
+            min-height: 100%;
+            height: auto;
+            /* Negative indent footer by its height */
+            margin: 0 auto -45px;
+            /* Pad bottom by footer height */
+            padding: 0 0 45px;
+            background: url(static/bg2.jpg) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+          }
+          /* Set the fixed height of the footer here */
+          #footer {
+            height: 45px;
+            background-color: #000;
+            color: #a0a0a0;
+            text-align: center;
+          }
+          #footer-push{
+            height: 10px;
+            background-color: #202020;
+          }
+          .navbar-nav>li>a{
+            padding-top: 25px;
+            padding-bottom: 25px;
+            font-size: 16px;
+          }
+          .navbar
+          {
+            background-color: #fff;
+          }
+          #dev-table tbody tr{
+            cursor: pointer;
+          }
+     /*     .panel-default>.panel-heading
+          {
+            color: #fff;
+            background-image: url('./static/lghtmeshli.jpg');
+          }*/
+        </style>
 
-	</style>
-</head>
+{% endblock metastyle %}
+{% block content %}
+    <div class="container" >
+      <div class="row" style="margin-top: 130px;">
 
-<body>
 
-	<div id="headerBar">
-	<table border="0" cellpadding="0" cellspacing="5" width="100%">
-		<tr valign="top" >
-			<td>
-			<div id="headerx">
-				<img src="/static/img/brand-logo.png" alt=""></img>
-			</div>
-			</td>
-			<td>
-                        {% if user.is_authenticated %}
-                        Group: 
-                            {% for u in user.groups.all %}
-                                {{ u.name }}
-                            {% endfor %} 
+<!--         <div class="col-md-6">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">Developers</h3>
+            <div class="pull-right">
+              <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+                <i class="glyphicon glyphicon-filter"></i>
+              </span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+          </div>
+          <table class="table table-hover" id="dev-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Kilgore</td>
+                <td>Trout</td>
+                <td>kilgore</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Bob</td>
+                <td>Loblaw</td>
+                <td>boblahblah</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Holden</td>
+                <td>Caulfield</td>
+                <td>penceyreject</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>         </div>-->
+        <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Devices</h3>
+              </div>
+              <div class="panel-body">
+                {% if deviceList %}
+
+
+
+
+                <table class="table table-hover" id="dev-table">
+                  <thead>
+                    <tr>
+                  
+                      <th>Device Name</th>
+                      <th>Status</th>
+                     
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for d in deviceList %}
+                    <tr data-link="/ttux/01/index/{{ d.name }}" >
+                      <td><a href="/ttux/01/index/{{ d.name }}">{{ d.name }}</a></td>
+                      <td>
+                        {% if d.connectedState %}
+                          <span class="text-success">Connected</span>
+                        {% else %}
+                          <span class="text-muted">Not Connected</span>
                         {% endif %}
-	
-			</td>
-			<td>
-				{% if user.is_authenticated %}
-			   	 	Welcome, {{ user.username }}.
-				{% else %}
-			    	Welcome, new user. Please log in.
-				{% endif %}	
-				<div id=logoutAction><a href="/ttux/logout">logout</a></div>
-			</td>
-		</tr>
-	</table>
-	</div>
-</br>
-Please select a device to view:
-</br>
-{% if deviceList %}
-    <ul>
-    {% for d in deviceList %}
-        <li><a href="/ttux/index3/{{ d.name }}">{{ d.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No devices are available.</p>
-{% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- <tr data-link="gohere" >
+                      <td>Kilgore</td>
+                      <td><span class="text-muted">Not Connected</span></td>
+                    </tr>
+                    <tr data-link="gohere" >
+                      <td><a href="">Bob</a></td>
+                      <td><span class="text-success">Connected</span></td>
+                    </tr>
+                    <tr>
+                      <td>Holden</td>
+                      <td><span class="text-muted">Not Connected</span></td>
+                    </tr> -->
+                  </tbody>
+                </table>
+              {% else %}
+                  <p>No devices are available.</p>
+              {% endif %}
+              </div>
+          </div>
+        </div>   
 
 
-	<div id="corp">Copyright 2012 telmedx </div>
-</body>
-</html>
+<!--         <div class="col-md-6">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Add Users</h3>
+            </div>
+              <div class="panel-body">
+                <form accept-charset="UTF-8" method="POST" action="" role="form">
+                  <fieldset>
+                      {% csrf_token %}
+                      <div class="form-group {% if form.errors %} has-error {% endif %}">
+                        <input class="form-control error" placeholder="Username" name="username" type="text">
+                    </div>
+                    <div class="form-group {% if form.errors %} has-error {% endif %}">
+                      <input class="form-control error" placeholder="Password" name="password" type="password" value="">
+                    </div>
+                    <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+                    <input type="hidden" name="next" value="/ttux/01/deviceList" />
+                  </fieldset>
+                </form>
+              </div>
+          </div>
+        </div> -->
+      </div>
+    </div>	
+{% endblock content %}
+{% block afterjquery %}
+<script>
+  $(document).ready(function(){
+    $("#dev-table tbody tr").click(function(){
+      window.location.href = $(this).data('link');
+    });
+  })
+</script>
+{% endblock afterjquery %}
