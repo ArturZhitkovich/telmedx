@@ -1,0 +1,96 @@
+
+		html, body { height:100%; overflow: -moz-scrollbars-vertical !important; }
+		body { margin:0; }
+		
+		img {
+			vertical-align: middle;
+			height: 100%;
+		}
+		
+		div#headerx {
+			height:50px;
+		}
+		
+		div#headerBar {
+			background-color:#cccccc;
+			width:100%;
+			border:0;
+			cellpadding:0;
+			cellspacing:5;			
+		}
+		
+		div#live {
+			float: left;
+			border-width: 1px;
+			border-style: solid;
+			width: 	520px;
+		}
+		
+		div#snapshots {
+			width:720px;
+			height:480px;
+		}
+		
+		div#stream {
+			width:520px;
+			height:320px;
+		}
+	
+		div#stream_status {
+			width:360px;
+			height:240px;
+			font-family: courier;
+			font-weight: normal;
+			font-size: small;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;		
+		}
+	
+		div#pastSnapshots {
+			height: 100px;
+			width: 720px;
+			overflow: auto;
+			white-space: nowrap;
+		}
+
+		div#hollywood_div {
+			height: 50%;
+			width: 50%;
+		}
+				
+		div#controls {
+		}
+		
+		div#corp {
+			font-family: sans-serif;
+			font-weight: normal;
+			font-size: small;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;		
+		}
+		
+		div#ui_label  {
+			font-family: sans-serif;
+			font-weight: normal;
+			font-variant: small-caps;			
+			font-size: small;
+			font-size: 18px;
+			line-height: 100%;
+			word-spacing: normal;
+			letter-spacing: normal;
+			text-decoration: none;
+			text-transform: none;
+			text-align: left;
+			text-indent: 0ex;
+		}
+
