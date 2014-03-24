@@ -1,285 +1,209 @@
-<html>
-<!-- INDEX 3 testing ajax queries -->
+{% extends "layout.html" %}
+{% block metatitle %}telmedx - video feed{% endblock %}
+{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
+{% block metastyle %}
+		<style>
+          html,
+          body {
+            height: 100%;
+            /* The html and body elements cannot have any padding or margin. */
+          }
+          /* Wrapper for page content to push down footer */
+          #wrap {
+            min-height: 100%;
+            height: auto;
+            /* Negative indent footer by its height */
+            margin: 0 auto -45px;
+            /* Pad bottom by footer height */
+            padding: 0 0 45px;
+            background: url(static/bg2.jpg) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+          }
+          /* Set the fixed height of the footer here */
+          #footer {
+            height: 45px;
+            background-color: #000;
+            color: #a0a0a0;
+            text-align: center;
+          }
+          #footer-push{
+            height: 10px;
+            background-color: #202020;
+          }
+          .navbar-nav>li>a{
+            padding-top: 25px;
+            padding-bottom: 25px;
+            font-size: 16px;
+          }
+          .navbar
+          {
+            background-color: #fff;
+          }
+          #hollywood
+          {
+            width: 100%;
+          }
+        </style>
+{% endblock metastyle %}
+{% block nav %}
+<ul class="nav navbar-nav">
+  <li><a href="/ttux/deviceList">Devices</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+  <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
+</ul>
+{% endblock nav %}
+{% block content %}
+    <div class="container" style="max-width:100%">
+      <div class="row" style="margin-top: 100px;">
+        <div class="col-md-5 ">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Live Video - {{ dev.name }}</h3>
+            </div>
+            <div class="panel-body">
+              <div id="stream">
+                <img id="hollywood" src="/static/spinner.gif" ></img>
+              </div>
+              
+              <button class="btn btn-primary btn-lg btn-block" onclick="takeSnapshotClicked()">Capture Image</button>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Saved Snapshots</h3>
+            </div>
+            <div id="pastSnapshots" style="min-height:100px;" class="panel-body">
 
-
-<head>
-	<title>telX Beta</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="language" content="en" />
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	
-	<style type="text/css">
-		html, body { height:100%; overflow: -moz-scrollbars-vertical !important; }
-		body { margin:0; }
-		
-		img {
-			vertical-align: middle;
-			height: 100%;
-		}
-		
-		div#headerx {
-			height:50px;
-		}
-		
-		div#headerBar {
-			background-color:#cccccc;
-			width:100%;
-			border:0;
-			cellpadding:0;
-			cellspacing:5;			
-		}
-		
-		div#live {
-			float: left;
-			border-width: 1px;
-			border-style: solid;
-			width: 	520px;
-		}
-		
-		div#snapshots {
-			width:720px;
-			height:480px;
-		}
-		
-		div#stream {
-			width:520px;
-			height:320px;
-		}
-	
-		div#stream_status {
-			width:360px;
-			height:240px;
-			font-family: courier;
-			font-weight: normal;
-			font-size: small;
-			line-height: 100%;
-			word-spacing: normal;
-			letter-spacing: normal;
-			text-decoration: none;
-			text-transform: none;
-			text-align: left;
-			text-indent: 0ex;		
-		}
-	
-		div#pastSnapshots {
-			height: 100px;
-			width: 720px;
-			overflow: auto;
-			white-space: nowrap;
-		}
-
-		div#hollywood_div {
-			height: 50%;
-			width: 50%;
-		}
-				
-		div#controls {
-		}
-		
-		div#corp {
-			font-family: sans-serif;
-			font-weight: normal;
-			font-size: small;
-			line-height: 100%;
-			word-spacing: normal;
-			letter-spacing: normal;
-			text-decoration: none;
-			text-transform: none;
-			text-align: left;
-			text-indent: 0ex;		
-		}
-		
-		div#ui_label  {
-			font-family: sans-serif;
-			font-weight: normal;
-			font-variant: small-caps;			
-			font-size: small;
-			font-size: 18px;
-			line-height: 100%;
-			word-spacing: normal;
-			letter-spacing: normal;
-			text-decoration: none;
-			text-transform: none;
-			text-align: left;
-			text-indent: 0ex;
-		}
-
-	</style>
-
-
-<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>-->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Captured Images</h3>
+            </div>
+            <div class="panel-body">
+            <div id="snapshots">
+          <img id="activeSnapshot" style="width:100%" src="/static/spinner.gif" alt="" />
+      
+        </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>	
+{% endblock content %}
+{% block afterjquery %}
 <script type="text/javascript">
-	// User Interface Elements
-
-		function inviteClicked() {
-			jQuery.post("/ttux/invite");
-		}
-		
-		function select(id) {
-			$(".snapshot").css("border", "none");
-			$("#" + id).css("border", "4px solid");
-		}
-		
-		function showSnapshot(id) {
-			var selected = $("#" + id);
-			
-			$("#activeSnapshot").attr("src", selected.attr("src"));
-			select(id);
-		}
-		
-		function takeSnapshotClicked() {
-			$.post("/ttux/snapshot/{{ dev.name }}", null, function(data) {
-				dataUri = "data:image/jpeg;base64," + data.image;
-				$("#activeSnapshot").attr("src", dataUri);
-				
-				var id = "snapshot-" + new Date().getTime().toString();
-				var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
-				
-				$("#pastSnapshots").append(imageElement);
-				
-				select(id);
-			});
-			
-			$("#activeSnapshot").attr("src", "/static/img/spinner.gif")
-		}
+function inviteClicked() {
+      jQuery.post("/ttux/invite");
+    }
+    
+    function select(id) {
+      $(".snapshot").css("border", "none");
+      $("#" + id).css("border", "4px solid");
+    }
+    
+    function showSnapshot(id) {
+      var selected = $("#" + id);
+      
+      $("#activeSnapshot").attr("src", selected.attr("src"));
+      select(id);
+    }
+    
+    function takeSnapshotClicked() {
+      $.post("/ttux/snapshot/{{ dev.name }}", null, function(data) {
+        dataUri = "data:image/jpeg;base64," + data.image;
+        $("#activeSnapshot").attr("src", dataUri);
+        
+        var id = "snapshot-" + new Date().getTime().toString();
+        var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
+        
+        $("#pastSnapshots").append(imageElement);
+        
+        select(id);
+      });
+      
+      $("#activeSnapshot").attr("src", "/static/img/spinner.gif")
+    }
 
 
-		var ff=0;
-		var lastFrame = 0;
-		var fCounter = 0;
-		var startTime = new Date();
+    var ff=0;
+    var lastFrame = 0;
+    var fCounter = 0;
+    var startTime = new Date();
 
-		function frameOne()
-		{
-		    var xhr = new XMLHttpRequest();
-		    var url = "/ttux/lastFrame/test/" + lastFrame;
-		    ff++;
-		    
-		    //setTimeout("frameTwo()", 150); // kick off our second fill in frame
-		   
-		    xhr.open("GET", url, true); // this is defined as synchronous?
-		    xhr.onreadystatechange = function () {
-		        if (xhr.readyState == xhr.DONE) {
-		            var test = xhr.responseText;
-		            // peel off the first 8 bytes which are the frame number
-		            var fnumber = test.substring(0,8);
-		            // log it
-		            //var log = document.getElementById('log');
-		            //log.innerHTML += fnumber + "\n";
+    function frameOne()
+    {
+        var xhr = new XMLHttpRequest();
+        var url = "/ttux/lastFrame/test/" + lastFrame;
+        ff++;
+        
+        //setTimeout("frameTwo()", 150); // kick off our second fill in frame
+       
+        xhr.open("GET", url, true); // this is defined as synchronous?
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == xhr.DONE) {
+                var test = xhr.responseText;
+                // peel off the first 8 bytes which are the frame number
+                var fnumber = test.substring(0,8);
+                // log it
+                //var log = document.getElementById('log');
+                //log.innerHTML += fnumber + "\n";
 
-		            lastFrame = fnumber;
-		            
-		            videoSrc = "data:image/jpg;base64," + test.substring(8);
-		            var video = document.getElementById("hollywood");
-		            video.src = videoSrc;
-		            //document.getElementById("hollywood").src = xhr.responseText;
-		            setTimeout("frameOne()", 1);            
-		        }
-		    }
-		    xhr.send();
-		}
+                lastFrame = fnumber;
+                
+                videoSrc = "data:image/jpg;base64," + test.substring(8);
+                var video = document.getElementById("hollywood");
+                video.src = videoSrc;
+                //document.getElementById("hollywood").src = xhr.responseText;
+                setTimeout("frameOne()", 1);            
+            }
+        }
+        xhr.send();
+    }
 
-		// jquery test
-		function frameOne_jq()
-		{
-			var r = $.ajax({
-				url: "/ttux/lastFrame/{{ dev.name }}/" + lastFrame
-			});
-			
-			r.done( function(msg) {
-				var fnumber = msg.substring(0,8);
-				lastFrame = fnumber;
+    // jquery test
+    function frameOne_jq()
+    {
+      var r = $.ajax({
+        url: "/ttux/lastFrame/{{ dev.name }}/" + lastFrame
+      });
+      
+      r.done( function(msg) {
+        var fnumber = msg.substring(0,8);
+        lastFrame = fnumber;
 
-				if (msg.substring(8).length > 0) {
-	            			videoSrc = "data:image/jpg;base64," + msg.substring(8);
-	            			$("#hollywood").attr("src", videoSrc);
-	            			var now = new Date();
-	            			var min = Math.floor( ( (now - startTime)/1000) );
-	            			var sec = (now - startTime)%1000;
-	            			$("#stream_status").html("{{ dev.name }}: Connected:" + min + "." + sec + " f:" + fCounter);
-	            			fCounter++;
-				}
-	            
-				//console.log("got frame: " + fnumber);
-				//setTimeout("frameOne_jq()", 100);
-				frameOne_jq();
-			});
+        if (msg.substring(8).length > 0) {
+                    videoSrc = "data:image/jpg;base64," + msg.substring(8);
+                    $("#hollywood").attr("src", videoSrc);
+                    var now = new Date();
+                    var min = Math.floor( ( (now - startTime)/1000) );
+                    var sec = (now - startTime)%1000;
+                    $("#stream_status").html("{{ dev.name }}: Connected:" + min + "." + sec + " f:" + fCounter);
+                    fCounter++;
+        }
+              
+        //console.log("got frame: " + fnumber);
+        //setTimeout("frameOne_jq()", 100);
+        frameOne_jq();
+      });
 
-			// error handler, wait 1/2 second
-			r.error( function(msg) {
-				console.log("got error");
-				setTimeout("frameOne_jq()", 500);
-			});
+      // error handler, wait 1/2 second
+      r.error( function(msg) {
+        console.log("got error");
+        setTimeout("frameOne_jq()", 500);
+      });
 
-		}		
-</script>
+    }   
 
-
-</head>
-<body onload="setTimeout('frameOne_jq()', 500)">
-
-	<div id="headerBar">
-	<table border="0" cellpadding="0" cellspacing="5" width="100%">
-		<tr valign="top" >
-			<td>
-			<div id="headerx">
-				<img src="/static/img/brand-logo.png" alt=""></img>
-			</div>
-			</td>
-			<td>
-			{% if user.is_authenticated %}
-				Viewing Device: {{ dev.name }}</br>
-			    <a href="/ttux/deviceList">Back To Device List</a>
-			{% else %}
-			    <p>- - -</p>
-			{% endif %}				
-			</td>
-			<td>
-			{% if user.is_authenticated %}
-			    Welcome, {{ user.username }}.
-			{% else %}
-			    <p>Welcome, new user. Please log in.</p>
-			{% endif %}	
-				<div id=logoutAction><a href="/ttux/logout">logout</a></div>
-			</td>
-		</tr>
-	</table>
-	</div>
-	
-	<table border="0" cellpadding="0" cellspacing="5">
-		<tr valign="top">
-			<td style="border-style: solid; border-width: 1px">
-				<div id="ui_label">Controls: </div>
-				<div id="controls">
-					{{ dev.name }}  <input type="button" value="Capture Image" onclick="takeSnapshotClicked()"/>
-				</div>
-			</td>
-		</tr>
-		
-		<tr valign="top">
-			<td style="border-style: solid; border-width: 1px">
-				<div id="ui_label">Live Video</div><br>
-				<div id="stream">
-					<img id="hollywood" src="/static/img/spinner.gif" ></img>
-				</div>
-				<div id="stream_status">{{ dev.name }}: Waiting...</div>
-		
-			</td>
-			<td style="border-style: solid; border-width: 1px">
-				<div id="snapshots">
-					<div id="ui_label">Image</div><br>
-					<img id="activeSnapshot" width="720" height="480" src="/static/img/telmedx_320icon.png" alt="" />
-					<div id="pastSnapshots"></div>
-				</div>
-			</td>
-		</tr>
-
-			
-	</table>
-	
-
-	<div id="corp">Copyright 2012 telmedx </div>
-</body>
-</html>
+    $(document).ready(function()
+    {
+      frameOne_jq();
+    });
+  </script>
+{% endblock afterjquery %}
