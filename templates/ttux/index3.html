@@ -91,7 +91,7 @@
             </div>
             <div class="panel-body">
             <div id="snapshots">
-          <img id="activeSnapshot"  src="/static/spinner.gif" alt="" />
+          <img id=" "  src="/static/spinner.gif" alt="" />
       
         </div>
             </div>
@@ -198,6 +198,7 @@ function inviteClicked() {
 
       // error handler, wait 1/2 second
       r.error( function(msg) {
+        console.log(msg);
         console.log("got error");
         setTimeout("frameOne_jq()", 500);
       });
