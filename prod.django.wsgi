@@ -23,4 +23,4 @@ activate_env=os.path.expanduser("/var/www/telx/prodenv/bin/activate_this.py")
 execfile(activate_env, dict(__file__=activate_env))
  
 import django.core.handlers.wsgi
-application = django.core.handlers.wsgi.WSGIHandler()
+application = newrelic.agent.WSGIApplicationWrapper(django.core.handlers.wsgi.WSGIHandler())
