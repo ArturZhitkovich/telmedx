@@ -170,6 +170,7 @@ function inviteClicked() {
         xhr.send();
     }
 
+    var previousTime;
     // jquery test
     function frameOne_jq()
     {
@@ -187,12 +188,17 @@ function inviteClicked() {
                     var now = new Date();
                     var min = Math.floor( ( (now - startTime)/1000) );
                     var sec = (now - startTime)%1000;
-                    $("#stream_status").html("- Connected: " + min + "." + sec + " f: " + fCounter);
+                    var fps = Math.floor(1/((now-previousTime)/1000));
+                    $("#stream_status").html("- Connected: " + min + "." + sec + " f: " + fCounter + " fps: " + fps);
                     fCounter++;
+                    console.log(1/((now-previousTime)/1000));
+                    previousTime = now;
         }
               
         //console.log("got frame: " + fnumber);
         //setTimeout("frameOne_jq()", 100);
+        var now = new Date();
+        previousTime = Math.floor(now - 1000);
         frameOne_jq();
       });
 
