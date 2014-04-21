@@ -1,6 +1,9 @@
 import os
 import sys
 import site
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
+
  
 path='/var/www/telx/mysite'
  
