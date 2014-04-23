@@ -1,0 +1,283 @@
+{% extends "layout.html" %}
+{% block metatitle %}telmedx - video feed{% endblock %}
+{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
+{% block metastyle %}
+		<style>
+          html,
+          body {
+            height: 100%;
+            /* The html and body elements cannot have any padding or margin. */
+          }
+          /* Wrapper for page content to push down footer */
+          #wrap {
+            min-height: 100%;
+            height: auto;
+            /* Negative indent footer by its height */
+            margin: 0 auto -45px;
+            /* Pad bottom by footer height */
+            padding: 0 0 45px;
+            background: url(static/bg-repeat.jpg) repeat   ; 
+/*            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;*/
+          }
+          /* Set the fixed height of the footer here */
+          #footer {
+            height: 45px;
+            background-color: #000;
+            color: #a0a0a0;
+            text-align: center;
+          }
+          #footer-push{
+            height: 10px;
+            background-color: #202020;
+          }
+          .navbar-nav>li>a{
+            padding-top: 25px;
+            padding-bottom: 25px;
+            font-size: 16px;
+          }
+          .navbar
+          {
+            background-color: #fff;
+          }
+          #hollywood
+          {
+            width: 100%;
+          }
+          #activeSnapshot{
+            width: 100%;
+          }
+        </style>
+{% endblock metastyle %}
+{% block nav %}
+<ul class="nav navbar-nav">
+  <li><a href="/ttux/deviceList">Devices</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+  <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
+</ul>
+{% endblock nav %}
+{% block content %}
+    <div class="container" style="max-width:100%">
+      <div class="row" style="margin-top: 100px;">
+        <div class="col-sm-5 ">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;<a style="display:inline-block; color:white;" id="rot-btn" class="btn btn-sm btn-primary">Rotate +90</a></h3>
+            </div>
+            <div class="panel-body">
+              <div id="stream">
+                <img id="hollywood" src="/static/spinner.gif" ></img>
+              </div>
+              
+              <button class="btn btn-primary btn-lg btn-block" onclick="takeSnapshotClicked()">Capture Image</button>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Saved Snapshots</h3>
+            </div>
+            <div id="pastSnapshots" style="min-height:100px;" class="panel-body">
+
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-7">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Captured Images</h3>
+            </div>
+            <div class="panel-body">
+            <div id="snapshots">
+          <img id="activeSnapshot"  src="/static/spinner.gif" alt="" />
+      
+        </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <canvas id="c" ></canvas>
+    </div>	
+{% endblock content %}
+{% block afterjquery %}
+<script type="text/javascript">
+function inviteClicked() {
+      jQuery.post("/ttux/invite");
+    }
+    
+    function select(id) {
+      $(".snapshot").css("border", "none");
+      $("#" + id).css("border", "4px solid");
+    }
+    
+    function showSnapshot(id) {
+      var selected = $("#" + id);
+      
+      $("#activeSnapshot").attr("src", selected.attr("src"));
+      select(id);
+    }
+    
+    function takeSnapshotClicked() {
+      $.post("/ttux/snapshot/{{ dev.name }}", null, function(data) {
+        dataUri = "data:image/jpeg;base64," + data.image;
+        $("#activeSnapshot").attr("src", dataUri);
+        
+        var id = "snapshot-" + new Date().getTime().toString();
+        var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
+        
+        $("#pastSnapshots").append(imageElement);
+        
+        select(id);
+      });
+      
+      $("#activeSnapshot").attr("src", "/static/spinner.gif")
+    }
+
+
+    var ff=0;
+    var lastFrame = 0;
+    var fCounter = 0;
+    var startTime = new Date();
+
+    function frameOne()
+    {
+        var xhr = new XMLHttpRequest();
+        var url = "/ttux/lastFrame/test/" + lastFrame;
+        ff++;
+        
+        //setTimeout("frameTwo()", 150); // kick off our second fill in frame
+       
+        xhr.open("GET", url, true); // this is defined as synchronous?
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == xhr.DONE) {
+                var test = xhr.responseText;
+                // peel off the first 8 bytes which are the frame number
+                var fnumber = test.substring(0,8);
+                // log it
+                //var log = document.getElementById('log');
+                //log.innerHTML += fnumber + "\n";
+
+                lastFrame = fnumber;
+                
+                videoSrc = "data:image/jpg;base64," + test.substring(8);
+                var video = document.getElementById("hollywood");
+                video.src = videoSrc;
+                //document.getElementById("hollywood").src = xhr.responseText;
+                setTimeout("frameOne()", 1);            
+            }
+        }
+        xhr.send();
+    }
+
+    var rotate = 90;
+    var previousTime;
+    var ctx;
+    var canvas;
+    // jquery test
+    function frameOne_jq()
+    {
+      var r = $.ajax({
+        url: "/ttux/lastFrame/{{ dev.name }}/" + lastFrame
+      });
+      
+      r.done( function(msg) {
+        var fnumber = msg.substring(0,8);
+        lastFrame = fnumber;
+
+        if (msg.substring(8).length > 0) {
+                    videoSrc = "data:image/jpg;base64," + msg.substring(8);
+
+
+                    if( rotate != 0){
+
+                      
+                      var image = new Image();
+                      image.src = videoSrc;
+                      image.onload = function() {
+                        // if( rotate == 90 || rotate == 270)
+                        // {
+                          // canvas.height = image.width;
+                          // canvas.width = image.height;
+                        // }else
+                        // {
+                          canvas.width = image.width;
+                          canvas.height = image.height;
+                        // }
+                          ctx = canvas.getContext("2d");
+                          switch (rotate) {
+                            case 90:
+                              ctx.translate(image.width, image.height/image.width);
+                              break;
+                            case 180:
+                              ctx.translate(image.width, image.height);
+                              break;
+                            case 270:
+                            console.log(270);
+                              canvas.width = image.height;
+                              canvas.height = image.width;
+                              ctx.translate(-1 * image.width, 0);
+                              break;
+                          }
+                          // ctx.translate(image.width, image.height);
+                          ctx.rotate( rotate * Math.PI / 180);
+                          if( rotate == 270 )
+                          {
+                            console.log("eh270")
+                            ctx.drawImage(image, (-1)*image.width, 0); 
+                          }else
+                          {
+                            ctx.drawImage(image, 0, 0); 
+                          }
+                          
+                          videoSrc = canvas.toDataURL();
+                          $("#hollywood").attr("src", videoSrc);
+                      };
+                    }else{
+                      $("#hollywood").attr("src", videoSrc);
+                    }
+                    var now = new Date();
+                    var min = Math.floor( (now - startTime)/1000 );
+                    var sec = (now - startTime)%1000;
+                    var fps = Number( 1 / ( (now-previousTime)/1000) ).toFixed(1);
+                    
+                    $("#stream_status").html("- Connected: " + min + "." + sec + " f: " + fCounter + " fps: " + fps);
+                    fCounter++;
+                    previousTime = now;
+        }
+
+              
+        //console.log("got frame: " + fnumber);
+        //setTimeout("frameOne_jq()", 100);
+        // var now = new Date();
+        // previousTime = Math.floor(now - 1000);
+        frameOne_jq();
+      });
+
+      // error handler, wait 1/2 second
+      r.error( function(msg) {
+        // console.log(msg);
+        console.log("got error");
+        setTimeout("frameOne_jq()", 500);
+      });
+
+    }   
+
+    $(document).ready(function()
+    {
+      $("#rot-btn").click(function(){
+        rotate = rotate+90;
+        if( rotate == 360){
+          rotate = 0;
+        }
+      });
+    })
+    $(document).ready(function()
+    {
+      canvas = document.getElementById("c");
+      previousTime = Date.now();
+      frameOne_jq();
+    });
+  </script>
+{% endblock afterjquery %}
