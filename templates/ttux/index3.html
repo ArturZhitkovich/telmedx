@@ -72,8 +72,15 @@
                 <canvas id="c" ></canvas>
                 <!-- <img id="hollywood" src="/static/spinner.gif" ></img> -->
               </div>
-              
-              <button class="btn btn-primary btn-lg btn-block" onclick="takeSnapshotClicked()">Capture Image</button>
+              <div id="capture-button" class="row">
+              <div class="col-xs-1">
+                  <img style="height: 50px; cursor:pointer;" src="static/Capture_Button.png">
+                </div>
+                <div class="col-xs-10">
+                <button class="btn btn-primary btn-lg btn-block" >Capture Image</button>
+                </div>
+              </div>
+ 
             </div>
           </div>
           <div class="panel panel-default">
@@ -276,6 +283,9 @@
       if( rotate == 360){
         rotate = 0;
       }
+    });
+    $("#capture-button").click(function(){
+      takeSnapshotClicked();
     });
 
     canvasSupport = isCanvasSupported();
