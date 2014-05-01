@@ -16,7 +16,7 @@
             margin: 0 auto -45px;
             /* Pad bottom by footer height */
             padding: 0 0 45px;
-            background: url(static/bg-repeat.jpg) repeat   ; 
+            background: url(static/img/bg-repeat.jpg) repeat   ; 
 /*            -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -67,8 +67,8 @@
             <div class="panel-heading">
               <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;
                 <!-- <a style="display:inline-block; color:white;" id="rot-btn" class="btn btn-sm btn-primary">Rotate +90</a> -->
-              <button id="rotate-left" class="btn" style="height: 25px; background: url(static/icon-left.png) no-repeat;"></button>
-              <button id="rotate-right" class="btn" style="height: 25px; background: url(static/icon-right.png) no-repeat;"></button>
+              <button id="rotate-left" class="btn" style="height: 25px; background: url(static/img/icon-left.png) no-repeat;"></button>
+              <button id="rotate-right" class="btn" style="height: 25px; background: url(static/img/icon-right.png) no-repeat;"></button>
               </h3>
             </div>
             <div class="panel-body">
@@ -78,7 +78,7 @@
               </div>
               <div id="capture-button" class="row">
               <div class="col-xs-1">
-                  <img style="height: 50px; cursor:pointer;" src="static/Capture_Button.png">
+                  <img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png">
                 </div>
                 <div class="col-xs-10">
                 <button class="btn btn-primary btn-lg btn-block" >Capture Image</button>
@@ -103,7 +103,7 @@
             </div>
             <div class="panel-body">
             <div id="snapshots">
-          <img id="activeSnapshot"  src="/static/spinner.gif" alt="" />
+          <img id="activeSnapshot"  src="/static/img/spinner.gif" alt="" />
       
         </div>
             </div>
@@ -210,7 +210,7 @@
     });
 
     
-    $("#activeSnapshot").attr("src", "/static/spinner.gif")
+    $("#activeSnapshot").attr("src", "/static/img/spinner.gif")
   }
 
 
@@ -307,7 +307,7 @@
     canvasSupport = isCanvasSupported();
     if ( ! canvasSupport ){
       $("#c").remove();
-      $("#stream").html('<img id="hollywood" src="/static/spinner.gif" ></img>');
+      $("#stream").html('<img id="hollywood" src="/static/img/spinner.gif" ></img>');
     }else{
       canvas = document.getElementById("c");
       ctx = canvas.getContext('2d');
