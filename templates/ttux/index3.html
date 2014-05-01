@@ -53,7 +53,7 @@
 {% endblock metastyle %}
 {% block nav %}
 <ul class="nav navbar-nav">
-  <li><a href="/ttux/deviceList">Devices</a></li>
+  <li><a href="/ttux/deviceList">Back to Device List</a></li>
 </ul>
 <ul class="nav navbar-nav navbar-right">
   <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
@@ -65,7 +65,11 @@
         <div class="col-sm-5 ">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;<a style="display:inline-block; color:white;" id="rot-btn" class="btn btn-sm btn-primary">Rotate +90</a></h3>
+              <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;
+                <a style="display:inline-block; color:white;" id="rot-btn" class="btn btn-sm btn-primary">Rotate +90</a>
+             <!--  <button id="rotate-left" class="btn" style="height: 25px; background: url(static/icon-left.png) no-repeat;"></button>
+              <button id="rotate-right" class="btn" style="height: 25px; background: url(static/icon-right.png) no-repeat;"></button> -->
+              </h3>
             </div>
             <div class="panel-body">
               <div id="stream">
@@ -262,7 +266,7 @@
       var min = Math.floor( (now - startTime)/1000 );
       var sec = (now - startTime)%1000;
       
-      $("#stream_status").html("- Connected: " + min + "." + sec + " f: " + fCounter );
+      $("#stream_status").html("- " + min + "." + sec + " f: " + fCounter );
       fCounter++; //Adds to frame couter
 
       frameOne_jq(); //Let the function call itself
@@ -284,6 +288,18 @@
         rotate = 0;
       }
     });
+    // $("#rotate-right").click(function(){
+    //   rotate = rotate+90;
+    //   if( rotate == 360){
+    //     rotate = 0;
+    //   }
+    // });
+    // $("#rotate-left").click(function(){
+    //   rotate = rotate-90;
+    //   if( rotate == -90){
+    //     rotate = 270;
+    //   }
+    // });
     $("#capture-button").click(function(){
       takeSnapshotClicked();
     });
