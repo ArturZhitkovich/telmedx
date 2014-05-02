@@ -49,26 +49,36 @@
           #activeSnapshot{
             width: 100%;
           }
+          .icon-bar{
+            background-color: black;
+          }
+          .navbar-toggle{
+            border: 1px solid black;
+            margin-top: 18px;
+          }
+          img.snapshot{
+            margin-bottom: 4px;
+          }
         </style>
 {% endblock metastyle %}
 {% block nav %}
-<ul class="nav navbar-nav">
+<ul class="nav collapse navbar-collapse navbar-nav">
   <li><a href="/ttux/deviceList">Back to Device List</a></li>
 </ul>
-<ul class="nav navbar-nav navbar-right">
+<ul class="nav collapse navbar-collapse navbar-nav navbar-right">
   <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
 </ul>
 {% endblock nav %}
 {% block content %}
     <div class="container" style="max-width:100%">
       <div class="row" style="margin-top: 100px;">
-        <div class="col-sm-5 ">
+        <div class="col-md-5 ">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;
                 <!-- <a style="display:inline-block; color:white;" id="rot-btn" class="btn btn-sm btn-primary">Rotate +90</a> -->
-              <button id="rotate-left" class="btn" style="height: 25px; background: url(static/icon-left.png) no-repeat;"></button>
-              <button id="rotate-right" class="btn" style="height: 25px; background: url(static/icon-right.png) no-repeat;"></button>
+              <button id="rotate-left" class="btn" style="height: 30px; width:30px; background: url(static/icon-left-blue-lg.png) no-repeat;"></button>
+              <button id="rotate-right" class="btn" style="height: 30px; width:30px; background: url(static/icon-right-blue-lg.png) no-repeat;"></button>
               </h3>
             </div>
             <div class="panel-body">
@@ -77,11 +87,11 @@
                 <!-- <img id="hollywood" src="/static/spinner.gif" ></img> -->
               </div>
               <div id="capture-button" class="row">
-              <div class="col-xs-1">
+              <div class="col-xs-12 col-md-offset-1 col-md-10 col-lg-offset-1 col-lg-10">
+                <button class="btn btn-primary btn-lg btn-block" >
                   <img style="height: 50px; cursor:pointer;" src="static/Capture_Button.png">
-                </div>
-                <div class="col-xs-10">
-                <button class="btn btn-primary btn-lg btn-block" >Capture Image</button>
+
+                Take Photo</button>
                 </div>
               </div>
  
@@ -96,7 +106,7 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-7">
+        <div class="col-md-7">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Captured Image</h3>

@@ -73,20 +73,12 @@
                   <thead>
                     <tr>
                       <th>Device Name</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for d in deviceList %}
                     <tr data-link="/ttux/index3/{{ d.name }}" >
                       <td><a href="/ttux/index3/{{ d.name }}">{{ d.name }}</a></td>
-                      <td>
-                        {% if d.connectedState %}
-                          <span class="text-success">Connected</span>
-                        {% else %}
-                          <span class="text-muted">Not Connected</span>
-                        {% endif %}
-                      </td>
                     </tr>
                     {% endfor %}
                   </tbody>
