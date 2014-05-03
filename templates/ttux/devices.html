@@ -45,6 +45,13 @@
           #dev-table tbody tr{
             cursor: pointer;
           }
+          .icon-bar{
+            background-color: black;
+          }
+          .navbar-toggle{
+            border: 1px solid black;
+            margin-top: 18px;
+          }
      /*     .panel-default>.panel-heading
           {
             color: #fff;
@@ -54,7 +61,7 @@
 
 {% endblock metastyle %}
 {% block nav %}
-<ul class="nav navbar-nav navbar-right">
+<ul class="nav collapse navbar-collapse navbar-nav navbar-right">
   <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
 </ul>
 {% endblock nav %}
