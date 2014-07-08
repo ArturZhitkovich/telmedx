@@ -43,7 +43,7 @@
             width: 100%;
           }
           #activeSnapshot{
-            width: 100%;
+            height: 100%;
           }
           .icon-bar{
             background-color: black;
@@ -91,7 +91,27 @@
               margin-top: 70px;
             }
           }
+          #capture-snaper .panel-body{
+            padding: 0px;
+          }
+          .currently-panning{
+            pointer-events:none;          /* THIS IS THE TRICK YOU SEEK */
+          }
+          #drawing-layer{
+            position: absolute;
+            z-index: 4;
+          }
         </style>
+        <!--[if IE]>
+      <style type="text/css">
+
+        .currently-panning {
+          background:none !important;
+        }
+
+        </style>
+    <![endif]-->
+    <link rel="stylesheet" href="/static/fonts/flaticon.css">
 {% endblock metastyle %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav">
@@ -122,19 +142,31 @@
                 <!-- <img id="hollywood" src="/static/spinner.gif" ></img> -->
               </div>
               <div id="capture-button" class="row">
-                <div class="col-xs-12 col-md-offset-1 col-md-10 col-lg-offset-1 col-lg-10">
+<!--                 <div class="col-xs-2" style="text-align: center;">
+                  <button type="button" id="flash-toggle" style="height: 72px;" class="btn btn-primary btn-lg" data-toggle="button"><span style="font-size: 25px;" class="glyphicon glyphicon-flash"></span></button>
+                  <p id="flash-status" >Flash Off</p>
+                </div>
+                <div class="col-xs-8"> 
                   <button class="btn btn-primary btn-lg btn-block" >
-                    <img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png">
-
-                  Take Photo</button>
+                    <img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png">Take Photo</button>
+                </div>
+                <div class="col-xs-2" style="text-align: center;">
+                  <button id="camera-toggle" style="font-size: 25px; height: 72px;" class="btn btn-primary btn-lg">
+                    <span class="glyphicon glyphicon-phone"></span>
+                  </button>
+                  <p id="camera-status" style="text-align: center;">Back</p>
+                </div> -->
+                <div class="btn-group">
+                  <button type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/switch19.png"></button>
+                  <button type="button" class="btn btn-default"><img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png" /></button>
+                  <button id="flash-toggle" type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/flash1.png"> </button>
                 </div>
               </div>
- 
             </div>
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Captured Snapshots</h3>
+              <h3 class="panel-title"><img style="height: 30px;" src="/static/img/images10.png"></h3>
             </div>
             <div id="pastSnapshots" style="min-height:100px;" class="panel-body">
 
@@ -142,24 +174,97 @@
           </div>
         </div>
         <div class="col-md-7 col-sm-7">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Captured Image</h3>
+          <div  id="capture-snaper" class="panel panel-default">
+            <div class="panel-heading" id="cap-head">
+              <h3 class="panel-title"><img style="height: 50px;" src="/static/img/picture11.png"> 
+                <!-- <img style="height: 50px;" src="/static/img/hd3.png">      -->
+                <!-- Button trigger modal -->
+                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">
+                  <img style="height: 30px" src="/static/img/page14.png">
+                </button>
+                <div style="float: right;">
+                  <div style="clear: both; margin-top: 3px;">
+                    <button class="btn btn-sm btn-default zoom-in" >
+                      <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                      <img style="height: 30px;" src="/static/img/zoom7.png">
+                    </button>
+                    <button class="btn btn-sm btn-default zoom-out" >
+                      <img style="height: 30px;" src="/static/img/minus13.png">
+                      <!-- <span class="glyphicon glyphicon-minus"></span> -->
+                    </button>
+                    </div>
+                </div>
+              </h3>
             </div>
-            <div class="panel-body">
-            <div id="snapshots">
-          <img id="activeSnapshot"  src="/static/img/spinner.gif" alt="" />
-      
-        </div>
+            <div id="cap-body" class="panel-body">
+              <div style="height:100%" id="snapshots" style="position:relative;">
+                <div id="drawing-layer"></div>
+                <div class="panzoom">
+                    
+                  
+                  
+                  <img id="activeSnapshot"  src="/static/img/sampleimage.png" alt="" />
+                  <!-- <img src="http://blog.millermedeiros.com/wp-content/uploads/2010/04/awesome_tiger.svg" width="900" height="900"> -->
+                </div>
+
+              </div>
+            </div>
+            <div class="panel-footer">
+              <div class="buttons">
+<!--                 <button class="zoom-in">Zoom In</button>
+                <button class="zoom-out">Zoom Out</button>
+                <input type="range" class="zoom-range" step="0.05" min="0.4" max="5">
+                <button class="reset">Reset</button> -->
+            </div>
             </div>
           </div>
         </div>
       </div>
       <canvas style="display:none;" id="b"></canvas>
     </div>	
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 {% block afterjquery %}
+<script type="text/javascript" src="/static/js/browser.js"></script>
+<script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>
+<script type="text/javascript" src="/static/js/raphael.js"></script>
+<script type="text/javascript" src="/static/js/json2.js"></script>
+<script type="text/javascript" src="/static/js/raphael.sketchpad.js"></script>
+<!-- <script type="text/javascript" src="/static/js/jquery.sketch.min.js"></script> -->
+      <script>
+
+        (function() {
+          var $section = $('#capture-snaper').first();
+          $section.find('.panzoom').panzoom({
+            $zoomIn: $section.find(".zoom-in"),
+            $zoomOut: $section.find(".zoom-out"),
+            $zoomRange: $section.find(".zoom-range"),
+            $reset: $section.find(".reset")
+          });
+        })();
+      
+      </script>
 <script type="text/javascript">
+
 
   //Frame counter & UI
   var ff=0;
@@ -258,7 +363,7 @@
     });
 
     
-    $("#activeSnapshot").attr("src", "/static/img/spinner.gif")
+    $("#activeSnapshot").attr("src", "/static/img/sampleimage.png")
   }
 
 
@@ -333,7 +438,7 @@
     });
 
   }   
-
+  var sketchpad;
   $(document).ready(function()
   {
     // $("#rot-btn").click(function(){
@@ -342,6 +447,50 @@
     //     rotate = 0;
     //   }
     // });
+    $("#flash-toggle").click(function(){
+      console.log("Clicked");
+      if( $(this).hasClass('active') ){
+        $(this).removeClass('active');
+        $(this).html('<img style="height: 50px;" src="/static/img/flash3.png">')
+        // $("#flash-status").html("Flash Off");
+      }else{
+        $(this).addClass('active');
+        $(this).html('<img style="height: 50px;" src="/static/img/flash1.png">')
+      }
+    });
+    $("#flash-toggle").css("width",$("#flash-toggle").outerWidth());
+    // $("#capture-snaper").css("border","1px solid red");
+    var snaperh = $(window).height() -110 -60
+    $("#capture-snaper").css("height",snaperh);
+    $("#cap-body").css("height",snaperh - $("#cap-head").outerHeight());
+
+    // $("#drawing-layer").attr("height",$("#activeSnapshot").innerHeight());
+    // $("#drawing-layer").attr("width",$("#activeSnapshot").innerWidth());
+
+      // sketchpad = Raphael.sketchpad("drawing-layer", {
+      //   width: 400,
+      //   height: 400,
+      //   editing: true
+      // });
+
+    // $("[data-tool='marker'],[data-tool='eraser'] ").attr('href',document.URL+"#drawing-layer")
+    // $('#drawing-layer').sketch({defaultColor: "#ff0"});
+
+    // $("#activeSnapshot").height(snaperh - $("#cap-head").outerHeight()-30)
+
+    $("#camera-toggle").click(function(){
+      var span = $(this).find("span");
+      if( span.hasClass('glyphicon-phone') ){
+        span.removeClass('glyphicon-phone');
+        span.addClass('glyphicon-facetime-video');
+        $("#camera-status").html("Front");
+      }else{
+        $("#camera-status").html("Back");
+        span.removeClass('glyphicon-facetime-video');
+        span.addClass('glyphicon-phone');
+      }
+    });
+
     $("#rotate-right").click(function(){
       rotate = rotate+90;
       if( rotate == 360){
@@ -361,7 +510,7 @@
     canvasSupport = isCanvasSupported();
     if ( ! canvasSupport ){
       $("#c").remove();
-      $("#stream").html('<img id="hollywood" src="/static/img/spinner.gif" ></img>');
+      $("#stream").html('<img id="hollywood" src="/static/img/sampleimage.png" ></img>');
     }else{
       canvas = document.getElementById("c");
       ctx = canvas.getContext('2d');
