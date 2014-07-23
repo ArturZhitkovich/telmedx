@@ -16,7 +16,12 @@
             margin: 0 auto -45px;
             /* Pad bottom by footer height */
             padding: 0 0 45px;
-            background: url(static/img/bg-repeat.jpg) repeat; 
+                        background: url(static/img/brushedsteel-dk.jpg) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            /*background: url(static/img/bg-repeat.jpg) repeat; */
           }
           /* Set the fixed height of the footer here */
           #footer {
@@ -101,6 +106,9 @@
             position: absolute;
             z-index: 4;
           }
+          .hundo{
+            width: 100%;
+          }
         </style>
         <!--[if IE]>
       <style type="text/css">
@@ -115,23 +123,28 @@
 {% endblock metastyle %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav">
-  <li><a href="/ttux/deviceList">Back to Device List</a></li>
+  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/ttux/deviceList"><img style="height: 55px;" src="/static/img/responsive.png"></a></li>
 </ul>
 <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
-  <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
+  <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
+    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-off"></span>
+  </a></li>
 </ul>
 {% endblock nav %}
 {% block content %}
-    <div class="container" style="max-width:100%">
+    <div class="container" style="max-width:100%;">
       <div id="first-row" class="row" style="">
         <div class="col-md-5 col-sm-5 ">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Live Video - {{ dev.name }} <div style="display:inline;" id="stream_status">{{ OTUK }}: Waiting...</div>&nbsp;
               <div style="float: right;">
-              <button id="rotate-left" class="btn" style="height: 30px; width:30px; background: url(static/img/icon-left-blue-lg.png) no-repeat;"></button>
-              &nbsp;&nbsp;
-              <button id="rotate-right" class="btn" style="height: 30px; width:30px; background: url(static/img/icon-right-blue-lg.png) no-repeat;"></button>
+                <button id="rotate-left" class="btn btn-default">
+                  <img style="height: 30px;" src="/static/img/rotating1.png">
+                </button>
+                <button id="rotate-right" class="btn btn-default">
+                  <img style="height: 30px;" src="/static/img/rotating1-opp.png">
+                </button>
               </div>
               <div class="clearfix"></div>
               </h3>
@@ -141,25 +154,14 @@
                 <canvas id="c"  ></canvas>
                 <!-- <img id="hollywood" src="/static/spinner.gif" ></img> -->
               </div>
+              <br>
               <div id="capture-button" class="row">
-<!--                 <div class="col-xs-2" style="text-align: center;">
-                  <button type="button" id="flash-toggle" style="height: 72px;" class="btn btn-primary btn-lg" data-toggle="button"><span style="font-size: 25px;" class="glyphicon glyphicon-flash"></span></button>
-                  <p id="flash-status" >Flash Off</p>
-                </div>
-                <div class="col-xs-8"> 
-                  <button class="btn btn-primary btn-lg btn-block" >
-                    <img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png">Take Photo</button>
-                </div>
-                <div class="col-xs-2" style="text-align: center;">
-                  <button id="camera-toggle" style="font-size: 25px; height: 72px;" class="btn btn-primary btn-lg">
-                    <span class="glyphicon glyphicon-phone"></span>
-                  </button>
-                  <p id="camera-status" style="text-align: center;">Back</p>
-                </div> -->
-                <div class="btn-group">
-                  <button type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/switch19.png"></button>
-                  <button type="button" class="btn btn-default"><img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png" /></button>
-                  <button id="flash-toggle" type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/flash1.png"> </button>
+                <div class="text-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/switch19.png"></button>
+                    <button type="button" class="btn btn-default"><img style="height: 50px; cursor:pointer;" src="static/img/Capture_Button.png" /></button>
+                    <button id="flash-toggle" type="button" class="btn btn-default"><img style="height: 50px;" src="/static/img/flash3.png"> </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -168,7 +170,7 @@
             <div class="panel-heading">
               <h3 class="panel-title"><img style="height: 30px;" src="/static/img/images10.png"></h3>
             </div>
-            <div id="pastSnapshots" style="min-height:100px;" class="panel-body">
+              <div id="pastSnapshots" style="min-height:100px;" class="panel-body">
 
             </div>
           </div>
@@ -179,43 +181,36 @@
               <h3 class="panel-title"><img style="height: 50px;" src="/static/img/picture11.png"> 
                 <!-- <img style="height: 50px;" src="/static/img/hd3.png">      -->
                 <!-- Button trigger modal -->
-                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">
+                <button id="open-editor" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">
                   <img style="height: 30px" src="/static/img/page14.png">
                 </button>
                 <div style="float: right;">
                   <div style="clear: both; margin-top: 3px;">
-                    <button class="btn btn-sm btn-default zoom-in" >
-                      <!-- <span class="glyphicon glyphicon-plus"></span> -->
-                      <img style="height: 30px;" src="/static/img/zoom7.png">
-                    </button>
-                    <button class="btn btn-sm btn-default zoom-out" >
-                      <img style="height: 30px;" src="/static/img/minus13.png">
-                      <!-- <span class="glyphicon glyphicon-minus"></span> -->
-                    </button>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-default zoom-in" >
+                        <img style="height: 30px;" src="/static/img/zoom7.png">
+                      </button>
+                      <button class="btn btn-sm btn-default zoom-out" >
+                        <img style="height: 30px;" src="/static/img/minus13.png">
+                      </button>
                     </div>
+
+                    <!-- <div class="btn-group"> -->
+                      <button class="btn btn-sm btn-default zoom-in" >
+                        <img style="height: 30px;" src="/static/img/download61.png">
+                      </button>
+                    <!-- </div> -->
+                  </div>
                 </div>
               </h3>
             </div>
             <div id="cap-body" class="panel-body">
               <div style="height:100%" id="snapshots" style="position:relative;">
-                <div id="drawing-layer"></div>
+                
                 <div class="panzoom">
-                    
-                  
-                  
-                  <img id="activeSnapshot"  src="/static/img/sampleimage.png" alt="" />
-                  <!-- <img src="http://blog.millermedeiros.com/wp-content/uploads/2010/04/awesome_tiger.svg" width="900" height="900"> -->
+                  <img id="activeSnapshot"   alt="" />
                 </div>
-
               </div>
-            </div>
-            <div class="panel-footer">
-              <div class="buttons">
-<!--                 <button class="zoom-in">Zoom In</button>
-                <button class="zoom-out">Zoom Out</button>
-                <input type="range" class="zoom-range" step="0.05" min="0.4" max="5">
-                <button class="reset">Reset</button> -->
-            </div>
             </div>
           </div>
         </div>
@@ -233,7 +228,8 @@
         <h4 class="modal-title" id="myModalLabel">Modal title</h4>
       </div>
       <div class="modal-body">
-        ...
+        <div id="drawing-layer"></div>
+        <img id="editSnapshot" class="hundo" src="/static/img/spinner.gif">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -252,15 +248,7 @@
 <!-- <script type="text/javascript" src="/static/js/jquery.sketch.min.js"></script> -->
       <script>
 
-        (function() {
-          var $section = $('#capture-snaper').first();
-          $section.find('.panzoom').panzoom({
-            $zoomIn: $section.find(".zoom-in"),
-            $zoomOut: $section.find(".zoom-out"),
-            $zoomRange: $section.find(".zoom-range"),
-            $reset: $section.find(".reset")
-          });
-        })();
+
       
       </script>
 <script type="text/javascript">
@@ -287,6 +275,8 @@
   //Canvas support
   var canvasSupport; //true or false, defines if we should use canvas or img
 
+  //Sketchpad
+  var sketchpad;
 
   function isCanvasSupported(){
     var elem = document.createElement('canvas');
@@ -335,7 +325,7 @@
           }
           console.log(rotate);
           
-          //  Rotate image            
+          //Rotate image            
           canvas2.setAttribute('width', cw);
           canvas2.setAttribute('height', ch);
           ctx2.rotate(rotate * Math.PI / 180);
@@ -343,8 +333,17 @@
           dataUri = canvas2.toDataURL();
           console.log(dataUri);
           $("#activeSnapshot").attr("src", dataUri);
+          //Center the image
+          $("#activeSnapshot").css("margin-left", ($("#snapshots").innerWidth()-$("#activeSnapshot").innerWidth())/2 );
           var id = "snapshot-" + new Date().getTime().toString();
-          var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
+          if( rotate == 90 || rotate == 270) {
+            smwidth = 45;
+            smheight = 75;
+          }else{
+            smwidth = 75;
+            smheight = 45;
+          }
+          var imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\""+String(smwidth)+"\" height=\""+String(smheight)+"\" onclick=\"window.parent.showSnapshot('" + id + "')\"> "
           
           $("#pastSnapshots").append(imageElement);
           
@@ -361,13 +360,7 @@
         select(id);
       }
     });
-
-    
-    $("#activeSnapshot").attr("src", "/static/img/sampleimage.png")
   }
-
-
-
 
   function frameOne_jq(){
 
@@ -438,17 +431,32 @@
     });
 
   }   
-  var sketchpad;
+  (function() {
+    var $section = $('#capture-snaper').first();
+    $section.find('.panzoom').panzoom({
+      $zoomIn: $section.find(".zoom-in"),
+      $zoomOut: $section.find(".zoom-out"),
+      $zoomRange: $section.find(".zoom-range"),
+      $reset: $section.find(".reset")
+    });
+  })();
+
   $(document).ready(function()
   {
-    // $("#rot-btn").click(function(){
-    //   rotate = rotate+90;
-    //   if( rotate == 360){
-    //     rotate = 0;
-    //   }
-    // });
-    $("#flash-toggle").click(function(){
+    $("#open-editor").click(function(){
       console.log("Clicked");
+      setTimeout( function(){
+        $('#editSnapshot').removeClass('hundo');
+        $("#editSnapshot").attr('src',$("#activeSnapshot").attr('src'));
+        var marginleft= ( $("#editSnapshot").parent(".modal-body").innerWidth() - $("#editSnapshot").innerWidth())/2;
+        $("#editSnapshot").css("margin-left",  marginleft );
+        $("#drawing-layer").css("marginleft", marginleft );
+        $("#drawing-layer").css("height", $("#editSnapshot").height());
+        $("#drawing-layer").css("width", $("#editSnapshot").width());
+      }, 1000);
+    });
+    $("#flash-toggle").click(function(){
+      
       if( $(this).hasClass('active') ){
         $(this).removeClass('active');
         $(this).html('<img style="height: 50px;" src="/static/img/flash3.png">')
@@ -510,7 +518,7 @@
     canvasSupport = isCanvasSupported();
     if ( ! canvasSupport ){
       $("#c").remove();
-      $("#stream").html('<img id="hollywood" src="/static/img/sampleimage.png" ></img>');
+      $("#stream").html('<img id="hollywood" src="/static/img/spinner.gif" ></img>');
     }else{
       canvas = document.getElementById("c");
       ctx = canvas.getContext('2d');
