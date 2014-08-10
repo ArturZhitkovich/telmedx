@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth import logout
 from django.template import RequestContext
 
+from django.utils.http import urlencode
+
 from ttux.models import mobileCam # get our database model
 
 #from time import sleep
@@ -90,6 +92,40 @@ def snapshotResponse(request, device_name):
     return HttpResponse("snapshotResponse")
 #END
 
+@csrf_exempt
+def flashlightResponse(request, device_name, status):
+    print "got flashlight from device" + device_name
+
+    session = Session.get( device_name )
+
+    try:
+        session.flashlightQ.put_nowait( status )
+    except:
+        #logger.error("failed to queue up snapshot response")
+        print "failed to queue up snapshot response from " + device_name
+        session.flashlightQ.get_nowait()  # empty the queue if full
+        session.flashlightQ.put_nowait( status )
+    #END
+    
+    return HttpResponse("flashlightResponse")
+
+@csrf_exempt
+def flipcameraResponse(request, device_name, status):
+    print "got camera from device" + device_name
+
+    session = Session.get( device_name )
+
+    try:
+        session.flipcameraQ.put_nowait( status )
+    except:
+        #logger.error("failed to queue up snapshot response")
+        print "failed to queue up snapshot response from " + device_name
+        session.flipcameraQ.get_nowait()  # empty the queue if full
+        session.flipcameraQ.put_nowait( status )
+    #END
+    
+    return HttpResponse("flipcameraResponse")
+
 
 # handle ping request from the phone
 @csrf_exempt
@@ -100,6 +136,28 @@ def pingRequest(request):
     #response['Connection'] = 'keep-alive'
     return(response)
 #END
+@csrf_exempt
+def ping2Request(request, app_version, device_name):
+    if( app_version is not None and device_name is not None):
+        print app_version
+        if app_version == '1.0.0': #Has flip camera & flashlight
+            
+            session = Session.get( device_name )
+            # print json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']})
+            try:
+                session.deviceSpecQ.put_nowait( json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']}) )
+            except:
+                session.deviceSpecQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        
+            
+
+    response = HttpResponse("pong")
+    response['Content-Type'] = "text/html"
+    response['Cache-Control'] = 'no-cache'
+    #response['Connection'] = 'keep-alive'
+    return(response)
+
+
 
 
 ##################################################################################
@@ -338,6 +396,9 @@ def getStreamRequest_XHR(request, device_name):
 #######################################################################
 # single url to return the most recent frame
 def getLastFrameFromStream(request, device_name, fnum):
+
+
+
     fnum_padded = str(fnum).zfill(8)
     #fnum_padded = fnum
     #print("got request for the most recent frame for device: " + device_name + "frame num: " + fnum + " " + fnum_padded)
@@ -363,6 +424,12 @@ def getLastFrameFromStream(request, device_name, fnum):
     frame = session.get_lastFrame()
     lastFnumber = session.get_frameNumber()
     lastFnumber_str = str(lastFnumber).zfill(8)
+
+    try:
+        lastFnumber_str = '!!'+session.deviceSpecQ.get_nowait()+'!!'+lastFnumber_str
+    except Exception, e:
+        pass
+        
     #print ("current frame: " + lastFnumber_str )
         
     encodedResp = lastFnumber_str + base64.encodestring(frame)
@@ -386,6 +453,72 @@ def stopRequest(request):
     return HttpResponse("stopRequest")
 #END
 
+@csrf_exempt
+def flipCamera(request, device_name):
+    print "Flip camera for device: " + device_name + " from " + request.META["REMOTE_ADDR"]
+
+    session = Session.get( device_name )
+
+    if not session.flipcameraQ.empty():
+        print "oops, found an errant flashlight, flushing the queue"
+        snapshot = session.flipcameraQ.get(block=True, timeout=1)
+    
+    path="/flipcamera" 
+
+    try:
+        session.commandQ.put_nowait(path)
+    except:
+        session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+    
+    status = ""
+    try:
+        status = session.flipcameraQ.get(block=True, timeout=20)
+    except:
+        ##logger.info("failed to get snapshot from phone")
+        print("failed to get flip from phone " + device_name)
+    
+    response = { "status" : status }
+#    start_response("200 OK", [("Content-Type", "application/json")])
+#    return [json.dumps(response)]
+    response = HttpResponse(json.dumps(response)) 
+    response['Content-Type'] = "application/json"
+    print "returning flashlight response now"
+    
+    return response
+
+
+@csrf_exempt
+def toggleFlash(request, device_name):
+    print "Toggle Flashlight request for device: " + device_name + " from " + request.META["REMOTE_ADDR"] 
+
+    session = Session.get( device_name )
+
+    if not session.flashlightQ.empty():
+        print "oops, found an errant flashlight, flushing the queue"
+        snapshot = session.flashlightQ.get(block=True, timeout=1)
+    
+    path="/toggleflash" 
+
+    try:
+        session.commandQ.put_nowait(path)
+    except:
+        session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
+    
+    status = ""
+    try:
+        status = session.flashlightQ.get(block=True, timeout=20)
+    except:
+        ##logger.info("failed to get snapshot from phone")
+        print("failed to get snapshot from phone " + device_name)
+    
+    response = { "status" : status }
+#    start_response("200 OK", [("Content-Type", "application/json")])
+#    return [json.dumps(response)]
+    response = HttpResponse(json.dumps(response)) 
+    response['Content-Type'] = "application/json"
+    print "returning flashlight response now"
+    
+    return response
 
 # POST request from the UI to take a snapshot 
 #@condition(etag_func=None)

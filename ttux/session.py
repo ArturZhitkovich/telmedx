@@ -90,6 +90,9 @@ class Session(object):
             Session.REGISTRY[key] = session
             session.commandQ = gevent.queue.Queue(1)
             session.snapshotQ = gevent.queue.Queue(1)
+            session.flashlightQ = gevent.queue.Queue(1)
+            session.flipcameraQ = gevent.queue.Queue(1)
+            session.deviceSpecQ = gevent.queue.Queue(1)
             session.control_greenlet = None
             session.sequence_number = None
             session.viewers = {}

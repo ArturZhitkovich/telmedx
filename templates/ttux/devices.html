@@ -13,9 +13,9 @@
             min-height: 100%;
             height: auto;
             /* Negative indent footer by its height */
-            margin: 0 auto -45px;
+            margin: 0 auto -20px;
             /* Pad bottom by footer height */
-            padding: 0 0 45px;
+            padding: 0 0 20px;
             background: url(static/img/brushedsteel-dk.jpg) no-repeat center center fixed; 
             -webkit-background-size: cover;
             -moz-background-size: cover;
@@ -24,7 +24,7 @@
           }
           /* Set the fixed height of the footer here */
           #footer {
-            height: 45px;
+            height: 20px;
             background-color: #000;
             color: #a0a0a0;
             text-align: center;
@@ -62,7 +62,9 @@
 {% endblock metastyle %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
-  <li><a href="ttux/logout">Logout&nbsp;<span class="glyphicon glyphicon-off"></span></a></li>
+  <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
+    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-off"></span>
+  </a></li>
 </ul>
 {% endblock nav %}
 {% block content %}
