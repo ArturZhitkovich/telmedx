@@ -2,9 +2,12 @@
 
 import gevent.queue
 import logging
+import time
+import datetime
 logger = logging.getLogger("session");
 
 from util.queue import DiscardingQueue
+from ttux.models import sessionLog, mobileCam
 
 class Session(object):
     REGISTRY = {}
@@ -44,7 +47,30 @@ class Session(object):
         # save the last frame
         self.LastFrame = frame
         self.frameNumber += 1 
+        self.frames_in_session += 1
+        if self.begin_timestamp == 0:
+            self.begin_timestamp = time.time()
+        if not self.last_frame_timestamp == 0 and time.time() - self.last_frame_timestamp > 5:
+            self.log_session()
+        self.last_frame_timestamp = time.time()
+    
+    def clean_session(self):
+        if not self.last_frame_timestamp == 0 and time.time() - self.last_frame_timestamp > 5:
+            self.log_session()
+
     #def
+    def log_session(self):
+        if self.last_frame_timestamp - self.begin_timestamp > 2:
+            cam = mobileCam.objects.get(name=self.device_name)
+            log = sessionLog()
+            log.device = cam
+            log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
+            log.end_timestamp = datetime.datetime.fromtimestamp(self.last_frame_timestamp)
+            log.frames = self.frames_in_session
+            log.save()
+        self.last_frame_timestamp = 0
+        self.begin_timestamp = 0
+        self.frames_in_session = 0
 
     def get_frameNumber(self):
         return self.frameNumber
@@ -93,6 +119,10 @@ class Session(object):
             session.flashlightQ = gevent.queue.Queue(1)
             session.flipcameraQ = gevent.queue.Queue(1)
             session.deviceSpecQ = gevent.queue.Queue(1)
+            session.device_name = str(key)
+            session.begin_timestamp = 0
+            session.last_frame_timestamp = 0
+            session.frames_in_session = 0
             session.control_greenlet = None
             session.sequence_number = None
             session.viewers = {}

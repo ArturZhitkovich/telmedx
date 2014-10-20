@@ -8,7 +8,7 @@ from ttux.session import Session
 print("ttux init: enter")
 #logger.info("Enter")
 try:
-    deviceList = mobileCam.objects.all().order_by('name')[:4]
+    deviceList = mobileCam.objects.all().order_by('name')
     for d in deviceList:
         print "Creating session for device:" + d.name
         Session.put(d.name, Session())

@@ -22,5 +22,6 @@ urlpatterns = patterns('ttux.views',
     url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>\w+)/?$', 'ping2Request'),
     url(r'^deviceList$', 'deviceView'),
     #
+    url(r'^viewSessionInfo', 'view_session_info'),
     url(r'^logout$','logout_view'),
 )

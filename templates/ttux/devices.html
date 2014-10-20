@@ -1,67 +1,11 @@
 {% extends "layout.html" %}
-{% block metatitle %}telmedx - login{% endblock %}
-{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
-{% block metastyle %}
-		<style>
-          html,
-          body {
-            height: 100%;
-            /* The html and body elements cannot have any padding or margin. */
-          }
-          /* Wrapper for page content to push down footer */
-          #wrap {
-            min-height: 100%;
-            height: auto;
-            /* Negative indent footer by its height */
-            margin: 0 auto -20px;
-            /* Pad bottom by footer height */
-            padding: 0 0 20px;
-            background: url(static/img/brushedsteel-bdk.jpg) no-repeat center center fixed; 
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
-          }
-          /* Set the fixed height of the footer here */
-          #footer {
-            height: 20px;
-            background-color: #000;
-            color: #a0a0a0;
-            text-align: center;
-          }
-          #footer-push{
-            height: 10px;
-            background-color: #202020;
-          }
-          .navbar-nav>li>a{
-            padding-top: 25px;
-            padding-bottom: 25px;
-            font-size: 16px;
-          }
-          .navbar
-          {
-            background-color: #fff;
-          }
-          #dev-table tbody tr{
-            cursor: pointer;
-          }
-          .icon-bar{
-            background-color: black;
-          }
-          .navbar-toggle{
-            border: 1px solid black;
-            margin-top: 18px;
-          }
-     /*     .panel-default>.panel-heading
-          {
-            color: #fff;
-            background-image: url('./static/img/lghtmeshli.jpg');
-          }*/
-        </style>
-
-{% endblock metastyle %}
+{% block metatitle %}telmedx | Devices{% endblock %}
+{% block metadescription %}Find all the registered device right here.{% endblock %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
+  <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
+    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-cog"></span>
+  </a></li>
   <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
     <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-off"></span>
   </a></li>
@@ -73,21 +17,24 @@
         <div class="col-md-6">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <h3 class="panel-title"><img style="height:40px;" src="/static/img/responsive.png"> </h3>
+                <img style="height:40px;" src="/static/img/responsive.png">
+                {% if deviceList %}
+                <p class="pull-right" style="margin-top: 5px;">&nbsp;&nbsp;Showing <span id="filter-count">{{ deviceList|length }}</span> of {{ deviceList|length }}</p>
+                  <div class="form-group pull-right" style="width: 60%;">
+                    <div class="input-group">
+                      <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                      <input class="form-control" id="filter" type="text" placeholder="Filter Device List">
+                    </div>
+                  </div>
+                  {% endif %}
               </div>
               <div class="panel-body">
                 {% if deviceList %}
-
-                <table class="table table-hover" id="dev-table">
-<!--                   <thead>
-                    <tr>
-                      <th>Device Name</th>
-                    </tr>
-                  </thead> -->
+                <table class="table table-hover" id="dev-table" style="margin-bottom: 0px;">
                   <tbody>
                     {% for d in deviceList %}
-                    <tr data-link="/ttux/index3/{{ d.name }}" >
-                      <td><img style="height: 30px; margin-right: 20px;" src="/static/img/apple.png"><a href="/ttux/index3/{{ d.name }}">{{ d.name }}</a></td>
+                    <tr data-link="/device/{{ d.name }}" >
+                      <td><img style="height: 30px; margin-right: 20px;" src="/static/img/apple.png"><a href="/device/{{ d.name }}">{{ d.name }}</a></td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -98,7 +45,7 @@
               </div>
           </div>
         </div>   
-<!--         <div class="col-md-6">
+        {% comment %} <div class="col-md-6">
             <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">Add Users</h3>
@@ -119,16 +66,10 @@
                 </form>
               </div>
           </div>
-        </div> -->
+        </div>{% endcomment %}
       </div>
     </div>	
 {% endblock content %}
 {% block afterjquery %}
-<script>
-  $(document).ready(function(){
-    $("#dev-table tbody tr").click(function(){
-      window.location.href = $(this).data('link');
-    });
-  })
-</script>
+<script type="text/javascript" src="/static/js/devices.js"></script>
 {% endblock afterjquery %}

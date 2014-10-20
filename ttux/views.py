@@ -22,6 +22,8 @@ import socket
 import errno
 import base64
 import json
+import datetime
+import time
 
 import string
 import random
@@ -561,7 +563,22 @@ def snapshotRequest(request, device_name):
     
     return response
 #END
-    
+
+def view_session_info(request):
+    device = request.GET.get('device',None)
+    body = 'devicenotfound'
+    if device is not None:
+        session = Session.get( device )
+        body = 'begin timestamp:   '+str(session.begin_timestamp)+'<br>'
+        body += 'end timestamp:   '+str(session.last_frame_timestamp)+'<br>'
+        body += 'frames in session:   '+str(session.frames_in_session)+'<br>'
+        body += 'difference:   '+str(time.time() - session.last_frame_timestamp)+'<br>'
+        body += 'cleaning...<br>'
+        session.clean_session()
+        body += 'begin timestamp:   '+str(session.begin_timestamp)+'<br>'
+        body += 'end timestamp:   '+str(session.last_frame_timestamp)+'<br>'
+        body += 'frames in session:   '+str(session.frames_in_session)+'<br>'
+    return HttpResponse(body)
     
 # Device selection View
 def deviceView(request):
