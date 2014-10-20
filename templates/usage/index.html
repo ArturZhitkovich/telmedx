@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block metatitle %}telmedx | Usage{% endblock %}
+{% block metadescription %}Here are all the usage logs.{% endblock %}
+{% block nav %}
+<ul class="nav collapse navbar-collapse navbar-nav">
+  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/devices"><img style="height: 40px;" src="/static/img/arrowhead7.png">&nbsp;<img style="height: 55px;" src="/static/img/responsive.png"></a></li>
+</ul>
+<ul class="nav collapse navbar-collapse navbar-nav navbar-right">
+  <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
+    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-cog"></span>
+  </a></li>
+  <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
+    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-off"></span>
+  </a></li>
+</ul>
+{% endblock nav %}
+{% block content %}
+    <div class="container" >
+      <div class="row" style="margin-top: 130px;">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading" style="height: 51px;">
+
+                <h3 class="panel-title pull-left"><img style="height:30px;" src="/static/img/apple.png">&nbsp;Usage Records{% if single_device %}&nbsp;|&nbsp;<a href="/usage/" style="color: #428BCA;">Show All Devices</a>&nbsp;|&nbsp;{{ single_device.name }}{% endif %}</h3>
+                
+                {% if records %}
+<!--                 <p style="margin-top: 5px;">&nbsp;&nbsp;Showing <span id="filter-count">{{ records|length }}</span> of {{ records|length }}</p> -->
+                  <div class="pull-right" style="margin-top: 6px;">
+                    <a href="?export_last_week=1">Export Last Week</a>
+                  <span class="step-links" >
+                      {% if records.has_previous %}
+                          <a href="?page={{ records.previous_page_number }}">previous</a>
+                      {% endif %}
+
+                      <span class="current">
+                          Page {{ records.number }} of {{ records.paginator.num_pages }}
+                      </span>
+
+                      {% if records.has_next %}
+                          <a href="?page={{ records.next_page_number }}">next</a>
+                      {% endif %}
+                  </span>
+                  </div>
+                  {% endif %}
+              </div>
+              <div class="panel-body">
+                {% if records %}
+                <table class="table table-hover" id="dev-table" style="margin-bottom: 0px;">
+                  <tbody>
+                    <tr>
+                      <th>Device</th>
+                      <th>Date &amp; Time</th>
+                      <th>Duration</th>
+                      <th>Frames Sent</th>
+                    </tr>
+                    {% for d in records %}
+                    <tr data-link="/usage/device/{{ d.device.name }}" >
+                      <td><a href="/usage/device/{{ d.device.name }}">{{ d.device.name }}</a></td>
+                      <td>{{ d.begin }}</td>
+                      <td>{{ d.duration }}</td>
+                      <td>{{ d.frames }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                  <p>No records are present.</p>
+              {% endif %}
+              </div>
+          </div>
+        </div>   
+      </div>
+    </div>	
+{% endblock content %}
+{% block afterjquery %}
+<script type="text/javascript" src="/static/js/devices.js"></script>
+{% endblock afterjquery %}
