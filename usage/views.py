@@ -8,6 +8,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 
+import datetime
+
 @login_required(login_url='/login')
 def home(request):
 	logs = sessionLog.objects.filter(device__groups=request.user.groups.all)
@@ -16,6 +18,11 @@ def home(request):
 	page = request.GET.get('page')
 
 	if request.GET.get('export_last_week',None) is not None:
+		try:
+			device = mobileCam.objects.filter(groups=request.user.groups.all).get(name=request.GET.get('device'))
+			logs.filter(device=device)
+		except mobileCam.DoesNotExist:
+			pass
 		logs = logs.filter(begin_timestamp__gt=datetime.datetime.now()-datetime.timedelta(days=7))
 		return export_usage_csv(logs)
 

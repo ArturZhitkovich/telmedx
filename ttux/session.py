@@ -36,6 +36,8 @@ class Session(object):
         #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
     #def 
 
+    def add_snapshot_count(self):
+        self.captured_images += 1
 
     # add a video sream frame to a specific device session instance
     # this frame will be broadcast to all viewers via their queues.
@@ -67,10 +69,12 @@ class Session(object):
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
             log.end_timestamp = datetime.datetime.fromtimestamp(self.last_frame_timestamp)
             log.frames = self.frames_in_session
+            log.captured_images = self.captured_images
             log.save()
         self.last_frame_timestamp = 0
         self.begin_timestamp = 0
         self.frames_in_session = 0
+        self.captured_images = 0
 
     def get_frameNumber(self):
         return self.frameNumber
@@ -123,6 +127,7 @@ class Session(object):
             session.begin_timestamp = 0
             session.last_frame_timestamp = 0
             session.frames_in_session = 0
+            session.captured_images = 0
             session.control_greenlet = None
             session.sequence_number = None
             session.viewers = {}

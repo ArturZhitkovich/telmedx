@@ -21,6 +21,7 @@ class sessionLog(models.Model):
 	begin_timestamp = models.DateTimeField()
 	end_timestamp = models.DateTimeField()
 	frames = models.IntegerField()
+	captured_images = models.IntegerField()
 
 	@property
 	def duration(self):

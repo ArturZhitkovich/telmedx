@@ -84,11 +84,13 @@ def snapshotResponse(request, device_name):
     session = Session.get( device_name )
     try:
         session.snapshotQ.put_nowait(image)
+        session.add_snapshot_count()
     except:
         #logger.error("failed to queue up snapshot response")
         print "failed to queue up snapshot response from " + device_name
         session.snapshotQ.get_nowait()  # empty the queue if full
         session.snapshotQ.put_nowait(image)
+        session.add_snapshot_count()
     #END
     
     return HttpResponse("snapshotResponse")

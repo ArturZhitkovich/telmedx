@@ -26,7 +26,7 @@
                 {% if records %}
 <!--                 <p style="margin-top: 5px;">&nbsp;&nbsp;Showing <span id="filter-count">{{ records|length }}</span> of {{ records|length }}</p> -->
                   <div class="pull-right" style="margin-top: 6px;">
-                    <a href="?export_last_week=1">Export Last Week</a>
+                    <a target="_blank" href="/usage/?export_last_week=1{% if single_device %}&device={{ single_device.name}}{% endif %}">Export Last Week</a>
                   <span class="step-links" >
                       {% if records.has_previous %}
                           <a href="?page={{ records.previous_page_number }}">previous</a>
@@ -52,6 +52,7 @@
                       <th>Date &amp; Time</th>
                       <th>Duration</th>
                       <th>Frames Sent</th>
+                      <th>Images Captured</th>
                     </tr>
                     {% for d in records %}
                     <tr data-link="/usage/device/{{ d.device.name }}" >
@@ -59,6 +60,7 @@
                       <td>{{ d.begin }}</td>
                       <td>{{ d.duration }}</td>
                       <td>{{ d.frames }}</td>
+                      <td>{{ d.captured_images }}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
