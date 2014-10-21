@@ -2,3 +2,4 @@
 ttuxenv/*
 *.pyc
 database.db
+mysite/settings.py
