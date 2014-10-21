@@ -44,13 +44,12 @@ function inviteClicked() {
 function select(id) {
   $(".snapshot").css("border", "none");
   $("#" + id).css("border", "4px solid");
+  $section.find('.panzoom').panzoom("reset");
 }
 
 function showSnapshot(id) {
   var selected = $("#" + id);
-  
   $("#activeSnapshot").attr("src", selected.attr("src"));
-  $section.find('.panzoom').panzoom("reset");
   select(id);
 }
 
