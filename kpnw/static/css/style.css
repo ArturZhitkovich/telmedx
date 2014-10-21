@@ -74,7 +74,12 @@ img.snapshot{
   border:1px solid black;
 }
 #first-row{
-  margin-top: 100px;
+  margin-top: 70px;
+}
+.shadow{
+  -moz-box-shadow:    0px 3px 15px #767575;
+  -webkit-box-shadow: 0px 3px 15px #767575;
+  box-shadow:         0px 3px 15px #767575;
 }
 @media all and (max-width: 992px) and (min-width: 768px) {
   .nav{

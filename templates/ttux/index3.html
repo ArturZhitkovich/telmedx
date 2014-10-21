@@ -3,14 +3,14 @@
 {% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav">
-  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/devices"><img style="height: 40px;" src="/static/img/arrowhead7.png">&nbsp;<img style="height: 55px;" src="/static/img/responsive.png"></a></li>
+  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/devices"><img style="height: 30px;" src="/static/img/arrowhead7.png">&nbsp;<img style="height: 45px;" src="/static/img/responsive.png"></a></li>
 </ul>
 <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
   <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
-    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-cog"></span>
+    <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-cog"></span>
   </a></li>
   <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/ttux/logout">
-    <span style="font-size: 35px; color: black;" class="glyphicon glyphicon-off"></span>
+    <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-off"></span>
   </a></li>
 </ul>
 {% endblock nav %}
@@ -19,14 +19,14 @@
       <div id="first-row" class="row" style="">
         <div class="col-md-4 ">
           <div class="panel panel-default">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 5px;">
               <h3 class="panel-title"><div style="float:left;">{{ dev.name }} &nbsp;</div>
               <div style="float: right;">
-                <button id="rotate-left" class="btn btn-default">
-                  <img style="height: 30px;" src="/static/img/rotating1.png">
+                <button id="rotate-left" class="btn btn-default" style="padding: 3px;">
+                  <img style="height: 25px;" src="/static/img/rotating1.png">
                 </button>
-                <button id="rotate-right" class="btn btn-default">
-                  <img style="height: 30px;" src="/static/img/rotating1-opp.png">
+                <button id="rotate-right" class="btn btn-default" style="padding: 3px;">
+                  <img style="height: 25px;" src="/static/img/rotating1-opp.png">
                 </button>
               </div>
               <div class="clearfix"></div>
@@ -38,12 +38,7 @@
                   <canvas width="360" height="480" id="c"  ></canvas>'
                   <div style="margin: 0px;" id="stream_status">{{ OTUK }}: Waiting...</div>
                 </div>
-                
-               
-
               </div>
-              
-              <br>
               <div id="" class="row">
                 <div class="text-center">
                   <div class="btn-group">
