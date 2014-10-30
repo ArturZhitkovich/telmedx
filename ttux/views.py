@@ -590,7 +590,7 @@ def deviceView(request):
     
     #deviceList = mobileCam.objects.all().order_by('name')[:4]
     g = request.user.groups.all
-    deviceList = mobileCam.objects.filter(groups = g)
+    deviceList = mobileCam.objects.filter(groups = g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
     # TODO this needs to be done on the admin page when a new device is added to the database. 
