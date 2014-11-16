@@ -17,7 +17,7 @@
         <div class="col-md-6">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <img style="height:40px;" src="/static/img/responsive.png">
+                <img style="height:40px;" src="/static/img/controls/responsive.png">
                 {% if deviceList %}
                 <p class="pull-right" style="margin-top: 5px;">&nbsp;&nbsp;Showing <span id="filter-count">{{ deviceList|length }}</span> of {{ deviceList|length }}</p>
                   <div class="form-group pull-right" style="width: 60%;">
@@ -34,7 +34,7 @@
                   <tbody>
                     {% for d in deviceList %}
                     <tr data-link="/device/{{ d.name }}" >
-                      <td><img style="height: 30px; margin-right: 20px;" src="/static/img/apple.png"><a href="/device/{{ d.name }}">{{ d.name }}</a></td>
+                      <td><img style="height: 30px; margin-right: 20px;" src="/static/img/controls/apple.png"><a href="/device/{{ d.name }}">{{ d.name }}</a></td>
                     </tr>
                     {% endfor %}
                   </tbody>

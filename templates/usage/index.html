@@ -3,7 +3,7 @@
 {% block metadescription %}Here are all the usage logs.{% endblock %}
 {% block nav %}
 <ul class="nav collapse navbar-collapse navbar-nav">
-  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/devices"><img style="height: 30px;" src="/static/img/arrowhead7.png">&nbsp;<img style="height: 45px;" src="/static/img/responsive.png"></a></li>
+  <li><a style="padding-bottom: 5px; padding-top: 10px;" href="/devices"><img style="height: 30px;" src="/static/img/controls/arrowhead7.png">&nbsp;<img style="height: 45px;" src="/static/img/controls/responsive.png"></a></li>
 </ul>
 <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
   <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
@@ -21,7 +21,7 @@
             <div class="panel panel-default">
               <div class="panel-heading" style="height: 51px;">
 
-                <h3 class="panel-title pull-left"><img style="height:30px;" src="/static/img/apple.png">&nbsp;Usage Records{% if single_device %}&nbsp;|&nbsp;<a href="/usage/" style="color: #428BCA;">Show All Devices</a>&nbsp;|&nbsp;{{ single_device.name }}{% endif %}</h3>
+                <h3 class="panel-title pull-left"><img style="height:30px;" src="/static/img/controls/apple.png">&nbsp;Usage Records{% if single_device %}&nbsp;|&nbsp;<a href="/usage/" style="color: #428BCA;">Show All Devices</a>&nbsp;|&nbsp;{{ single_device.name }}{% endif %}</h3>
                 
                 {% if records %}
 <!--                 <p style="margin-top: 5px;">&nbsp;&nbsp;Showing <span id="filter-count">{{ records|length }}</span> of {{ records|length }}</p> -->
