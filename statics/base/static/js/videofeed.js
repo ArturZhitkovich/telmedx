@@ -119,11 +119,11 @@ function takeSnapshotClicked() {
 }
 function flashOn(){
   $("#flash-toggle").addClass('active');
-  $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/open103off.png">');
+  $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103off.png">');
 }
 function flashOff(){
   $("#flash-toggle").removeClass('active');
-  $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/open103.png">');
+  $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103.png">');
 }
 function toggle_jq(){
   flashToggeling = true;
@@ -368,7 +368,7 @@ $(document).ready(function()
   canvasSupport = isCanvasSupported();
   if ( ! canvasSupport ){
     $("#c").remove();
-    $("#stream").html('<img id="hollywood" src="/static/img/spinner.gif" ></img>');
+    $("#stream").html('<img id="hollywood" src="/static/img/controls/spinner.gif" ></img>');
   }else{
     canvas = document.getElementById("c");
     ctx = canvas.getContext('2d');
