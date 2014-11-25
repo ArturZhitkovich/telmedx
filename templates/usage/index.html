@@ -29,7 +29,7 @@
                     <a target="_blank" href="/usage/?export_last_week=1{% if single_device %}&device={{ single_device.name}}{% endif %}">Export Last Week</a>
                   <span class="step-links" >
                       {% if records.has_previous %}
-                          <a href="usage?page={{ records.previous_page_number }}">previous</a>
+                          <a href="/usage?page={{ records.previous_page_number }}">previous</a>
                       {% endif %}
 
                       <span class="current">
@@ -37,7 +37,7 @@
                       </span>
 
                       {% if records.has_next %}
-                          <a href="usage?page={{ records.next_page_number }}">next</a>
+                          <a href="/usage?page={{ records.next_page_number }}">next</a>
                       {% endif %}
                   </span>
                   </div>
