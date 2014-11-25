@@ -531,7 +531,8 @@ def snapshotRequest(request, device_name):
     #return HttpResponse("snapshotRequest")
     #logger.info("Snapshot request from %s", env["REMOTE_ADDR"] )
     print "Snapshot request for device: " + device_name + " from " + request.META["REMOTE_ADDR"] 
-    
+    # import pdb; pdb.set_trace()
+
     # send command to the phone
     session = Session.get( device_name )
     
@@ -548,15 +549,21 @@ def snapshotRequest(request, device_name):
     except:
         session.commandQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
     
-    # wait for response from the phone
-    snapshot = ""
-    try:
-        snapshot = session.snapshotQ.get(block=True, timeout=20)
-    except:
-        ##logger.info("failed to get snapshot from phone")
-        print("failed to get snapshot from phone " + device_name)
+
+
     
-    response = { "image" : base64.encodestring(snapshot) }
+    if request.POST.get('ie','false') == 'false':
+        # wait for response from the phone
+        snapshot = ""
+        try:
+            snapshot = session.snapshotQ.get(block=True, timeout=20)
+        except:
+            ##logger.info("failed to get snapshot from phone")
+            print("failed to get snapshot from phone " + device_name)
+
+        response = { "image" : base64.encodestring(snapshot) }
+    else:
+        response = { 'link': True }
 #    start_response("200 OK", [("Content-Type", "application/json")])
 #    return [json.dumps(response)]
     response = HttpResponse(json.dumps(response)) 
@@ -565,6 +572,19 @@ def snapshotRequest(request, device_name):
     
     return response
 #END
+
+def get_ie_snapshot(request, device_name, salt):
+
+    session = Session.get( device_name )
+    snapshot = ""
+    try:
+        snapshot = session.snapshotQ.get(block=True, timeout=20)
+    except:
+        ##logger.info("failed to get snapshot from phone")
+        print("failed to get snapshot from phone " + device_name)
+        return HttpResponse("")
+
+    return HttpResponse(snapshot, mimetype="image/png")
 
 def view_session_info(request):
     device = request.GET.get('device',None)

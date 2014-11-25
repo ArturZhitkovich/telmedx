@@ -24,6 +24,7 @@ var canvasSupport; //true or false, defines if we should use canvas or img
 var sketchpad;
 
 //Flash
+var isFlashOn = false;
 var flashToggeling = false;
 
 //Camera
@@ -32,6 +33,30 @@ var cameraToggeling = false;
 
 //Caputred Image Viewer
 var $section;
+
+//IE 8 Fix for IndexOf
+if (!Array.prototype.indexOf)
+{
+  Array.prototype.indexOf = function(elt /*, from*/)
+  {
+    var len = this.length >>> 0;
+
+    var from = Number(arguments[1]) || 0;
+    from = (from < 0)
+         ? Math.ceil(from)
+         : Math.floor(from);
+    if (from < 0)
+      from += len;
+
+    for (; from < len; from++)
+    {
+      if (from in this &&
+          this[from] === elt)
+        return from;
+    }
+    return -1;
+  };
+}
 
 function isCanvasSupported(){
   var elem = document.createElement('canvas');
@@ -52,11 +77,28 @@ function showSnapshot(id) {
   $("#activeSnapshot").attr("src", selected.attr("src"));
   select(id);
 }
+function makeid(){
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for( var i=0; i < 15; i++ )
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+  return text;
+}
 
 function takeSnapshotClicked() {
-  $.post("/ttux/snapshot/"+deviceName, null, function(data) {
-    var dataUri = "data:image/jpeg;base64," + data.image;
-    if( canvasSupport ){
+  if($('html').hasClass('lt-ie9')){
+    var ie = true;
+  }else{
+    var ie = false;
+  }
+  $.post("/ttux/snapshot/"+deviceName, {'ie':ie}, function(data) {
+    if( ie ){
+      var dataUri = '/ttux/ie-snapshot/'+deviceName+'/'+makeid();
+    }else{
+      var dataUri = "data:image/jpeg;base64," + data.image;
+    }
+    if( canvasSupport && !ie ){
       var image = new Image();
       image.src = dataUri;
       image.onload = function() {
@@ -118,12 +160,14 @@ function takeSnapshotClicked() {
   });
 }
 function flashOn(){
-  $("#flash-toggle").addClass('active');
+  isFlashOn = true;
   $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103off.png">');
+  $("#flash-toggle").removeClass('active');
 }
 function flashOff(){
-  $("#flash-toggle").removeClass('active');
+  isFlashOn = false;
   $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103.png">');
+  $("#flash-toggle").removeClass('active');
 }
 function toggle_jq(){
   flashToggeling = true;
@@ -170,6 +214,7 @@ function toggle_camera_jq(){
     }
   });
 }
+var controlOutput;
 function frameOne_jq(){
 
   var r = $.ajax({//Go get frame
@@ -183,7 +228,8 @@ function frameOne_jq(){
     if( msg.substring(0,2) == '!!'){
       begin_end = msg.indexOf('!!', 2);
       control = $.parseJSON( msg.substring(2, parseInt( begin_end, 10 )   ) );
-      if( control.command == 'update_controls' ){
+      controlOutput = control;
+      if( control.command == 'update_controls' && ! $("html").hasClass("lt-ie9") ){
         if(control.parameters.indexOf('flash') != -1){
           $("#flash-toggle").show();
         }
@@ -290,7 +336,7 @@ $(document).ready(function()
       return;
     }
     toggle_jq();
-    if( $(this).hasClass('active') ){
+    if( isFlashOn ){
       flashOff();
     }else{
       flashOn();
@@ -302,19 +348,6 @@ $(document).ready(function()
     sizePreview();
   });
   sizePreview();
-  // $("#drawing-layer").attr("height",$("#activeSnapshot").innerHeight());
-  // $("#drawing-layer").attr("width",$("#activeSnapshot").innerWidth());
-
-    // sketchpad = Raphael.sketchpad("drawing-layer", {
-    //   width: 400,
-    //   height: 400,
-    //   editing: true
-    // });
-
-  // $("[data-tool='marker'],[data-tool='eraser'] ").attr('href',document.URL+"#drawing-layer")
-  // $('#drawing-layer').sketch({defaultColor: "#ff0"});
-
-  // $("#activeSnapshot").height(snaperh - $("#cap-head").outerHeight()-30)
   var previous_camera_toggle_state;
   $("#camera-toggle").hover(function(){
     previous_camera_toggle_state = $(this).find('div:visible').attr('id');
@@ -377,7 +410,11 @@ $(document).ready(function()
   }
   streamBox = $("#stream");
   streamBox.css("overflow","hidden");
-
+  if( $('html').hasClass('lt-ie9') ){
+    $("#rotate-buttons").css("visibility","hidden");
+    $("#zoom-controls").css("visibility","hidden");
+  }
+  
   //Ask for the first frame
   frameOne_jq();
 });
