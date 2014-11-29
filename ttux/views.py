@@ -3,12 +3,14 @@
 from django.template import Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
+from django.contrib.auth.models import User
 from django.template import RequestContext
 
 from django.utils.http import urlencode
 
 from ttux.models import mobileCam # get our database model
+from ttux.settings import API_KEYS
 
 #from time import sleep
 import gevent
@@ -623,6 +625,17 @@ def deviceView(request):
     #
     return render_to_response('ttux/devices.html', {'deviceList':deviceList}, context_instance=RequestContext(request))
 #END
+
+def sso_login_view(request, device_name):
+    key = request.GET.get('key','1111')
+    if key in API_KEYS:
+        username = API_KEYS[key]
+        user = get_object_or_404(User, username=username)
+        user.backend='django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+        return HttpResponseRedirect('/device/'+device_name)
+    else:
+        return HttpResponse('Not Authorized')
 
 
 # Log out
