@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^login/$', login),
     url(r'^login-and-view/(?P<device_name>\w+)/?$', 'ttux.views.sso_login_view'),
     url(r'^devices/?$', 'ttux.views.deviceView'), #Alternate for /deviceList
-    url(r'^device/(?P<device_name>\w+)$', 'ttux.views.index3'), #Alternate for /ttux/index3
+    url(r'^device/(?P<device_name>.*?)/?$', 'ttux.views.index3'), #Alternate for /ttux/index3
     url(r'^$', login),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATICFILES_ROOT}),
 )
