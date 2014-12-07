@@ -144,7 +144,8 @@ def pingRequest(request):
 #END
 @csrf_exempt
 def ping2Request(request, app_version, device_name):
-    if( app_version is not None and device_name is not None):
+    if( app_version is not None and device_name is not None and not device_name == ''):
+        print device_name
         print app_version
         if app_version == '1.0.0': #Has flip camera & flashlight
             
