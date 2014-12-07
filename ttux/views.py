@@ -637,6 +637,50 @@ def sso_login_view(request, device_name):
     else:
         return HttpResponse('Not Authorized')
 
+@csrf_exempt
+def initialize_device(request):
+    if request.method == "POST":
+        try:
+            json_data = json.loads(request.body)
+        except Exception:
+            return HttpResponse('Invalid Body')
+        key = json_data.get('api-key','1111')
+        if key in API_KEYS:
+            username = API_KEYS[key]
+            user = get_object_or_404(User, username=username)
+        try:
+            g = user.groups.all()[0]
+            device_name = json_data.get('email','')
+        except Exception:
+            return HttpResponse('Invalid Body')
+            # NSDictionary *parameters = @{@"firstName": _firstName.text
+            #  @"lastName": _lastName.text
+            #  @"phoneNumber": _phoneNumber.text
+            #  @"email":_email.text
+            #  @"api-key":API_KEY};
+        try:
+            cam = mobileCam.objects.get(name=device_name)
+        except Exception:
+            cam = mobileCam.objects.create(groups = g, 
+                # last_name=json_data.get('lastName',''), 
+                # first_name=json_data.get('firstName',''), 
+                # phone_number=json_data.get('phoneNumber',0),
+                # email=json_data.get('email',''),
+                name=device_name
+                )
+        session = Session.get( device_name )
+        if session is None:
+            Session.put(device_name, Session())
+
+
+    # groups         = models.ForeignKey(Group)
+    # name           = models.CharField(max_length=100)  # name of this device
+    # uid            = models.CharField(max_length=50)   # unique identifier, for an iphone this will be the phone number, for an iTouch it is??
+    # streamId       = models.CharField(max_length=50, blank=True)  # stream identifier of the currently connected stream, blank otherwise
+    # connectedState = models.BooleanField(default=False)      # is the device currently connected
+    
+        return HttpResponse(json.dumps({'status':'ok','device_name':cam.name}), content_type='application/json')
+
 
 # Log out
 def logout_view(request):
