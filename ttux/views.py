@@ -150,12 +150,13 @@ def ping2Request(request, app_version, device_name):
         if app_version == '1.0.0': #Has flip camera & flashlight
             
             session = Session.get( device_name )
-            # print json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']})
-            try:
-                session.deviceSpecQ.put_nowait( json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']}) )
-            except:
-                session.deviceSpecQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
-        
+            if session is not None:
+
+                # print json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']})
+                try:
+                    session.deviceSpecQ.put_nowait( json.dumps({'status':'ok' ,'command':'update_controls', 'parameters':['flip', 'flash']}) )
+                except:
+                    session.deviceSpecQ.get_nowait()   # remove item if the queue is blocked to keep stale requests from sitting in the queue
             
 
     response = HttpResponse("pong")
@@ -654,32 +655,25 @@ def initialize_device(request):
             device_name = json_data.get('email','')
         except Exception:
             return HttpResponse('Invalid Body')
-            # NSDictionary *parameters = @{@"firstName": _firstName.text
-            #  @"lastName": _lastName.text
-            #  @"phoneNumber": _phoneNumber.text
-            #  @"email":_email.text
-            #  @"api-key":API_KEY};
         try:
             cam = mobileCam.objects.get(name=device_name)
+            cam.last_name = json_data.get('lastName','')
+            cam.first_name = json_data.get('firstName','')
+            cam.phone_number = json_data.get('phoneNumber','')
+            cam.email = json_data.get('email','')
+            cam.save()
         except Exception:
             cam = mobileCam.objects.create(groups = g, 
-                # last_name=json_data.get('lastName',''), 
-                # first_name=json_data.get('firstName',''), 
-                # phone_number=json_data.get('phoneNumber',0),
-                # email=json_data.get('email',''),
+                last_name=json_data.get('lastName',''), 
+                first_name=json_data.get('firstName',''), 
+                phone_number=json_data.get('phoneNumber',''),
+                email=json_data.get('email',''),
                 name=device_name
                 )
         session = Session.get( device_name )
         if session is None:
             Session.put(device_name, Session())
 
-
-    # groups         = models.ForeignKey(Group)
-    # name           = models.CharField(max_length=100)  # name of this device
-    # uid            = models.CharField(max_length=50)   # unique identifier, for an iphone this will be the phone number, for an iTouch it is??
-    # streamId       = models.CharField(max_length=50, blank=True)  # stream identifier of the currently connected stream, blank otherwise
-    # connectedState = models.BooleanField(default=False)      # is the device currently connected
-    
         return HttpResponse(json.dumps({'status':'ok','device_name':cam.name}), content_type='application/json')
 
 

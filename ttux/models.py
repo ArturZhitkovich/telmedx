@@ -6,9 +6,11 @@ from ttux.utils import HumanTimeFormatter
 class mobileCam(models.Model):
     groups         = models.ForeignKey(Group)
     name           = models.CharField(max_length=100)  # name of this device
-    uid            = models.CharField(max_length=50)   # unique identifier, for an iphone this will be the phone number, for an iTouch it is??
-    streamId       = models.CharField(max_length=50, blank=True)  # stream identifier of the currently connected stream, blank otherwise
     connectedState = models.BooleanField(default=False)      # is the device currently connected
+    email          = models.EmailField(max_length=254, default='')
+    last_name      = models.CharField(max_length=70, default='')
+    first_name     = models.CharField(max_length=35, default='')
+    phone_number   = models.CharField(max_length=10, default='')
     
 class sessionRecord(models.Model):
     mobile     = models.ForeignKey(mobileCam) # the mobile device used for this session
