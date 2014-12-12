@@ -74,5 +74,8 @@
 </div>
 {% endblock content %}
 {% block afterjquery %}
+<script>
+  $("#dev-table  td a").each(function(){ $(this).html($(this).text().replace(/\@.*?$/,'')); });
+</script>
 <script type="text/javascript" src="/static/js/devices.js"></script>
 {% endblock afterjquery %}
