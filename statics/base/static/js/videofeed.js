@@ -199,13 +199,13 @@ function toggle_camera_jq(){
     cameraToggeling = false;
     if( data.status == 'front' ){
       frontCamera = true;
-      $("#camera-toggle div:not('#camera-front-icon')").hide();
+      // $("#camera-toggle div:not('#camera-front-icon')").hide();
       $("#camera-front-icon").show();
       $("#flash-toggle").addClass('disabled');
 
     }else if (data.status == 'back'){
       frontCamera = false;
-      $("#camera-toggle div:not('#camera-back-icon')").hide();
+      // $("#camera-toggle div:not('#camera-back-icon')").hide();
       $("#camera-back-icon").show();
       $("#flash-toggle").removeClass('disabled');
 
@@ -349,15 +349,15 @@ $(document).ready(function()
   });
   sizePreview();
   var previous_camera_toggle_state;
-  $("#camera-toggle").hover(function(){
-    previous_camera_toggle_state = $(this).find('div:visible').attr('id');
-    $(this).find('div').not('#camera-toggle-icon').hide();
-    $(this).find('#camera-toggle-icon').show();
-  }, function(){
-    $(this).find('div').hide();
-    $(this).find('#'+previous_camera_toggle_state).show();
-  });
-  $("#camera-toggle div:not('#camera-back-icon')").hide();
+  // $("#camera-toggle").hover(function(){
+  //   previous_camera_toggle_state = $(this).find('div:visible').attr('id');
+  //   $(this).find('div').not('#camera-toggle-icon').hide();
+  //   $(this).find('#camera-toggle-icon').show();
+  // }, function(){
+  //   $(this).find('div').hide();
+  //   $(this).find('#'+previous_camera_toggle_state).show();
+  // });
+  // $("#camera-toggle div:not('#camera-back-icon')").hide();
   $("#camera-toggle").click(function(){
     if( cameraToggeling ){
       console.log('I\'m toggleing');
@@ -366,10 +366,10 @@ $(document).ready(function()
     flashOff();
     toggle_camera_jq();
     if( ! frontCamera ){
-      $("#camera-toggle div:not('#camera-front-icon')").hide();
+      // $("#camera-toggle div:not('#camera-front-icon')").hide();
       $("#flash-toggle").addClass('disabled');
     }else{
-      $("#camera-toggle div:not('#camera-back-icon')").hide();
+      // $("#camera-toggle div:not('#camera-back-icon')").hide();
       $("#flash-toggle").removeClass('disabled');
 
     }
