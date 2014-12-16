@@ -206,6 +206,8 @@ def index3(request, device_name):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/?next=%s' % request.path)
     #
+    print device_name
+    device_name = device_name.strip()
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
     # HACK: delete the most recent frame, in case one is left over from a previous session
