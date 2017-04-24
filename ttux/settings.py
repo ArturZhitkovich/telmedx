@@ -3,5 +3,5 @@ API_KEYS = {
 	'9d502de940473c5a7bd463b436bc67bdfe6e5402':'tes',
 	'fdb2f059974ba13961831837f31fda450d5690ef':'kaiser',
 	'da32e68228b8f1b6b5acba3b5d4ec1b4136bd59b':'demo',
-	'aa6fdedaa4b437567440369de72c47dbbcc20f67':'empiric'
+    '39e751c27598429c812b047f260a20eabd1004dd':'kpsandbox'
 }
