@@ -1,40 +1,42 @@
-# DJ session handler
-
-import gevent.queue
+import datetime
 import logging
 import time
-import datetime
-logger = logging.getLogger("session");
+
+import gevent.queue
+
+logger = logging.getLogger("session")
 
 from util.queue import DiscardingQueue
 from ttux.models import sessionLog, mobileCam
 
+
 class Session(object):
     REGISTRY = {}
-    
-    
+
     def __init__(self):
         logging.basicConfig(level=logging.DEBUG)
         logger.info("session:__init__")
-#        self.commandQ = gevent.queue.Queue(1)
-#        self.snapshotQ = gevent.queue.Queue(1)
-#        self.control_greenlet = None
-#        #self.fragments = {}
-#        self.sequence_number = None
-#        self.viewers = {}
 
-####################################################################################
-# Session instance Methods for a specific device
-####################################################################################
+    #        self.commandQ = gevent.queue.Queue(1)
+    #        self.snapshotQ = gevent.queue.Queue(1)
+    #        self.control_greenlet = None
+    #        #self.fragments = {}
+    #        self.sequence_number = None
+    #        self.viewers = {}
+
+    ####################################################################################
+    # Session instance Methods for a specific device
+    ####################################################################################
 
     # add a video stream viewer for this specific device session instance
     # create a discarding queue, add it to self.viwerers and return a handle to that queue.
     def add_viewer(self, address):
         logger.info("add_viewer address:" + address)
         return self.viewers.setdefault(address, DiscardingQueue(4))
-        #NOTE: setdefault() is like get(), except that if k is missing, x is both returned and inserted into the dictionary as the value of k. x defaults to None.
-        #NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
-    #def 
+        # NOTE: setdefault() is like get(), except that if k is missing, x is both returned and inserted into the dictionary as the value of k. x defaults to None.
+        # NOTE: http://docs.python.org/release/2.5.2/lib/typesmapping.html
+
+    # def
 
     def add_snapshot_count(self):
         self.captured_images += 1
@@ -48,19 +50,19 @@ class Session(object):
             queue.put(frame)
         # save the last frame
         self.LastFrame = frame
-        self.frameNumber += 1 
+        self.frameNumber += 1
         self.frames_in_session += 1
         if self.begin_timestamp == 0:
             self.begin_timestamp = time.time()
         if not self.last_frame_timestamp == 0 and time.time() - self.last_frame_timestamp > 5:
             self.log_session()
         self.last_frame_timestamp = time.time()
-    
+
     def clean_session(self):
         if not self.last_frame_timestamp == 0 and time.time() - self.last_frame_timestamp > 5:
             self.log_session()
 
-    #def
+    # def
     def log_session(self):
         if self.last_frame_timestamp - self.begin_timestamp > 2:
             cam = mobileCam.objects.get(name=self.device_name)
@@ -78,7 +80,7 @@ class Session(object):
 
     def get_frameNumber(self):
         return self.frameNumber
-    
+
     def get_lastFrame(self):
         return self.LastFrame
 
@@ -89,12 +91,11 @@ class Session(object):
     def remove_viewer(self, address):
         logger.info("remove_viewer address:" + address)
         self.viewers.pop(address, None)
-    #def
+        # def
 
-
-##########################################################################################
-# Static Methods
-##########################################################################################
+    ##########################################################################################
+    # Static Methods
+    ##########################################################################################
 
     # get Session instance for a given device (key)
     @staticmethod
@@ -102,14 +103,13 @@ class Session(object):
         logger.info("get key:" + str(key))
         return Session.REGISTRY.get(key)
 
-
-    # add a session for a device name (key), but only add it 
+    # add a session for a device name (key), but only add it
     # if there is not already a session for this device.
     # this is called at startup to initialize the session objects
     # for each device.
     @staticmethod
     def put(key, session):
-        logger.info("put key: " + str(key) )
+        logger.info("put key: " + str(key))
         print "REGISTRY before:"
         for k in Session.REGISTRY:
             print "   k: " + k
@@ -131,11 +131,10 @@ class Session(object):
             session.control_greenlet = None
             session.sequence_number = None
             session.viewers = {}
-            session.LastFrame = "" # store the most recently received frame here?
-            session.frameNumber = 0 # frame number of the most recent frame
-        #END if
-                
+            session.LastFrame = ""  # store the most recently received frame here?
+            session.frameNumber = 0  # frame number of the most recent frame
+        # END if
+
         print "REGISTRY after:"
         for k in Session.REGISTRY:
             print "   k: " + k
-
