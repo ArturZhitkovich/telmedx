@@ -1,0 +1,9 @@
+# virtualenv dirs
+bin/
+include/
+lib/
+share/
+
+lib64
+pyvenv.cfg
+pip-selfcheck.json
