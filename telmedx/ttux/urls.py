@@ -1,8 +1,8 @@
 from django.conf.urls import url
+
 from . import views
 
 urlpatterns = [
-    # 'ttux.views',
     url(r'^$', views.device_view),
     url(r'^index/(?P<device_name>.*?)/?$', views.index),
     url(r'^index3/(?P<device_name>.*?)/?$', views.index3),
@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^initializeDevice', views.initialize_device),
     url(r'^viewSessionInfo', views.view_session_info),
     url(r'^logout$', views.logout_view),
+
 ]

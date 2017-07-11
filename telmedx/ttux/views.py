@@ -10,13 +10,17 @@ import gevent
 import gevent.queue
 from django.contrib.auth import logout, login
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.utils.six import BytesIO
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import api_view
 
 from .helpers import id_generator
 from .models import mobileCam  # get our database model
+from .serializers import InitializeSerializer
 from .session import Session
 from .settings import API_KEYS
 
@@ -174,12 +178,14 @@ def index(request, device_name):
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
 
-    return render_to_response('ttux/index.html', {'dev': d}, context_instance=RequestContext(request))
+    return render_to_response('ttux/index.html', {'dev': d})
 
 
+# deprecated
 def index2(request, device_name):
     """
     Main View Finder Device Control View for texting XHR
+    :deprecated:
     :param request:
     :param device_name:
     :return:
@@ -191,7 +197,7 @@ def index2(request, device_name):
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
 
-    return render_to_response('ttux/index2.html', {'dev': d}, context_instance=RequestContext(request))
+    return render_to_response('ttux/index2.html', {'dev': d})
 
 
 def index3(request, device_name):
@@ -212,11 +218,7 @@ def index3(request, device_name):
     session = Session.get(device_name)
     session.clear_lastFrame()
 
-    return render_to_response('ttux/index3.html', {'dev': d}, context_instance=RequestContext(request))
-
-
-# END
-
+    return render_to_response('ttux/index3.html', {'dev': d})
 
 
 # Video stream generator
@@ -489,7 +491,7 @@ def device_view(request):
         return HttpResponseRedirect('/login/?next=%s' % request.path)
 
     # deviceList = mobileCam.objects.all().order_by('name')[:4]
-    g = request.user.groups.all
+    g = request.user.groups.all()
     deviceList = mobileCam.objects.filter(groups=g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
@@ -501,13 +503,8 @@ def device_view(request):
     #    c = Context( { 'deviceList':deviceList} )
     #    return HttpResponse(t.render(c))
     #
-    return render_to_response(
-        'ttux/devices.html',
-        {
-            'deviceList': deviceList
-        },
-        context_instance=RequestContext(request)
-    )
+    return render_to_response('ttux/devices.html',
+                              {'deviceList': deviceList})
 
 
 def sso_login_view(request, device_name):
@@ -524,47 +521,43 @@ def sso_login_view(request, device_name):
 
 @csrf_exempt
 def initialize_device(request):
+    """
+    Step one in app authentication process
+    :param request:
+    :return:
+    """
     if request.method == "POST":
-        try:
-            json_data = json.loads(request.body)
-        except Exception:
-            return HttpResponse('Invalid Body')
+        data = JSONParser().parse(request)
+        payload = InitializeSerializer(data=data)
 
-        key = json_data.get('api-key', '1111')
-        if key in API_KEYS:
-            username = API_KEYS[key]
-            user = get_object_or_404(User, username=username)
+        if payload.is_valid():
+            api_key = payload.data.get('api_key')
+            if api_key in API_KEYS:
+                username = API_KEYS[api_key]
+                user = get_object_or_404(User, username=username)
 
-        try:
-            g = user.groups.all()[0]
-            device_name = json_data.get('email', '')
-        except Exception:
-            return HttpResponse('Invalid Body')
+            group = user.groups.first()
+            device_name = payload.data.get('email')
 
-        try:
-            cam = mobileCam.objects.get(name=device_name)
-            cam.last_name = json_data.get('lastName', '')
-            cam.first_name = json_data.get('firstName', '')
-            cam.phone_number = json_data.get('phoneNumber', '')
-            cam.email = json_data.get('email', '')
-            cam.save()
-        except Exception:
-            cam = mobileCam.objects.create(
-                groups=g,
-                last_name=json_data.get('lastName', ''),
-                first_name=json_data.get('firstName', ''),
-                phone_number=json_data.get('phoneNumber', ''),
-                email=json_data.get('email', ''),
-                name=device_name
+            cam, created = mobileCam.objects.get_or_create(
+                name=device_name,
+                email=payload.data.get('email'),
+                defaults=dict(
+                    first_name=payload.data.get('firstName'),
+                    last_name=payload.data.get('lastName'),
+                    phone_number=payload.data.get('phoneNumber'),
+                    groups=group,
+                )
             )
 
-        session = Session.get(device_name)
-        if session is None:
-            Session.put(device_name)
+            session = Session.get(device_name)
+            if session is None:
+                Session.put(device_name)
 
-        return HttpResponse(json.dumps({'status': 'ok', 'device_name': cam.name}), content_type='application/json')
+            return JsonResponse({'status': 'OK', 'device_name': cam.name})
 
 
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)
+

@@ -2,14 +2,15 @@ from django.contrib.auth.models import Group
 from django.db import models
 
 
+# TODO: Is group really required for this?
 class mobileCam(models.Model):
     groups = models.ForeignKey(Group)
     name = models.CharField(max_length=100)  # name of this device
     connectedState = models.BooleanField(default=False)  # is the device currently connected
-    email = models.EmailField(max_length=254, default='')
-    last_name = models.CharField(max_length=70, default='')
-    first_name = models.CharField(max_length=35, default='')
-    phone_number = models.CharField(max_length=10, default='')
+    email = models.EmailField(max_length=255, default='')
+    last_name = models.CharField(max_length=255, default='')
+    first_name = models.CharField(max_length=255, default='')
+    phone_number = models.CharField(max_length=32, default='')
 
 
 class sessionRecord(models.Model):
