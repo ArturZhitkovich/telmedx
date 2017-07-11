@@ -78,8 +78,6 @@ TEMPLATES = [
     },
 ]
 
-STATIC_ROOT = TEMPLATES_DIR
-
 WSGI_APPLICATION = 'telmedx.wsgi.application'
 
 # Database
@@ -126,4 +124,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATICFILES_DIRS = [
+    # Adjust this directory to point to the proper site
+    # TODO: Make more dynamic so we don't have to hardcode
+    os.path.join(BASE_DIR, 'tel_static', 'kpnw', 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 STATIC_URL = '/static/'
+
+
+# DRF stuff
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

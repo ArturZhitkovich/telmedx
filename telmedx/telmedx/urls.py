@@ -18,6 +18,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.views import login
 from django.views.static import serve
+from ttux.routers import urlpatterns as ttux_patterns
 
 from ttux import views as ttux_views
 
@@ -32,4 +33,5 @@ urlpatterns = [
     url(r'^devices/?$', ttux_views.device_view),
     url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
     # url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_ROOT}),
+    url(r'^api', include(ttux_patterns))
 ]

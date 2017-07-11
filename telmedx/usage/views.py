@@ -4,15 +4,14 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import redirect, render_to_response
-from django.template import RequestContext
-from usage.utils import export_usage_csv
 
 from ttux.models import mobileCam, sessionLog
+from usage.utils import export_usage_csv
 
 
 @login_required(login_url='/login')
 def home(request):
-    logs = sessionLog.objects.filter(device__groups=request.user.groups.all)
+    logs = sessionLog.objects.filter(device__groups=request.user.groups.all())
     paginator = Paginator(logs, 25)  # Show 25 contacts per page
 
     page = request.GET.get('page')
@@ -35,15 +34,14 @@ def home(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         logs = paginator.page(paginator.num_pages)
 
-    return render_to_response('usage/index.html',
-                              {'records': logs}, context_instance=RequestContext(request))
+    return render_to_response('usage/index.html', {'records': logs})
 
 
 @login_required(login_url='/login')
 def single_device(request, device_name):
     try:
         device = mobileCam.objects.filter(groups=request.user.groups.all).get(name=device_name)
-    except mobileCam.DoesNotExist:
+    except mobileCam.DoesNotExist as e:
         return redirect('/usage')
 
     logs = sessionLog.objects.filter(device=device)
@@ -65,4 +63,4 @@ def single_device(request, device_name):
         logs = paginator.page(paginator.num_pages)
 
     return render_to_response('usage/index.html',
-                              {'records': logs, 'single_device': device}, context_instance=RequestContext(request))
+                              {'records': logs, 'single_device': device})

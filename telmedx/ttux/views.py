@@ -12,11 +12,8 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.six import BytesIO
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from rest_framework.viewsets import ViewSet
-from rest_framework.decorators import api_view
 
 from .helpers import id_generator
 from .models import mobileCam  # get our database model
@@ -50,7 +47,7 @@ def rx_image(request, device_name):
     try:
         # command_resp = commandQ.get_nowait();
         command_resp = session.commandQ.get_nowait()
-    except:
+    except Exception as e:
         command_resp = ""
 
     if (command_resp != ""):
@@ -164,6 +161,7 @@ def ping2_request(request, app_version, device_name):
 # UI Handlers
 ##################################################################################
 
+# deprecated
 def index(request, device_name):
     """
     Main View Finder Device Control View
@@ -309,7 +307,8 @@ def get_last_frame_from_stream(request, device_name, fnum):
 
     # print ("current frame: " + lastFnumber_str )
 
-    encodedResp = lastFnumber_str + base64.encodestring(frame)
+    # encodedResp = lastFnumber_str + base64.encodebytes(frame)
+    encodedResp = base64.encodebytes(frame)
     response = HttpResponse(encodedResp)
     response['Content-Type'] = "text/html"
     # response['Content-Type'] = "image/jpeg"
@@ -487,11 +486,13 @@ def device_view(request):
     :return:
     """
     # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
+    # if not request.user.is_authenticated():
+    #     return HttpResponseRedirect('/login/?next=%s' % request.path)
+    user = User.objects.first()
 
     # deviceList = mobileCam.objects.all().order_by('name')[:4]
-    g = request.user.groups.all()
+    # g = request.user.groups.all()
+    g = user.groups.all()
     deviceList = mobileCam.objects.filter(groups=g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
@@ -536,6 +537,7 @@ def initialize_device(request):
                 username = API_KEYS[api_key]
                 user = get_object_or_404(User, username=username)
 
+            # TODO: Find out logic for add user to groups
             group = user.groups.first()
             device_name = payload.data.get('email')
 
@@ -560,4 +562,3 @@ def initialize_device(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)
-
