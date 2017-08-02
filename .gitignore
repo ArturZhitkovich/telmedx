@@ -107,3 +107,6 @@ share/
 lib64
 pyvenv.cfg
 pip-selfcheck.json
+
+
+telmedx/static
