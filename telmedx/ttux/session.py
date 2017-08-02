@@ -5,12 +5,16 @@ import time
 import gevent.queue
 
 from util.queue import DiscardingQueue
-from .models import sessionLog, mobileCam
+from .models import sessionLog
 
 logger = logging.getLogger(__name__)
 
 
 class Session:
+    """
+    This class is an in-app/in-memory cache that keeps track of frames from
+    the user camera and sends them to the web interface.
+    """
     REGISTRY = {}
     commandQ = gevent.queue.Queue(1)
     snapshotQ = gevent.queue.Queue(1)
@@ -68,10 +72,11 @@ class Session:
             self.log_session()
 
     def log_session(self):
+        return
         if self.last_frame_timestamp - self.begin_timestamp > 2:
-            cam = mobileCam.objects.get(name=self.device_name)
+            # cam = mobileCam.objects.get(name=self.device_name)
             log = sessionLog()
-            log.device = cam
+            # log.device = cam
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
             log.end_timestamp = datetime.datetime.fromtimestamp(self.last_frame_timestamp)
             log.frames = self.frames_in_session
@@ -111,7 +116,7 @@ class Session:
         return Session.REGISTRY.get(key)
 
     @staticmethod
-    def put(key):
+    def put(key, session):
         """
         add a session for a device name (key), but only add it
         if there is not already a session for this device.
@@ -122,5 +127,33 @@ class Session:
         :type session: Session
         :return:
         """
-        if key not in Session.REGISTRY:
-            Session.REGISTRY[key] = Session(key=key)
+        # if key not in Session.REGISTRY:
+        #     Session.REGISTRY[key] = Session(key=key)
+        logger.info("put key: " + str(key))
+        for k in Session.REGISTRY:
+            print("   k: " + k)
+        print("Checking for key in REGISTRY")
+        if key in Session.REGISTRY:
+            print("key found: " + key)
+        else:
+            Session.REGISTRY[key] = session
+            session.commandQ = gevent.queue.Queue(1)
+            session.snapshotQ = gevent.queue.Queue(1)
+            session.flashlightQ = gevent.queue.Queue(1)
+            session.flipcameraQ = gevent.queue.Queue(1)
+            session.deviceSpecQ = gevent.queue.Queue(1)
+            session.device_name = str(key)
+            session.begin_timestamp = 0
+            session.last_frame_timestamp = 0
+            session.frames_in_session = 0
+            session.captured_images = 0
+            session.control_greenlet = None
+            session.sequence_number = None
+            session.viewers = {}
+            session.LastFrame = ""  # store the most recently received frame here?
+            session.frameNumber = 0  # frame number of the most recent frame
+        # END if
+
+        print("REGISTRY after:")
+        for k in Session.REGISTRY:
+            print("   k: " + k)

@@ -32,9 +32,24 @@ logger = logging.getLogger(__name__)
 # Phone Handlers
 ##################################################################################
 # process a single video frame from the phone
-# csrf_exempt decorator is required to allow a post without a csrf token
 @csrf_exempt
 def rx_image(request, device_name):
+    """
+    Receive image data from mobile apps.
+    This assumes data is sent through in binary mode.
+
+    Example `curl` command:
+    ```bash
+    curl -X POST --data-binary \
+         localhost:8000/ttux/img/user@example.com/img0001.jpg
+    ```
+
+    :param request:
+    :param device_name:
+    :return:
+    :rtype: HttpResponse
+    """
+
     # session = Session.get(0)
     # print "got img for device " + device_name
     session = Session.get(device_name)
@@ -48,17 +63,18 @@ def rx_image(request, device_name):
         # command_resp = commandQ.get_nowait();
         command_resp = session.commandQ.get_nowait()
     except Exception as e:
+        logger.warning(e)
         command_resp = ""
 
-    if (command_resp != ""):
+    if command_resp != "":
         # logger.info("sending command to the phone: %s", command_resp)
         print("sending command " + command_resp + " to the phone: " + device_name)
+
     # ENDIF
     ##return HttpResponse(status="200 OK")
     return HttpResponse(command_resp)
 
 
-#
 @csrf_exempt
 def snapshot_response(request, device_name):
     """
@@ -89,6 +105,13 @@ def snapshot_response(request, device_name):
 
 @csrf_exempt
 def flashlight_response(request, device_name, status):
+    """
+    Receive flashlight response from the phone/mobile device
+    :param request:
+    :param device_name:
+    :param status:
+    :return:
+    """
     print("got flashlight from device" + device_name)
 
     session = Session.get(device_name)
@@ -107,6 +130,13 @@ def flashlight_response(request, device_name, status):
 
 @csrf_exempt
 def flipcamera_response(request, device_name, status):
+    """
+    Receive flip camera response from phone/device
+    :param request:
+    :param device_name:
+    :param status:
+    :return:
+    """
     print("got camera from device" + device_name)
 
     session = Session.get(device_name)
@@ -136,18 +166,32 @@ def pingRequest(request):
 # END
 @csrf_exempt
 def ping2_request(request, app_version, device_name):
-    if (app_version is not None and device_name is not None and not device_name == ''):
-        print(device_name)
-        print(app_version)
-        if app_version == '1.0.0':  # Has flip camera & flashlight
+    """
+    This is resposible of handling "new" app versions which support camera
+    features such as changing camera (front/back facing) and torch control.
+
+    :param request:
+    :param app_version:
+    :param device_name:
+    :return:
+    """
+    if all([app_version, device_name]):
+        # Has flip camera & flashlight
+        if app_version == '1.0.0':
 
             session = Session.get(device_name)
             if session is not None:
                 try:
                     session.deviceSpecQ.put_nowait(
-                        json.dumps({'status': 'ok', 'command': 'update_controls', 'parameters': ['flip', 'flash']}))
+                        json.dumps({
+                            'status': 'ok',
+                            'command': 'update_controls',
+                            'parameters': ['flip', 'flash']
+                        })
+                    )
                 except:
-                    # remove item if the queue is blocked to keep stale requests from sitting in the queue
+                    # remove item if the queue is blocked to keep stale
+                    # requests from sitting in the queue
                     session.deviceSpecQ.get_nowait()
 
     response = HttpResponse("pong")
@@ -277,7 +321,6 @@ def get_last_frame_from_stream(request, device_name, fnum):
     """
     fnum_padded = str(fnum).zfill(8)
     # fnum_padded = fnum
-    # print("got request for the most recent frame for device: " + device_name + "frame num: " + fnum + " " + fnum_padded)
     session = Session.get(device_name)
 
     # check if we are asking for the same frame again
@@ -285,12 +328,12 @@ def get_last_frame_from_stream(request, device_name, fnum):
     lastFnumber_str = str(lastFnumber).zfill(8)
     # print ("current frame: " + lastFnumber_str )
 
-    # do not send a response until the frame changes, cheat and just sleep for now
-    if (fnum == lastFnumber_str):
-        # print("duplicate frame, pause")
+    # do not send a response until the frame changes,
+    # cheat and just sleep for now
+    if fnum == lastFnumber_str:
         # when to bail out
         timeout = 1000
-        while ((fnum == lastFnumber_str) and (timeout > 0)):
+        while fnum == lastFnumber_str and timeout > 0:
             timeout -= 1
             gevent.sleep(0.01)
             lastFnumber = session.get_frameNumber()
@@ -301,19 +344,21 @@ def get_last_frame_from_stream(request, device_name, fnum):
     lastFnumber_str = str(lastFnumber).zfill(8)
 
     try:
-        lastFnumber_str = '!!' + session.deviceSpecQ.get_nowait() + '!!' + lastFnumber_str
+        lastFnumber_str = '!!{}!!{}'.format(
+            session.deviceSpecQ.get_nowait(),
+            lastFnumber_str
+        )
     except Exception as e:
         pass
 
-    # print ("current frame: " + lastFnumber_str )
-
-    # encodedResp = lastFnumber_str + base64.encodebytes(frame)
-    encodedResp = base64.encodebytes(frame)
+    frame_encoded = base64.encodebytes(frame)
+    encodedResp = lastFnumber_str + frame_encoded.decode('ascii')
+    # encodedResp = base64.encodebytes(frame)
     response = HttpResponse(encodedResp)
     response['Content-Type'] = "text/html"
     # response['Content-Type'] = "image/jpeg"
     response['Cache-Control'] = 'no-cache'
-    return (response)
+    return response
 
 
 def invite_request(request):
@@ -337,12 +382,18 @@ def stop_request(request):
 
 @csrf_exempt
 def flip_camera(request, device_name):
+    """
+    Handle flip camera request. This comes from the web interface.
+    :param request:
+    :param device_name:
+    :return:
+    """
     print("Flip camera for device: " + device_name + " from " + request.META["REMOTE_ADDR"])
 
     session = Session.get(device_name)
 
     if not session.flipcameraQ.empty():
-        print("oops, found an errant flashlight, flushing the queue")
+        print("oops, unable to flip camera, flushing the queue")
         snapshot = session.flipcameraQ.get(block=True, timeout=1)
 
     path = "/flipcamera"
@@ -350,18 +401,17 @@ def flip_camera(request, device_name):
     try:
         session.commandQ.put_nowait(path)
     except:
-        session.commandQ.get_nowait()  # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        # remove item if the queue is blocked to keep stale requests from
+        # sitting in the queue
+        session.commandQ.get_nowait()
 
     status = ""
     try:
         status = session.flipcameraQ.get(block=True, timeout=20)
     except:
-        ##logger.info("failed to get snapshot from phone")
         print("failed to get flip from phone " + device_name)
 
     response = {"status": status}
-    #    start_response("200 OK", [("Content-Type", "application/json")])
-    #    return [json.dumps(response)]
     response = HttpResponse(json.dumps(response))
     response['Content-Type'] = "application/json"
     print("returning flashlight response now")
@@ -371,26 +421,36 @@ def flip_camera(request, device_name):
 
 @csrf_exempt
 def toggle_flash(request, device_name):
-    print("Toggle Flashlight request for device: " + device_name + " from " + request.META["REMOTE_ADDR"])
+    """
+    Handle toggle flash request. This comes from the web interface.
+    :param request:
+    :param device_name:
+    :return:
+    """
+    print('Toggle flashlight request for device: {} from {}'.format(
+        device_name,
+        request.META['REMOTE_ADDR']
+    ))
 
     session = Session.get(device_name)
 
     if not session.flashlightQ.empty():
         print("oops, found an errant flashlight, flushing the queue")
-        snapshot = session.flashlightQ.get(block=True, timeout=1)
+        session.flashlightQ.get(block=True, timeout=1)
 
     path = "/toggleflash"
 
     try:
         session.commandQ.put_nowait(path)
-    except:
-        session.commandQ.get_nowait()  # remove item if the queue is blocked to keep stale requests from sitting in the queue
+    except Exception as e:
+        # remove item if the queue is blocked to keep stale requests from
+        # sitting in the queue
+        session.commandQ.get_nowait()
 
     status = ""
     try:
         status = session.flashlightQ.get(block=True, timeout=20)
     except:
-        ##logger.info("failed to get snapshot from phone")
         print("failed to get snapshot from phone " + device_name)
 
     response = {"status": status}
@@ -413,7 +473,9 @@ def snapshot_request(request, device_name):
     """
     # return HttpResponse("snapshotRequest")
     # logger.info("Snapshot request from %s", env["REMOTE_ADDR"] )
-    print("Snapshot request for device: " + device_name + " from " + request.META["REMOTE_ADDR"])
+    print('Snapshot request for device: {} from {}'.format(
+        device_name,
+        request.META["REMOTE_ADDR"]))
 
     # send command to the phone
     session = Session.get(device_name)
@@ -427,7 +489,9 @@ def snapshot_request(request, device_name):
     try:
         session.commandQ.put_nowait(path)
     except:
-        session.commandQ.get_nowait()  # remove item if the queue is blocked to keep stale requests from sitting in the queue
+        # remove item if the queue is blocked to keep stale requests from
+        # sitting in the queue
+        session.commandQ.get_nowait()
 
     if request.POST.get('ie', 'false') == 'false':
         # wait for response from the phone
@@ -435,7 +499,7 @@ def snapshot_request(request, device_name):
         try:
             snapshot = session.snapshotQ.get(block=True, timeout=20)
         except:
-            ##logger.info("failed to get snapshot from phone")
+            # logger.info("failed to get snapshot from phone")
             print("failed to get snapshot from phone " + device_name)
 
         response = {"image": base64.encodestring(snapshot)}
@@ -496,9 +560,9 @@ def device_view(request):
     deviceList = mobileCam.objects.filter(groups=g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
-    # TODO this needs to be done on the admin page when a new device is added to the database.
+    # TODO: needs to be done on the admin page when a new device is added to the database
     for d in deviceList:
-        Session.put(d.name)
+        Session.put(d.name, Session())
 
     # t = loader.get_template('ttux/devices.html')
     #    c = Context( { 'deviceList':deviceList} )
@@ -554,7 +618,7 @@ def initialize_device(request):
 
             session = Session.get(device_name)
             if session is None:
-                Session.put(device_name)
+                Session.put(device_name, Session())
 
             return JsonResponse({'status': 'OK', 'device_name': cam.name})
 
