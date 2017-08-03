@@ -7,6 +7,17 @@ $(document).ready(function () {
     console.log("ready!");
     // Optimalisation: Store reference outside the event handler:
     var $window = $(window);
+    /* Execute on load */
+    checkWidth();
+    locateStream();
+    // Bind event listener
+    $(window).resize(checkWidth);
+    $(window).resize(function () {
+        $(".resizable").resizable("option", "maxHeight", resizeHeight);
+        $(".resizable").resizable("option", "maxWidth", resizeWidth);
+        $(".resizable-right").resizable("option", "maxHeight", resizeHeightRight);
+        $(".resizable-right").resizable("option", "maxWidth", resizeWidthRight);
+    });
 
     function checkWidth() {
         var windowsize = $window.width();
@@ -54,8 +65,12 @@ $(document).ready(function () {
     $(".resizable").resizable({
         aspectRatio: true,
         handles: "se",
-        maxHeight: resizeHeight,
-        maxWidth: resizeWidth,
+        maxHeight: function () {
+            return resizeHeight;
+        },
+        maxWidth: function () {
+            return resizeWidth;
+        },
         minHeight: 500,
         minWidth: 250,
     });
@@ -63,9 +78,14 @@ $(document).ready(function () {
         minHeight: resizeHeightRight,
         maxWidth: resizeWidthRight
     });
-    /* Execute on load */
-    checkWidth();
-    locateStream();
-    // Bind event listener
-    $(window).resize(checkWidth);
+    //$( ".stream-container" ).width();
+    $(".ui-icon-gripsmall-diagonal-se").mousedown(function () {
+        console.log("resizable clicked");
+        checkWidth();
+        $(".resizable").resizable("option", "maxHeight", resizeHeight);
+        $(".resizable").resizable("option", "maxWidth", resizeWidth);
+        $(".resizable-right").resizable("option", "maxHeight", resizeHeightRight);
+        $(".resizable-right").resizable("option", "maxWidth", resizeWidthRight);
+    });
 });
+
