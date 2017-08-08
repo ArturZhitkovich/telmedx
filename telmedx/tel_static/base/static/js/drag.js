@@ -11,8 +11,10 @@ $(document).ready(function () {
     checkWidth();
     locateStream();
     // Bind event listener
-    $(window).resize(checkWidth);
+    //$(window).resize(checkWidth);
     $(window).resize(function () {
+	console.log("window resized");
+	checkWidth();
         $(".resizable").resizable("option", "maxHeight", resizeHeight);
         $(".resizable").resizable("option", "maxWidth", resizeWidth);
         $(".resizable-right").resizable("option", "maxHeight", resizeHeightRight);
@@ -75,7 +77,9 @@ $(document).ready(function () {
         minWidth: 250,
     });
     $(".resizable-right").resizable({
-        minHeight: resizeHeightRight,
+	minHeight: 500,
+        minWidth: 500,
+        maxHeight: resizeHeightRight,
         maxWidth: resizeWidthRight
     });
     //$( ".stream-container" ).width();
