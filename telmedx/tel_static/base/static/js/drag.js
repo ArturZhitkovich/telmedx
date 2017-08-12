@@ -25,12 +25,12 @@ $(document).ready(function () {
         var windowsize = $window.width();
         if (windowsize < 992) {
             //if the window is less than 992px wide then...
-            resizeHeight = 1200;
+            resizeHeight = 500;
             resizeWidth = $window.width() - 30;
             resizeHeightRight = 800;
             resizeWidthRight = $window.width() - 30;
         } else {
-            resizeHeight = 800;
+            resizeHeight = 420;
             resizeWidth = 600;
             resizeWidthRight = $(".col-md-6").width();
             resizeHeightRight = 800;
@@ -65,7 +65,7 @@ $(document).ready(function () {
     }
 
     $(".resizable").resizable({
-        aspectRatio: true,
+        aspectRatio: false,
         handles: "se",
         maxHeight: function () {
             return resizeHeight;
@@ -73,7 +73,7 @@ $(document).ready(function () {
         maxWidth: function () {
             return resizeWidth;
         },
-        minHeight: 500,
+        minHeight: 300,
         minWidth: 250,
     });
     $(".resizable-right").resizable({
