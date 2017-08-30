@@ -340,24 +340,30 @@ def get_last_frame_from_stream(request, device_name, fnum):
             lastFnumber_str = str(lastFnumber).zfill(8)
 
     frame = session.get_lastFrame()
-    lastFnumber = session.get_frameNumber()
-    lastFnumber_str = str(lastFnumber).zfill(8)
+    if frame:
+        lastFnumber = session.get_frameNumber()
+        lastFnumber_str = str(lastFnumber).zfill(8)
 
-    try:
-        lastFnumber_str = '!!{}!!{}'.format(
-            session.deviceSpecQ.get_nowait(),
-            lastFnumber_str
-        )
-    except Exception as e:
-        pass
+        try:
+            lastFnumber_str = '!!{}!!{}'.format(
+                session.deviceSpecQ.get_nowait(),
+                lastFnumber_str
+            )
+        except Exception as e:
+            pass
 
-    frame_encoded = base64.encodebytes(frame)
-    encodedResp = lastFnumber_str + frame_encoded.decode('ascii')
-    # encodedResp = base64.encodebytes(frame)
-    response = HttpResponse(encodedResp)
-    response['Content-Type'] = "text/html"
-    # response['Content-Type'] = "image/jpeg"
-    response['Cache-Control'] = 'no-cache'
+        frame_encoded = base64.encodebytes(frame)
+        encodedResp = lastFnumber_str + frame_encoded.decode('ascii')
+        # encodedResp = base64.encodebytes(frame)
+        response = HttpResponse(encodedResp)
+        response['Content-Type'] = "text/html"
+        # response['Content-Type'] = "image/jpeg"
+        response['Cache-Control'] = 'no-cache'
+    else:
+        response = HttpResponse('0')
+        response['Content-Type'] = "text/html"
+        response['Cache-Control'] = 'no-cache'
+
     return response
 
 
