@@ -459,11 +459,7 @@ def toggle_flash(request, device_name):
     except:
         print("failed to get snapshot from phone " + device_name)
 
-    response = {"status": status}
-    #    start_response("200 OK", [("Content-Type", "application/json")])
-    #    return [json.dumps(response)]
-    response = HttpResponse(json.dumps(response))
-    response['Content-Type'] = "application/json"
+    response = JsonResponse({"status": status})
     print("returning flashlight response now")
 
     return response
@@ -508,7 +504,7 @@ def snapshot_request(request, device_name):
             # logger.info("failed to get snapshot from phone")
             print("failed to get snapshot from phone " + device_name)
 
-        response = {"image": base64.encodestring(snapshot)}
+        response = {"image": base64.encodebytes(snapshot).decode('utf-8')}
     else:
         response = {'link': True}
     # start_response("200 OK", [("Content-Type", "application/json")])
