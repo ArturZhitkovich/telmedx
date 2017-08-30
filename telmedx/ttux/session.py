@@ -5,7 +5,7 @@ import time
 import gevent.queue
 
 from util.queue import DiscardingQueue
-from .models import sessionLog
+from .models import sessionLog, mobileCam
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,6 @@ class Session:
     # add a video sream frame to a specific device session instance
     # this frame will be broadcast to all viewers via their queues.
     def enqueue_frame(self, frame):
-        logger.info("enqueue_frame")
         # ship off to any listeners out there
         for queue in self.viewers.values():
             queue.put(frame)
@@ -72,11 +71,10 @@ class Session:
             self.log_session()
 
     def log_session(self):
-        return
         if self.last_frame_timestamp - self.begin_timestamp > 2:
-            # cam = mobileCam.objects.get(name=self.device_name)
+            cam = mobileCam.objects.get(name=self.device_name)
             log = sessionLog()
-            # log.device = cam
+            log.device = cam
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
             log.end_timestamp = datetime.datetime.fromtimestamp(self.last_frame_timestamp)
             log.frames = self.frames_in_session
@@ -112,7 +110,6 @@ class Session:
         :param key:
         :return:
         """
-        logger.info("get key:" + str(key))
         return Session.REGISTRY.get(key)
 
     @staticmethod
