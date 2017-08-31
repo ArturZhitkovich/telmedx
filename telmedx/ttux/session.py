@@ -104,6 +104,10 @@ class Session:
         self.viewers.pop(address, None)
 
     @staticmethod
+    def get_queue():
+        return gevent.queue.Queue(1)
+
+    @staticmethod
     def get(key):
         """
         get Session instance for a given device (key)

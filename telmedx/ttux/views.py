@@ -54,6 +54,9 @@ def rx_image(request, device_name):
     # print "got img for device " + device_name
     session = Session.get(device_name)
 
+    if not session:
+        return JsonResponse({'status': 'Not ready'})
+
     image = request.read()
     # distribute this frame to each watcher
     session.enqueue_frame(image)
@@ -63,7 +66,6 @@ def rx_image(request, device_name):
         # command_resp = commandQ.get_nowait();
         command_resp = session.commandQ.get_nowait()
     except Exception as e:
-        logger.warning(e)
         command_resp = ""
 
     if command_resp != "":
@@ -112,7 +114,7 @@ def flashlight_response(request, device_name, status):
     :param status:
     :return:
     """
-    print("got flashlight from device" + device_name)
+    print("got flashlight from device: {}, {}".format(device_name, status))
 
     session = Session.get(device_name)
 
@@ -120,10 +122,9 @@ def flashlight_response(request, device_name, status):
         session.flashlightQ.put_nowait(status)
     except:
         # logger.error("failed to queue up snapshot response")
-        print("failed to queue up snapshot response from " + device_name)
+        print("failed to queue up flashlight response from " + device_name)
         session.flashlightQ.get_nowait()  # empty the queue if full
         session.flashlightQ.put_nowait(status)
-    # END
 
     return HttpResponse("flashlightResponse")
 
@@ -257,8 +258,12 @@ def index3(request, device_name):
     d = get_object_or_404(mobileCam, name=device_name)
     # HACK: delete the most recent frame, in case one is left over from a previous session
     # this will create a slight artifact for current viewers
-    session = Session.get(device_name)
-    session.clear_lastFrame()
+    try:
+        session = Session.get(device_name)
+        session.clear_lastFrame()
+    except AttributeError:
+        # Camera is not active yet, so just ignore?
+        pass
 
     return render_to_response('ttux/index3.html', {'dev': d})
 
@@ -323,10 +328,17 @@ def get_last_frame_from_stream(request, device_name, fnum):
     # fnum_padded = fnum
     session = Session.get(device_name)
 
-    # check if we are asking for the same frame again
-    lastFnumber = session.get_frameNumber()
-    lastFnumber_str = str(lastFnumber).zfill(8)
-    # print ("current frame: " + lastFnumber_str )
+    if not session:
+        return HttpResponse('Not ready')
+
+    try:
+        # check if we are asking for the same frame again
+        lastFnumber = session.get_frameNumber()
+        lastFnumber_str = str(lastFnumber).zfill(8)
+        # print ("current frame: " + lastFnumber_str )
+    except:
+        lastFnumber = ""
+        lastFnumber_str = str(lastFnumber).zfill(8)
 
     # do not send a response until the frame changes,
     # cheat and just sleep for now
@@ -412,14 +424,14 @@ def flip_camera(request, device_name):
         session.commandQ.get_nowait()
 
     status = ""
+    session = Session.get(device_name)
+
     try:
         status = session.flipcameraQ.get(block=True, timeout=20)
     except:
         print("failed to get flip from phone " + device_name)
 
-    response = {"status": status}
-    response = HttpResponse(json.dumps(response))
-    response['Content-Type'] = "application/json"
+    response = JsonResponse({"status": status})
     print("returning flashlight response now")
 
     return response
@@ -531,6 +543,7 @@ def get_ie_snapshot(request, device_name, salt):
 def view_session_info(request):
     device = request.GET.get('device', None)
     body = 'devicenotfound'
+
     if device is not None:
         session = Session.get(device)
         body = 'begin timestamp:   ' + str(session.begin_timestamp) + '<br>'
