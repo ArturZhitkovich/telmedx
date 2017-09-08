@@ -565,13 +565,10 @@ def device_view(request):
     :return:
     """
     # make sure user is logged in
-    # if not request.user.is_authenticated():
-    #     return HttpResponseRedirect('/login/?next=%s' % request.path)
-    user = User.objects.first()
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
 
-    # deviceList = mobileCam.objects.all().order_by('name')[:4]
-    # g = request.user.groups.all()
-    g = user.groups.all()
+    g = request.user.groups.first()
     deviceList = mobileCam.objects.filter(groups=g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
@@ -579,10 +576,6 @@ def device_view(request):
     for d in deviceList:
         Session.put(d.name, Session())
 
-    # t = loader.get_template('ttux/devices.html')
-    #    c = Context( { 'deviceList':deviceList} )
-    #    return HttpResponse(t.render(c))
-    #
     return render_to_response('ttux/devices.html',
                               {'deviceList': deviceList})
 
