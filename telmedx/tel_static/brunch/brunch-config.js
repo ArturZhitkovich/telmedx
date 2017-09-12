@@ -6,9 +6,18 @@ exports.files = {
       'app.js': /^app/
     }
   },
-  stylesheets: {joinTo: 'app.css'}
+  stylesheets: {
+    joinTo: {
+      'app.css': 'app/styles/app.scss'
+    }
+  }
 };
 
 exports.plugins = {
-  babel: {presets: ['latest']}
+  babel: {presets: ['latest']},
+  sass: {
+    options: {
+      includePaths: ['node_modules/bootstrap-sass/assets/stylesheets',]
+    }
+  }
 };

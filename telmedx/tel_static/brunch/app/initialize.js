@@ -1,4 +1,5 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-  // do your setup here
-  console.log('Initialized app');
+    const $ = require('jquery');
+    console.log('Initialized app');
 });
