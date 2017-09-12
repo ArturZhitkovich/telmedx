@@ -1,4 +1,10 @@
 // See http://brunch.io for documentation.
+exports.modules = {
+  autoRequire: {
+    'app.js': ['initialize'],
+  }
+};
+
 exports.files = {
   javascripts: {
     joinTo: {
