@@ -1,34 +1,34 @@
 // See http://brunch.io for documentation.
 exports.modules = {
-  autoRequire: {
-    'app.js': ['initialize'],
-  }
+    autoRequire: {
+        'app.js': ['initialize']
+    }
 };
 
 exports.files = {
-  javascripts: {
-    joinTo: {
-      'vendor.js': /^(?!app)/, // Files that are not in `app` dir.
-      'app.js': /^app/
+    javascripts: {
+        joinTo: {
+            'vendor.js': /^(?!app)/, // Files that are not in `app` dir.
+            'app.js': /^app/
+        }
+    },
+    stylesheets: {
+        joinTo: {
+            'app.css': 'app/styles/app.scss'
+        }
     }
-  },
-  stylesheets: {
-    joinTo: {
-      'app.css': 'app/styles/app.scss'
-    }
-  }
 };
 
 exports.plugins = {
-  babel: {presets: ['latest']},
-  sass: {
-    options: {
-      includePaths: ['node_modules/bootstrap-sass/assets/stylesheets',]
+    babel: {presets: ['latest']},
+    sass: {
+        options: {
+            includePaths: ['node_modules/bootstrap-sass/assets/stylesheets']
+        }
+    },
+    copyfilemon: {
+        'fonts': [
+            'node_modules/bootstrap-sass/assets/fonts'
+        ]
     }
-  },
-  copyfilemon: {
-    'fonts': [
-        'node_modules/bootstrap-sass/assets/fonts',
-    ]
-  }
 };

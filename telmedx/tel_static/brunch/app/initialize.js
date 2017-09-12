@@ -1,5 +1,10 @@
+const $ = require('jquery'),
+    DevicesView = require('main/devices')
+;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const $ = require('jquery');
-    console.log('Initialized app');
+
+    DevicesView.init("#devices-page");
+
+
 });
