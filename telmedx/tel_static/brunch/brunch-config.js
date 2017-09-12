@@ -19,5 +19,10 @@ exports.plugins = {
     options: {
       includePaths: ['node_modules/bootstrap-sass/assets/stylesheets',]
     }
+  },
+  copyfilemon: {
+    'fonts': [
+        'node_modules/bootstrap-sass/assets/fonts',
+    ]
   }
 };

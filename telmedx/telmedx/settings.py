@@ -128,6 +128,7 @@ STATICFILES_DIRS = [
     # Adjust this directory to point to the proper site
     # TODO: Make more dynamic so we don't have to hardcode
     os.path.join(BASE_DIR, 'tel_static', 'kpnw', 'static'),
+    os.path.join(BASE_DIR, 'tel_static', 'brunch', 'public'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
