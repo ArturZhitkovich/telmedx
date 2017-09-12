@@ -5,8 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title></title>
-    <meta name="description" content="">
+    <title>{% block metatitle %}{% endblock %}</title>
+    <meta name="description" content="{% block metadescription %}{% endblock %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="manifest" href="site.webmanifest">
@@ -47,7 +47,6 @@
 
 <script src="{% static 'vendor.js' %}"></script>
 <script src="{% static 'app.js' %}"></script>
-<script>require('initialize');</script>
 
 <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
 <!--
