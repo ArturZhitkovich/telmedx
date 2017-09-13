@@ -39,6 +39,12 @@
       border: 0 !important;
     }
   }
+
+  div#pastSnapshots {
+    .snap-item {
+      margin: 2px;
+    }
+  }
 }
 
 #myModal {
