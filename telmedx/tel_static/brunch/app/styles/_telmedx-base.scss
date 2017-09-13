@@ -24,6 +24,10 @@ html, body {
   background-color: #000;
   color: #a0a0a0;
   text-align: center;
+
+  p {
+    margin-bottom: 0;
+  }
 }
 
 #footer-push {
@@ -31,42 +35,51 @@ html, body {
   background-color: #202020;
 }
 
-.navbar-nav > li > a {
-  padding-top: 25px;
-  padding-bottom: 25px;
-  font-size: 16px;
-}
-
 .navbar {
   background-color: #fff;
+
+  &.shadow {
+    -moz-box-shadow: 0 3px 15px #767575;
+    -webkit-box-shadow: 0 3px 15px #767575;
+    box-shadow: 0 3px 15px #767575;
+  }
+
+  .icon-bar {
+    background-color: black;
+  }
+
+  .navbar-toggle {
+    border: 1px solid black;
+    margin-top: 18px;
+  }
+
+  .navbar-brand {
+    padding: 10px;
+    img {
+      height: 40px;
+    }
+  }
+
 }
 
-#dev-table tbody tr {
-  cursor: pointer;
+img.snapshot {
+  margin-bottom: 4px;
 }
 
-.icon-bar {
-  background-color: black;
+#first-row {
+  margin-top: 70px;
 }
 
-.navbar-toggle {
-  border: 1px solid black;
-  margin-top: 18px;
+.currently-panning {
+  pointer-events: none;
+  background: none !important;
 }
 
-#hollywood {
-  height: 50%;
-  width: 50%;
-  display: block;
-  margin: auto auto 8px;
-}
-
-.ui-widget-content {
-  border: 0 !important;
-}
-
-#capture-snaper.panel {
-  margin-bottom: 0;
+// Not in use?
+#camera-back-icon span {
+  font-size: 40px;
+  height: 50px;
+  padding-top: 5px;
 }
 
 @media (min-width: 800px) {
@@ -75,56 +88,16 @@ html, body {
   }
 }
 
-#activeSnapshot {
-  height: 100%;
-}
-
-.icon-bar {
-  background-color: black;
-}
-
-.navbar-toggle {
-  border: 1px solid black;
-  margin-top: 18px;
-}
-
-img.snapshot {
-  margin-bottom: 4px;
-}
-
-.canvas-wrapper {
-  display: table;
-  margin: 0 auto;
-}
-
-#c {
-  padding-left: 0;
-  padding-right: 0;
-  border: 1px solid black;
-}
-
-#first-row {
-  margin-top: 70px;
-}
-
-.shadow {
-  -moz-box-shadow: 0 3px 15px #767575;
-  -webkit-box-shadow: 0 3px 15px #767575;
-  box-shadow: 0 3px 15px #767575;
-}
-
 @media all and (max-width: 992px) and (min-width: 768px) {
   .nav {
     height: 45px;
   }
   .navbar-brand {
     padding: 10px;
-    /*border: 1px solid red;*/
   }
   .navbar-brand img {
     margin-top: 3px;
     height: 25px;
-    /*border: 1px solid red;*/
   }
   .navbar-nav > li > a {
     padding-top: 16px;
@@ -134,32 +107,5 @@ img.snapshot {
   #first-row {
     margin-top: 70px;
   }
-}
-
-#capture-snaper .panel-body {
-  padding: 0;
-}
-
-.currently-panning {
-  pointer-events: none; /* THIS IS THE TRICK YOU SEEK */
-}
-
-#drawing-layer {
-  position: absolute;
-  z-index: 4;
-}
-
-.hundo {
-  width: 100%;
-}
-
-#camera-back-icon span {
-  font-size: 40px;
-  height: 50px;
-  padding-top: 5px;
-}
-
-.currently-panning {
-  background: none !important;
 }
 

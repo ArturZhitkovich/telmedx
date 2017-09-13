@@ -80,8 +80,8 @@ module.exports = {
     },
 
     bindUiActions() {
-        const context = this,
-            $section = $('#capture-snaper').first();
+        const context = this;
+        const $section = $('#capture-snaper').first();
 
         this.deviceName = $("#deviceName").data('name');
 
@@ -93,8 +93,8 @@ module.exports = {
         });
 
         $("#open-editor").click(function () {
-            const $editSnapshot = $('#editSnapshot'),
-                $drawingLayer = $('#drawing-layer');
+            const $editSnapshot = $('#editSnapshot');
+            const $drawingLayer = $('#drawing-layer');
 
             setTimeout(function () {
                 $editSnapshot.removeClass('hundo');

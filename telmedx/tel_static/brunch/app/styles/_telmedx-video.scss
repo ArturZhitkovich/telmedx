@@ -1,0 +1,53 @@
+// Dynamically created by video-view.js
+#hollywood {
+  height: 50%;
+  width: 50%;
+  display: block;
+  margin: auto auto 8px;
+}
+
+#device-video-page {
+
+  #capture-snaper {
+    &.panel {
+      margin-bottom: 0;
+    }
+
+    .panel-body {
+      padding: 0;
+    }
+
+    // Inside of .panzoom
+    #activeSnapshot {
+      height: 100%;
+    }
+  }
+
+  #video-canvas {
+    padding-left: 0;
+    padding-right: 0;
+    border: 1px solid black;
+  }
+
+  .canvas-wrapper {
+    display: table;
+    margin: 0 auto;
+  }
+
+  div.stream-container {
+    .ui-widget-content {
+      border: 0 !important;
+    }
+  }
+}
+
+#myModal {
+  #drawing-layer {
+    position: absolute;
+    z-index: 4;
+  }
+
+  .hundo {
+    width: 100%;
+  }
+}

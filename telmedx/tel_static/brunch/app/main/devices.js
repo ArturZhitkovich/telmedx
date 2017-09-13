@@ -12,8 +12,8 @@ module.exports = {
     },
 
     bindUiActions() {
-        const context = this,
-            $filter = context.$el.find("#filter");
+        const context = this;
+        const $filter = context.$el.find("#filter");
         let count = 0;
 
         this.$el.find('.device-item').click((e) => {
