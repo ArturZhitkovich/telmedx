@@ -3,15 +3,15 @@ const $ = require('jquery');
 module.exports = {
     $el: null,
 
-    init: function (el) {
+    init(el) {
         this.$el = $(el);
 
-        if (this.$el) {
+        if (this.$el.length) {
             this.bindUiActions();
         }
     },
 
-    bindUiActions: function () {
+    bindUiActions() {
         const context = this,
             $filter = context.$el.find("#filter");
         let count = 0;
@@ -23,7 +23,7 @@ module.exports = {
         if ($filter.length !== 0) {
             $filter.keyup(() => {
                 count = 0;
-                $("#dev-table tr").each(function() {
+                $("#dev-table tr").each(function () {
                     if ($(this).find("a:first").text().search(new RegExp($filter.val(), "i")) < 0) {
                         $(this).addClass("hidden");
                     } else {

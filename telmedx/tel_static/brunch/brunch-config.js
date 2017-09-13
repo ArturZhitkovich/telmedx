@@ -26,6 +26,15 @@ exports.plugins = {
             includePaths: ['node_modules/bootstrap-sass/assets/stylesheets']
         }
     },
+    cssnano: {
+    },
+    uglify: {
+    },
+    afterBrunch: [
+        // Requires uglify installed globally via npm
+        'uglifyjs public/app.js -o public/app.min.js',
+        'uglifyjs public/vendor.js -o public/vendor.min.js'
+    ],
     copyfilemon: {
         'fonts': [
             'node_modules/bootstrap-sass/assets/fonts'
