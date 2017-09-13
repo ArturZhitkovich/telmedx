@@ -9,7 +9,9 @@ import time
 import gevent
 import gevent.queue
 from django.contrib.auth import logout, login
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -221,7 +223,9 @@ def index(request, device_name):
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
 
-    return render_to_response('ttux/index.html', {'dev': d})
+    return render_to_response('ttux/index.html', context={
+        'dev': d,
+    })
 
 
 # deprecated
@@ -240,7 +244,9 @@ def index2(request, device_name):
     # look up this device
     d = get_object_or_404(mobileCam, name=device_name)
 
-    return render_to_response('ttux/index2.html', {'dev': d})
+    return render_to_response('ttux/index2.html', context={
+        'dev': d,
+    })
 
 
 def index3(request, device_name):
@@ -265,7 +271,9 @@ def index3(request, device_name):
         # Camera is not active yet, so just ignore?
         pass
 
-    return render_to_response('ttux/index3.html', {'dev': d})
+    return render_to_response('ttux/index3.html', context={
+        'dev': d,
+    })
 
 
 # Video stream generator
@@ -576,8 +584,9 @@ def device_view(request):
     for d in deviceList:
         Session.put(d.name, Session())
 
-    return render_to_response('ttux/devices.html',
-                              {'deviceList': deviceList})
+    return render_to_response('ttux/devices.html', context={
+        'deviceList': deviceList,
+    })
 
 
 def sso_login_view(request, device_name):
@@ -634,3 +643,12 @@ def initialize_device(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)
+
+
+
+class TelmedxLoginView(LoginView):
+    def get_context_data(self, **kwargs):
+        context = super(TelmedxLoginView, self).get_context_data(**kwargs)
+        # Add branding context
+        context.update({ 'brand': settings.INSTANCE_BRAND })
+        return context
