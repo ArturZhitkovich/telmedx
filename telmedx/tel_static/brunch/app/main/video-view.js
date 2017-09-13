@@ -131,7 +131,6 @@ module.exports = {
         this.sizePreview();
 
         $("#camera-toggle").click(function () {
-            debugger;
             if (context.cameraToggeling) {
                 console.log('I\'m toggleing');
                 return;
@@ -168,6 +167,7 @@ module.exports = {
                 context.rotate = 270;
             }
         });
+
         $("#capture-button").click(function () {
             context.takeSnapshotClicked();
         });
@@ -322,6 +322,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Contains the main logic for requesting and processing command and image
+     * frames requested from the server.
+     */
     frameOne_jq() {
         const context = this;
 
