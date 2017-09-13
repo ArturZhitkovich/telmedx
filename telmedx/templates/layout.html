@@ -20,6 +20,7 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
 
+
 <div id="wrap">
     <div class="navbar  navbar-fixed-top shadow">
         <div class="container">
@@ -30,7 +31,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/devices">
-                    <img src="/static/img/brand-logo.png" alt="telmedx">
+                    <img src="/static/img/{{ brand }}/brand-logo.png" alt="telmedx">
                 </a>
             </div>
             {% block nav %}{% endblock nav %}
@@ -40,7 +41,7 @@
 </div>
 <div id="footer">
     <footer>
-        <p>&copy; 2012-2014 telmedx </p>
+        <p>&copy; 2012-20147 telmedx  {{ brand }}</p>
     </footer>
 </div>
 

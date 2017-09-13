@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = os.path.join(BASE_DIR, '..')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -24,7 +25,15 @@ SECRET_KEY = '(7e+zj5vxj^c8p^on3yfh(tki&bkfn68*n2+9mwsma73^ix#)s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'www.barefootdev2.com',
+    '127.0.0.1',
+    '10.0.0.48',
+    'telmedx.local',
+    'localhost',
+]
+
+INSTANCE_BRAND = 'kpnw'
 
 # Application definition
 THIRD_PARTY_APPS = (
@@ -58,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'telmedx.urls'
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATES_DIR = os.path.join(PROJECT_DIR, 'templates')
 
 TEMPLATES = [
     {
@@ -82,11 +91,10 @@ WSGI_APPLICATION = 'telmedx.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(PROJECT_DIR, 'db.sqlite3'),
     }
 }
 
@@ -127,11 +135,11 @@ USE_TZ = True
 STATICFILES_DIRS = [
     # Adjust this directory to point to the proper site
     # TODO: Make more dynamic so we don't have to hardcode
-    os.path.join(BASE_DIR, 'tel_static', 'kpnw', 'static'),
-    os.path.join(BASE_DIR, 'tel_static', 'brunch', 'public'),
+    os.path.join(PROJECT_DIR, 'tel_static', 'kpnw', 'static'),
+    os.path.join(PROJECT_DIR, 'tel_static', 'brunch', 'public'),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static/'
 
@@ -143,4 +151,36 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
+}
+
+# Session stuff
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+import os
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
 }
