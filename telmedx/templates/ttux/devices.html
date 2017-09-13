@@ -1,60 +1,70 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block metatitle %}telmedx | Devices{% endblock %}
 
 {% block metadescription %}Find all the registered device right here.{% endblock %}
 
 {% block nav %}
-<ul class="nav collapse navbar-collapse navbar-nav navbar-right">
-    <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
-        <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-cog"></span>
-    </a></li>
-    <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
-        <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-off"></span>
-    </a></li>
-</ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li><a class="partition">{{ user }}</a></li>
+        <li>
+            <a href="/usage">
+                <span class="glyphicon glyphicon-cog"></span>
+            </a>
+        </li>
+        <li>
+            <a href="ttux/logout">
+                <span class="glyphicon glyphicon-off"></span>
+            </a>
+        </li>
+    </ul>
 {% endblock nav %}
 
 {% block content %}
-<div class="container">
-    <div class="row" style="margin-top: 90px;">
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <img style="height:40px;" src="/static/img/controls/responsive.png">
-                    {% if deviceList %}
-                    <p class="pull-right" style="margin-top: 5px;">&nbsp;&nbsp;Showing <span
-                            id="filter-count">{{ deviceList|length }}</span> of {{ deviceList|length }}</p>
-                    <div class="form-group pull-right" style="width: 60%;">
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span>
+    <div id="devices-page" class="container">
+        <div class="row" style="margin-top: 90px;">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <img style="height:40px;" src="/static/img/controls/responsive.png">
+                        {% if deviceList %}
+                            <p class="pull-right" style="margin-top: 5px;">&nbsp;&nbsp;Showing <span
+                                    id="filter-count">{{ deviceList|length }}</span> of {{ deviceList|length }}</p>
+                            <div class="form-group pull-right" style="width: 60%;">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span>
+                                    </div>
+                                    <input class="form-control" id="filter" type="text"
+                                           placeholder="Filter Device List">
+                                </div>
                             </div>
-                            <input class="form-control" id="filter" type="text"
-                                   placeholder="Filter Device List">
-                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                </div>
-                <div class="panel-body">
-                    {% if deviceList %}
-                    <table class="table table-hover" id="dev-table" style="margin-bottom: 0px;">
-                        <tbody>
-                        {% for d in deviceList %}
-                        <tr data-link="/device/{{ d.name }}">
-                            <td><img style="height: 30px; margin-right: 20px;"
-                                     src="/static/img/controls/apple.png"><a
-                                    href="/device/{{ d.name }}">{{ d.name }}</a></td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p>No devices are available.</p>
-                    {% endif %}
+                    <div class="panel-body">
+                        {% if deviceList %}
+                            <table class="devices-list table table-hover"
+                                   id="dev-table"
+                                   style="margin-bottom: 0;">
+                                <tbody>
+                                {% for d in deviceList %}
+                                    <tr class="device-item" data-link="/device/{{ d.name }}">
+                                        <td>
+                                            <img style="height: 30px; margin-right: 20px;"
+                                                 src="{% static 'img/controls/apple.png' %}">
+                                            <a href="/device/{{ d.name }}">{{ d.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No devices are available.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
-        {% comment %}
+            {% comment %}
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -80,18 +90,19 @@
             </div>
         </div>
         {% endcomment %}
+        </div>
     </div>
-</div>
-<div class="scroll-to-top">
-    <a href="/usage" style="font-size: 25px; color: #333;"><span class="glyphicon glyphicon-cog"></span></a>
-</div>
+    <div class="scroll-to-top">
+        <a href="/usage" style="font-size: 25px; color: #333;"><span class="glyphicon glyphicon-cog"></span></a>
+    </div>
 {% endblock content %}
 
 {% block afterjquery %}
-<script>
-    $("#dev-table  td a").each(function () {
-        $(this).html($(this).text().replace(/\@.*?$/, ''));
-    });
-</script>
-<script type="text/javascript" src="/static/js/devices.js"></script>
+    <script>
+        $("#dev-table  td a").each(function () {
+            $(this).html($(this).text().replace(/\@.*?$/, ''));
+        });
+    </script>
+    {#    <script type="text/javascript" src="/static/js/devices.js"></script>#}
+
 {% endblock afterjquery %}

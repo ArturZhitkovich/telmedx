@@ -19,11 +19,12 @@
         </li>
     </ul>
 {% endblock nav %}
+
 {% block content %}
-    <div class="container" style="max-width: 100%;">
+    <div id="device-video-page" class="container" style="width: 100%;">
         <div id="first-row" class="row">
             <div class="col-md-4">
-                <div class="panel panel-default resizable" style="overflow: hidden;">
+                <div class="video-panel panel panel-default resizable" style="overflow: hidden;">
                     <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
                         <h3 class="panel-title">
                             <div style="float:left;">{{ dev.name }} &nbsp;</div>
@@ -42,7 +43,7 @@
                         <div class="panel-body">
                             <div id="stream">
                                 <div class="canvas-wrapper">
-                                    <canvas width="360" height="480" id="c"></canvas>
+                                    <canvas width="360" height="480" id="video-canvas"></canvas>
                                     '
                                     <div style="margin: 0px;" id="stream_status">{{ OTUK }}: Waiting...</div>
                                 </div>
@@ -139,10 +140,11 @@
     </div>
     <div id="deviceName" data-name="{{ dev.name }}"></div>
 {% endblock content %}
+
 {% block afterjquery %}
-    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>
-    <script type="text/javascript" src="/static/js/videofeed-1.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript" src="/static/js/drag.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {#    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>#}
+    {#    <script type="text/javascript" src="/static/js/videofeed-1.js"></script>#}
+    {#    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>#}
+    {#    <script type="text/javascript" src="/static/js/drag.js"></script>#}
+    {#    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">#}
 {% endblock afterjquery %}
