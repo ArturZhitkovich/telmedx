@@ -273,6 +273,7 @@ def index3(request, device_name):
 
     return render_to_response('ttux/index3.html', context={
         'dev': d,
+        'user': request.user
     })
 
 
@@ -586,6 +587,7 @@ def device_view(request):
 
     return render_to_response('ttux/devices.html', context={
         'deviceList': deviceList,
+        'user': request.user
     })
 
 

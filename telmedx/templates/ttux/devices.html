@@ -6,13 +6,18 @@
 {% block metadescription %}Find all the registered device right here.{% endblock %}
 
 {% block nav %}
-    <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
-        <li><a style="padding-top: 20px; padding-bottom: 11px;" href="/usage">
-            <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-cog"></span>
-        </a></li>
-        <li><a style="padding-top: 20px; padding-bottom: 11px;" href="ttux/logout">
-            <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-off"></span>
-        </a></li>
+    <ul class="nav navbar-nav navbar-right">
+        <li><a class="partition">{{ user }}</a></li>
+        <li>
+            <a href="/usage">
+                <span class="glyphicon glyphicon-cog"></span>
+            </a>
+        </li>
+        <li>
+            <a href="ttux/logout">
+                <span class="glyphicon glyphicon-off"></span>
+            </a>
+        </li>
     </ul>
 {% endblock nav %}
 
@@ -98,5 +103,6 @@
             $(this).html($(this).text().replace(/\@.*?$/, ''));
         });
     </script>
-    <script type="text/javascript" src="/static/js/devices.js"></script>
+    {#    <script type="text/javascript" src="/static/js/devices.js"></script>#}
+
 {% endblock afterjquery %}

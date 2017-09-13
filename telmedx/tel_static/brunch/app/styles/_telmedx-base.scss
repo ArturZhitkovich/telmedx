@@ -60,6 +60,22 @@ html, body {
     }
   }
 
+  .navbar-right {
+    li > a {
+      padding-top: 20px;
+      padding-bottom: 11px;
+
+      span.glyphicon {
+        font-size: 25px;
+        color: #000;
+      }
+
+      .partition {
+        font-size: 14px;
+        color: #333;
+      }
+    }
+  }
 }
 
 img.snapshot {
