@@ -81,15 +81,15 @@ module.exports = {
 
     bindUiActions() {
         const context = this;
-        const $section = $('#capture-snaper').first();
+        this.$section = $('#capture-snaper').first();
 
         this.deviceName = $("#deviceName").data('name');
 
-        $section.find('.panzoom').panzoom({
-            $zoomIn: $section.find(".zoom-in"),
-            $zoomOut: $section.find(".zoom-out"),
-            $zoomRange: $section.find(".zoom-range"),
-            $reset: $section.find(".reset")
+        this.$section.find('.panzoom').panzoom({
+            $zoomIn: this.$section.find(".zoom-in"),
+            $zoomOut: this.$section.find(".zoom-out"),
+            $zoomRange: this.$section.find(".zoom-range"),
+            $reset: this.$section.find(".reset")
         });
 
         $("#open-editor").click(function () {
@@ -178,10 +178,10 @@ module.exports = {
             $("#c").remove();
             $stream.html('<img id="hollywood" src="/static/img/controls/spinner.gif" />');
         } else {
-            this.canvas = document.getElementById("c");
-            this.ctx = canvas.getContext('2d');
+            this.canvas = document.getElementById("video-canvas");
+            this.ctx = this.canvas.getContext('2d');
             this.canvas2 = document.getElementById("b");
-            this.ctx2 = canvas2.getContext('2d');
+            this.ctx2 = this.canvas2.getContext('2d');
         }
 
         $stream.css("overflow", "hidden");
@@ -190,7 +190,12 @@ module.exports = {
             $("#zoom-controls").css("visibility", "hidden");
         }
 
-        //Ask for the first frame
+        // Bind pastSnapshots for future snapshots
+        $('#pastSnapshots').on('click', '.snap-item', function(ev) {
+            // Snapshot id
+            const sid = $(ev.target).data('sid');
+            context.showSnapshot(sid);
+        })
     },
 
     isCanvasSupported() {
@@ -206,13 +211,13 @@ module.exports = {
     select(id) {
         $(".snapshot").css("border", "none");
         $("#" + id).css("border", "4px solid");
-        $section.find('.panzoom').panzoom("reset");
+        this.$section.find('.panzoom').panzoom("reset");
     },
 
     showSnapshot(id) {
         const selected = $("#" + id);
         $("#activeSnapshot").attr("src", selected.attr("src"));
-        select(id);
+        this.select(id);
     },
 
     makeid() {
@@ -256,7 +261,6 @@ module.exports = {
             } else {
                 dataUri = "data:image/jpeg;base64," + data.image;
             }
-            console.log(dataUri);
 
             if (context.canvasSupport && !ie) {
                 const image = new Image();
@@ -289,7 +293,6 @@ module.exports = {
                     context.ctx2.rotate(rotate * Math.PI / 180);
                     context.ctx2.drawImage(image, cx, cy);//Display Image in Canvas
                     dataUri = context.canvas2.toDataURL();
-                    console.log(dataUri);
 
                     $("#activeSnapshot").attr("src", dataUri);
                     //Center the image
@@ -303,21 +306,21 @@ module.exports = {
                         smheight = 45;
                     }
 
-                    const imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"" + String(smwidth) + "\" height=\"" + String(smheight) + "\" onclick=\"window.parent.showSnapshot('" + id + "')\"> ";
+                    const imageElement = "<img class=\"snapshot-item snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"" + String(smwidth) + "\" height=\"" + String(smheight) + "\" onclick=\"window.parent.showSnapshot('" + id + "')\"> ";
 
                     $("#pastSnapshots").append(imageElement);
 
-                    select(id);
+                    context.select(id);
                 };
             } else {
                 $("#activeSnapshot").attr("src", dataUri);
-                $section.find('.panzoom').panzoom("reset");
-                const id = "snapshot-" + new Date().getTime().toString(),
-                    imageElement = "<img class=\"snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"75\" height=\"50\" onclick=\"window.parent.showSnapshot('" + id + "')\"> ";
+                context.$section.find('.panzoom').panzoom("reset");
+                const id = "snapshot-" + new Date().getTime().toString();
+                const imageElement = `<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50">`;
 
                 $("#pastSnapshots").append(imageElement);
 
-                select(id);
+                context.select(id);
             }
         });
     },
@@ -359,7 +362,6 @@ module.exports = {
             }
 
             context.lastFrame = fnumber;
-            console.log(`last frame ${context.lastFrame}`);
 
             if (msg.substring(8).length > 0) {
                 let videoSrc = "data:image/jpg;base64," + msg.substring(begin_img_data);
@@ -371,7 +373,7 @@ module.exports = {
                     image.onload = function () {
                         let cw = image.width, ch = image.height, cx = 0, cy = 0;
                         // Calculate new canvas size and x/y coorditates for image
-                        switch (rotate) {
+                        switch (context.rotate) {
                             case 90:
                                 cw = image.height;
                                 ch = image.width;
@@ -390,7 +392,7 @@ module.exports = {
                         //  Rotate image
                         context.canvas.setAttribute('width', cw);
                         context.canvas.setAttribute('height', ch);
-                        context.ctx.rotate(rotate * Math.PI / 180);
+                        context.ctx.rotate(context.rotate * Math.PI / 180);
 
                         //Scales the image down if it won't fit in the box
                         if (cw > context.streamBox.innerWidth()) {
