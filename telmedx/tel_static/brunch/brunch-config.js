@@ -33,7 +33,9 @@ exports.plugins = {
     afterBrunch: [
         // Requires uglify installed globally via npm
         'uglifyjs public/app.js -o public/app.min.js',
-        'uglifyjs public/vendor.js -o public/vendor.min.js'
+        'uglifyjs public/vendor.js -o public/vendor.min.js',
+        // Copy over images to public dir so Django can get it
+        'cp -r app/assets/img public'
     ],
     copyfilemon: {
         'fonts': [
