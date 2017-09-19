@@ -14,7 +14,8 @@ exports.files = {
     },
     stylesheets: {
         joinTo: {
-            'app.css': 'app/styles/app.scss'
+            'app.css': 'app/styles/app.scss',
+            'vendor.css': /^node_modules/
         }
     }
 };
@@ -25,6 +26,10 @@ exports.npm = {
     globals: {
         '$': 'jquery',
         'jQuery': 'jquery'
+    },
+    // Required for jquery-ui
+    styles: {
+        'jquery-ui-bundle': ['jquery-ui.css']
     }
 };
 
@@ -32,19 +37,25 @@ exports.plugins = {
     babel: {presets: ['latest']},
     sass: {
         options: {
-            includePaths: ['node_modules/bootstrap-sass/assets/stylesheets']
+            includePaths: [
+                'node_modules/bootstrap-sass/assets/stylesheets'
+            ]
         }
     },
     cssnano: {
+        discardComments: {
+            removeAll: true
+        }
     },
-    uglify: {
-    },
+    uglify: {},
     afterBrunch: [
         // Requires uglify installed globally via npm
         'uglifyjs public/app.js -o public/app.min.js',
         'uglifyjs public/vendor.js -o public/vendor.min.js',
         // Copy over images to public dir so Django can get it
-        'cp -r app/assets/img public'
+        'cp -r app/assets/img public',
+        // Required for jquery-ui
+        'cp -r node_modules/jquery-ui-bundle/images public'
     ],
     copyfilemon: {
         'fonts': [
