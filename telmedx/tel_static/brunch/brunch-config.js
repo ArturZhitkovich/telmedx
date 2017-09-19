@@ -19,6 +19,15 @@ exports.files = {
     }
 };
 
+exports.npm = {
+    enabled: true,
+    // Required for jquery plugins like jquery-ui
+    globals: {
+        '$': 'jquery',
+        'jQuery': 'jquery'
+    }
+};
+
 exports.plugins = {
     babel: {presets: ['latest']},
     sass: {
