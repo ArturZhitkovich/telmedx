@@ -178,6 +178,19 @@ module.exports = {
             context.takeSnapshotClicked();
         });
 
+        $("#delete-snapshot").click(function () {
+            context.deleteSnapshot();
+        });
+
+        $('div').on('click', '.closeDiv', function () {
+            var snapDeleteID = $(this).attr("id");
+            var snapID = snapDeleteID.replace('delete-','')
+            $("#" + snapID).remove();
+            $("#" + snapDeleteID).remove();
+            console.log("item deleted");
+        });
+
+
         this.canvasSupport = this.isCanvasSupported();
         const $stream = $('#stream');
         if (!this.canvasSupport) {
@@ -216,6 +229,7 @@ module.exports = {
         $.post("/ttux/invite");
     },
 
+    // adds border to snapshot 
     select(id) {
         $(".snapshot").css("border", "none");
         $("#" + id).css("border", "4px solid");
@@ -226,6 +240,10 @@ module.exports = {
         const selected = $("#" + id);
         $("#activeSnapshot").attr("src", selected.attr("src"));
         this.select(id);
+    },
+
+    deleteSnapshot(id) {
+        console.log("Snapshot deleted");
     },
 
     makeid() {
@@ -314,9 +332,22 @@ module.exports = {
                         smheight = 45;
                     }
 
-                    const imageElement = "<img class=\"snapshot-item snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"" + String(smwidth) + "\" height=\"" + String(smheight) + "\" onclick=\"window.parent.showSnapshot('" + id + "')\"> ";
+                    var imageElement = $.parseHTML("<img class=\"snapshot-item snapshot\" id=\"" + id + "\" src=\"" + dataUri + "\" width=\"" + String(smwidth) + "\" height=\"" + String(smheight) + "\" onclick=\"window.parent.showSnapshot('" + id + "')\">");
+                    
+                    var container = document.createElement("div");
+                    // maybe make class unique, or an id via the const id above
+                    container.setAttribute('class', 'snapshot-container');
+    
+                    var div = document.createElement("div");
+                    div.innerHTML = "&times";
+                    div.setAttribute('class', 'closeDiv');
+                    div.setAttribute('id', "delete-" + id);
 
-                    $("#pastSnapshots").append(imageElement);
+                    const $container = $(container);
+                    $container.append(imageElement);
+                    $container.append(div);
+    
+                    $("#pastSnapshots").append($container);
 
                     context.select(id);
                 };
@@ -324,9 +355,23 @@ module.exports = {
                 $("#activeSnapshot").attr("src", dataUri);
                 context.$section.find('.panzoom').panzoom("reset");
                 const id = "snapshot-" + new Date().getTime().toString();
-                const imageElement = `<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50">`;
 
-                $("#pastSnapshots").append(imageElement);
+                var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" style="float:left;" width="75" height="50">`);                
+            
+                var container = document.createElement("div");
+                // maybe make class unique, or an id via the const id above
+                container.setAttribute('class', 'snapshot-container');
+
+                var div = document.createElement("div");
+                div.innerHTML = "&times";
+                div.setAttribute('class', 'closeDiv');
+                div.setAttribute('id', "delete-" + id);
+
+                const $container = $(container);
+                $container.append(imageElement);
+                $container.append(div);
+
+                $("#pastSnapshots").append($container);
 
                 context.select(id);
             }
