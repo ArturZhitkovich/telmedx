@@ -8,10 +8,10 @@ import time
 # from time import sleep
 import gevent
 import gevent.queue
-from django.contrib.auth import logout, login
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth import logout, login
+from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -181,8 +181,12 @@ def ping2_request(request, app_version, device_name):
     if all([app_version, device_name]):
         # Has flip camera & flashlight
         if app_version == '1.0.0':
-
             session = Session.get(device_name)
+            if session is None:
+                print('ping2: No session, putting session.')
+                Session.put(device_name, Session())
+                session = Session.get(device_name)
+
             if session is not None:
                 try:
                     session.deviceSpecQ.put_nowait(
@@ -192,7 +196,7 @@ def ping2_request(request, app_version, device_name):
                             'parameters': ['flip', 'flash']
                         })
                     )
-                except:
+                except Exception as e:
                     # remove item if the queue is blocked to keep stale
                     # requests from sitting in the queue
                     session.deviceSpecQ.get_nowait()
@@ -556,15 +560,15 @@ def view_session_info(request):
 
     if device is not None:
         session = Session.get(device)
-        body = 'begin timestamp:   ' + str(session.begin_timestamp) + '<br>'
-        body += 'end timestamp:   ' + str(session.last_frame_timestamp) + '<br>'
-        body += 'frames in session:   ' + str(session.frames_in_session) + '<br>'
-        body += 'difference:   ' + str(time.time() - session.last_frame_timestamp) + '<br>'
-        body += 'cleaning...<br>'
+        body = 'begin timestamp:    {}<br/>'.format(str(session.begin_timestamp))
+        body += 'end timestamp:   {}<br/>'.format(str(session.last_frame_timestamp))
+        body += 'frames in session:   {}<br/>'.format(str(session.frames_in_session))
+        body += 'difference:   {}<br/>'.format(str(time.time() - session.last_frame_timestamp))
+        body += 'cleaning...<br/>'
         session.clean_session()
-        body += 'begin timestamp:   ' + str(session.begin_timestamp) + '<br>'
-        body += 'end timestamp:   ' + str(session.last_frame_timestamp) + '<br>'
-        body += 'frames in session:   ' + str(session.frames_in_session) + '<br>'
+        body += 'begin timestamp:   {}<br/>'.format(str(session.begin_timestamp))
+        body += 'end timestamp:   {}<br/>'.format(str(session.last_frame_timestamp))
+        body += 'frames in session:   {}<br/>'.format(str(session.frames_in_session))
     return HttpResponse(body)
 
 
@@ -649,10 +653,9 @@ def logout_view(request):
     return HttpResponseRedirect('/login/?next=%s' % request.path)
 
 
-
 class TelmedxLoginView(LoginView):
     def get_context_data(self, **kwargs):
         context = super(TelmedxLoginView, self).get_context_data(**kwargs)
         # Add branding context
-        context.update({ 'brand': settings.INSTANCE_BRAND })
+        context.update({'brand': settings.INSTANCE_BRAND})
         return context
