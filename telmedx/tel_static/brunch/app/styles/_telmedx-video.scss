@@ -45,6 +45,19 @@
       margin: 2px;
     }
   }
+  .closeDiv {
+  width: 15px;
+  height: 16px;
+  background-color: rgb(35, 179, 119);
+  float: left;
+  cursor: pointer;
+  color: white;
+  box-shadow: 2px 2px 7px rgb(74, 72, 72);
+  text-align: center;
+  margin: 5px;
+  border-radius: 4px;
+}
+
 }
 
 #myModal {
