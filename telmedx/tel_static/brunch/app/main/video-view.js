@@ -161,17 +161,15 @@ module.exports = {
         });
 
         $("#rotate-right").click(function () {
-            context.rotate = context.rotate + 90;
-            if (context.rotate === 360) {
-                context.rotate = 0;
-            }
+            var angle = ($('#hollywood').data('angle') + 90) || 90;
+            $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
+            $('#hollywood').data('angle', angle);
         });
 
         $("#rotate-left").click(function () {
-            context.rotate = context.rotate - 90;
-            if (context.rotate === -90) {
-                context.rotate = 270;
-            }
+            var angle = ($('#hollywood').data('angle') - 90) || - 90;
+            $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
+            $('#hollywood').data('angle', angle);
         });
 
         $("#capture-button").click(function () {
