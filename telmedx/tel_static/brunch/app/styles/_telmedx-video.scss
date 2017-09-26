@@ -1,7 +1,7 @@
 // Dynamically created by video-view.js
 #hollywood {
-  height: 50%;
-  width: 50%;
+  height: 100%;
+  width: 65%;
   display: block;
   margin: auto auto 8px;
 }
@@ -45,6 +45,11 @@
       margin: 2px;
     }
   }
+
+  .row.ui-widget-content {
+    display: inline;
+  }
+
   .closeDiv {
   width: 15px;
   height: 16px;
@@ -70,3 +75,20 @@
     width: 100%;
   }
 }
+
+.ui-resizable-sw {
+  background-image: url(images/ui-icons_444444_256x240.png);
+  transform: rotate(90deg);
+  cursor: sw-resize;
+  width: 12px;
+  height: 12px;
+  left: 5px;
+  right: 0px;
+  bottom: 4px;
+  z-index: 90;
+  position: absolute;
+  background-position: -64px -224px;
+}
+
+
+

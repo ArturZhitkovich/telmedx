@@ -535,10 +535,12 @@ module.exports = {
             this.resizeHeightRight = 800;
             this.resizeWidthRight = $window.width() - 30;
         } else {
-            this.resizeHeight = 420;
-            this.resizeWidth = 600;
-            this.resizeWidthRight = $(".col-md-6").width();
-            this.resizeHeightRight = 800;
+            this.resizeHeight = 660;
+            this.resizeWidth = 895;
+            this.resizeWidthRight = 890;
+            this.resizeHeightRight = 660;
+            //this.resizeWidthRight = $(".col-md-6").width();
+            //this.resizeHeightRight = 800;
         }
     },
 
@@ -590,25 +592,26 @@ module.exports = {
 
         $resizable.resizable({
             aspectRatio: false,
-            handles: "se",
+            handles: "sw",
             maxHeight: () => {
                 return this.resizeHeight;
             },
             maxWidth: () => {
                 return this.resizeWidth;
             },
-            minHeight: 300,
-            minWidth: 250
+            minHeight: 400,
+            minWidth: 400
         });
 
         $resizableRight.resizable({
+            handles: "sw",
             minHeight: 500,
             minWidth: 500,
             maxHeight: this.resizeHeightRight,
             maxWidth: this.resizeWidthRight
         });
 
-        $(".ui-icon-gripsmall-diagonal-se").mousedown(() => {
+        $(".ui-resizable-sw").mousedown(() => {
             console.log("resizable clicked");
             this.checkWidth();
             $resizable.resizable("option", "maxHeight", this.resizeHeight);
