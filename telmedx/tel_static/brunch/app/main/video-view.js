@@ -185,6 +185,7 @@ module.exports = {
             var snapID = snapDeleteID.replace('delete-','')
             $("#" + snapID).remove();
             $("#" + snapDeleteID).remove();
+            $('.' + 'container-'+ snapID).remove();
             console.log("item deleted");
         });
 
@@ -334,10 +335,10 @@ module.exports = {
                     
                     var container = document.createElement("div");
                     // maybe make class unique, or an id via the const id above
-                    container.setAttribute('class', 'snapshot-container');
+                    container.setAttribute('class', 'container-'+ id);
     
                     var div = document.createElement("div");
-                    div.innerHTML = "&times";
+                    //div.innerHTML = "&times";
                     div.setAttribute('class', 'closeDiv');
                     div.setAttribute('id', "delete-" + id);
 
@@ -358,10 +359,10 @@ module.exports = {
             
                 var container = document.createElement("div");
                 // maybe make class unique, or an id via the const id above
-                container.setAttribute('class', 'snapshot-container');
+                container.setAttribute('class', 'container-'+ id);
 
                 var div = document.createElement("div");
-                div.innerHTML = "&times";
+                //div.innerHTML = "&times";
                 div.setAttribute('class', 'closeDiv');
                 div.setAttribute('id', "delete-" + id);
 
@@ -535,10 +536,10 @@ module.exports = {
             this.resizeHeightRight = 800;
             this.resizeWidthRight = $window.width() - 30;
         } else {
-            this.resizeHeight = 660;
-            this.resizeWidth = 895;
-            this.resizeWidthRight = 890;
-            this.resizeHeightRight = 660;
+            this.resizeHeight = 650;
+            this.resizeWidth = 885;
+            this.resizeWidthRight = 892.5;
+            this.resizeHeightRight = 650;
             //this.resizeWidthRight = $(".col-md-6").width();
             //this.resizeHeightRight = 800;
         }
