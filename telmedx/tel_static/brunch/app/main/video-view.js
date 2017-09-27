@@ -531,9 +531,9 @@ module.exports = {
 
         if (windowsize < 992) {
             //if the window is less than 992px wide then...
-            this.resizeHeight = 500;
+            this.resizeHeight = 650;
             this.resizeWidth = $window.width() - 30;
-            this.resizeHeightRight = 800;
+            this.resizeHeightRight = 530;
             this.resizeWidthRight = $window.width() - 30;
         } else {
             this.resizeHeight = 650;
