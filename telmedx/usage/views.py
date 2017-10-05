@@ -1,6 +1,7 @@
 # Create your views here.
 import datetime
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import redirect, render_to_response
@@ -34,15 +35,20 @@ def home(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         logs = paginator.page(paginator.num_pages)
 
-    return render_to_response('usage/index.html', {'records': logs})
+    return render_to_response('usage/index.html', context={
+        'records': logs,
+        'brand': settings.INSTANCE_BRAND
+    })
 
 
 @login_required(login_url='/login')
 def single_device(request, device_name):
     try:
-        device = mobileCam.objects.filter(groups=request.user.groups.all).get(name=device_name)
+        device = mobileCam.objects.filter(groups=request.user.groups.all()).get(name=device_name)
     except mobileCam.DoesNotExist as e:
         return redirect('/usage')
+    except Exception as e:
+        print(e)
 
     logs = sessionLog.objects.filter(device=device)
 
@@ -62,5 +68,8 @@ def single_device(request, device_name):
         # If page is out of range (e.g. 9999), deliver last page of results.
         logs = paginator.page(paginator.num_pages)
 
-    return render_to_response('usage/index.html',
-                              {'records': logs, 'single_device': device})
+    return render_to_response('usage/index.html', context={
+        'records': logs,
+        'single_device': device,
+        'brand': settings.INSTANCE_BRAND
+    })
