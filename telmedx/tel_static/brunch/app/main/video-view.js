@@ -1,5 +1,6 @@
-const $ = require('jquery'),
-    panzoom = require('jquery.panzoom');
+const $ = require('jquery');
+const panzoom = require('jquery.panzoom');
+const jqueryUi = require('jquery-ui-bundle');
 
 
 module.exports = {
@@ -43,6 +44,11 @@ module.exports = {
     // Caputred Image Viewer
     $section: null,
     controlOutput: null,
+
+    resizeWidth: 0,
+    resizeHeight: 0,
+    resizeWidthRight: 0,
+    resizeHeightRight: 0,
 
 
     init(el) {
@@ -155,17 +161,15 @@ module.exports = {
         });
 
         $("#rotate-right").click(function () {
-            context.rotate = context.rotate + 90;
-            if (context.rotate === 360) {
-                context.rotate = 0;
-            }
+            var angle = ($('#hollywood').data('angle') + 90) || 90;
+            $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
+            $('#hollywood').data('angle', angle);
         });
 
         $("#rotate-left").click(function () {
-            context.rotate = context.rotate - 90;
-            if (context.rotate === -90) {
-                context.rotate = 270;
-            }
+            var angle = ($('#hollywood').data('angle') - 90) || - 90;
+            $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
+            $('#hollywood').data('angle', angle);
         });
 
         $("#capture-button").click(function () {
@@ -181,6 +185,7 @@ module.exports = {
             var snapID = snapDeleteID.replace('delete-','')
             $("#" + snapID).remove();
             $("#" + snapDeleteID).remove();
+            $('.' + 'container-'+ snapID).remove();
             console.log("item deleted");
         });
 
@@ -208,7 +213,9 @@ module.exports = {
             // Snapshot id
             const sid = $(ev.target).data('sid');
             context.showSnapshot(sid);
-        })
+        });
+
+        this.bindResizeEvents();
     },
 
     isCanvasSupported() {
@@ -328,10 +335,10 @@ module.exports = {
                     
                     var container = document.createElement("div");
                     // maybe make class unique, or an id via the const id above
-                    container.setAttribute('class', 'snapshot-container');
+                    container.setAttribute('class', 'container-'+ id);
     
                     var div = document.createElement("div");
-                    div.innerHTML = "&times";
+                    //div.innerHTML = "&times";
                     div.setAttribute('class', 'closeDiv');
                     div.setAttribute('id', "delete-" + id);
 
@@ -352,10 +359,10 @@ module.exports = {
             
                 var container = document.createElement("div");
                 // maybe make class unique, or an id via the const id above
-                container.setAttribute('class', 'snapshot-container');
+                container.setAttribute('class', 'container-'+ id);
 
                 var div = document.createElement("div");
-                div.innerHTML = "&times";
+                //div.innerHTML = "&times";
                 div.setAttribute('class', 'closeDiv');
                 div.setAttribute('id', "delete-" + id);
 
@@ -512,6 +519,107 @@ module.exports = {
         this.isFlashOn = false;
         $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103.png">');
         $("#flash-toggle").removeClass('active');
+    },
+
+    /**
+     * Function to check the width on resize on the entire window.
+     * To be used for adjusting the panel layouts depending on resolution.
+     */
+    checkWidth() {
+        const $window = $(window);
+        const windowsize = $window.width();
+
+        if (windowsize < 992) {
+            //if the window is less than 992px wide then...
+            this.resizeHeight = 650;
+            this.resizeWidth = $window.width() - 30;
+            this.resizeHeightRight = 530;
+            this.resizeWidthRight = $window.width() - 30;
+        } else {
+            this.resizeHeight = 650;
+            this.resizeWidth = 885;
+            this.resizeWidthRight = 892.5;
+            this.resizeHeightRight = 650;
+            //this.resizeWidthRight = $(".col-md-6").width();
+            //this.resizeHeightRight = 800;
+        }
+    },
+
+    locateStream() {
+        /*
+         * This function is to allow or disable resizing of the container before stream has loaded in
+        */
+        // see if stream elementExists
+        // if it does not, disable resizing?
+        const elementExists = $('#hollywood');
+        if (!elementExists) {
+            console.log("Cannot find hollywood");
+        } else {
+            console.log("hollywood exists");
+        }
+    },
+
+    checkoverflow(el) {
+        const element = document.querySelector('' + ele);
+        console.log("checkoverflow called");
+        if (element.offsetHeight < element.scrollHeight ||
+            element.offsetWidth < element.scrollWidth) {
+            // your element have overflow
+            console.log("element has overflow");
+        } else {
+            // your element doesn't have overflow
+            console.log("element is fine");
+        }
+    },
+
+    /**
+     * Bindings to adjust layout based on window size.
+     */
+    bindResizeEvents() {
+        // Window resizing adjustments
+        const $resizable = $('.resizable');
+        const $resizableRight = $('.resizable-right');
+
+        this.checkWidth();
+        this.locateStream();
+
+        $(window).resize(() => {
+            this.checkWidth();
+            $resizable.resizable("option", "maxHeight", this.resizeHeight);
+            $resizable.resizable("option", "maxWidth", this.resizeWidth);
+            $resizableRight.resizable("option", "maxHeight", this.resizeHeightRight);
+            $resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
+        });
+
+        $resizable.resizable({
+            aspectRatio: false,
+            handles: "sw",
+            maxHeight: () => {
+                return this.resizeHeight;
+            },
+            maxWidth: () => {
+                return this.resizeWidth;
+            },
+            minHeight: 400,
+            minWidth: 400
+        });
+
+        $resizableRight.resizable({
+            handles: "sw",
+            minHeight: 500,
+            minWidth: 500,
+            maxHeight: this.resizeHeightRight,
+            maxWidth: this.resizeWidthRight
+        });
+
+        $(".ui-resizable-sw").mousedown(() => {
+            console.log("resizable clicked");
+            this.checkWidth();
+            $resizable.resizable("option", "maxHeight", this.resizeHeight);
+            $resizable.resizable("option", "maxWidth", this.resizeWidth);
+            $resizableRight.resizable("option", "maxHeight", this.resizeHeightRight);
+            $resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
+        });
     }
 };
 

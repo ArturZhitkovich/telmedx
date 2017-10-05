@@ -7,7 +7,13 @@
 
 {% block nav %}
     <ul class="nav navbar-nav navbar-right">
-        <li><a class="partition">{{ user }}</a></li>
+        <li>
+            <a href="#">
+                <span class="partition">
+                    {{ brand }} - {{ user }}
+                </span>
+            </a>
+        </li>
         <li>
             <a href="/usage">
                 <span class="glyphicon glyphicon-cog"></span>
@@ -91,9 +97,6 @@
         </div>
         {% endcomment %}
         </div>
-    </div>
-    <div class="scroll-to-top">
-        <a href="/usage" style="font-size: 25px; color: #333;"><span class="glyphicon glyphicon-cog"></span></a>
     </div>
 {% endblock content %}
 
