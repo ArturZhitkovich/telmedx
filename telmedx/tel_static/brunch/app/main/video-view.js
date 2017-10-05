@@ -185,6 +185,7 @@ module.exports = {
             var snapID = snapDeleteID.replace('delete-','')
             $("#" + snapID).remove();
             $("#" + snapDeleteID).remove();
+            $('.' + 'container-'+ snapID).remove();
             console.log("item deleted");
         });
 
@@ -334,10 +335,10 @@ module.exports = {
                     
                     var container = document.createElement("div");
                     // maybe make class unique, or an id via the const id above
-                    container.setAttribute('class', 'snapshot-container');
+                    container.setAttribute('class', 'container-'+ id);
     
                     var div = document.createElement("div");
-                    div.innerHTML = "&times";
+                    //div.innerHTML = "&times";
                     div.setAttribute('class', 'closeDiv');
                     div.setAttribute('id', "delete-" + id);
 
@@ -358,10 +359,10 @@ module.exports = {
             
                 var container = document.createElement("div");
                 // maybe make class unique, or an id via the const id above
-                container.setAttribute('class', 'snapshot-container');
+                container.setAttribute('class', 'container-'+ id);
 
                 var div = document.createElement("div");
-                div.innerHTML = "&times";
+                //div.innerHTML = "&times";
                 div.setAttribute('class', 'closeDiv');
                 div.setAttribute('id', "delete-" + id);
 
@@ -530,15 +531,17 @@ module.exports = {
 
         if (windowsize < 992) {
             //if the window is less than 992px wide then...
-            this.resizeHeight = 500;
+            this.resizeHeight = 650;
             this.resizeWidth = $window.width() - 30;
-            this.resizeHeightRight = 800;
+            this.resizeHeightRight = 530;
             this.resizeWidthRight = $window.width() - 30;
         } else {
-            this.resizeHeight = 420;
-            this.resizeWidth = 600;
-            this.resizeWidthRight = $(".col-md-6").width();
-            this.resizeHeightRight = 800;
+            this.resizeHeight = 650;
+            this.resizeWidth = 885;
+            this.resizeWidthRight = 892.5;
+            this.resizeHeightRight = 650;
+            //this.resizeWidthRight = $(".col-md-6").width();
+            //this.resizeHeightRight = 800;
         }
     },
 
@@ -590,25 +593,26 @@ module.exports = {
 
         $resizable.resizable({
             aspectRatio: false,
-            handles: "se",
+            handles: "sw",
             maxHeight: () => {
                 return this.resizeHeight;
             },
             maxWidth: () => {
                 return this.resizeWidth;
             },
-            minHeight: 300,
-            minWidth: 250
+            minHeight: 400,
+            minWidth: 400
         });
 
         $resizableRight.resizable({
+            handles: "sw",
             minHeight: 500,
             minWidth: 500,
             maxHeight: this.resizeHeightRight,
             maxWidth: this.resizeWidthRight
         });
 
-        $(".ui-icon-gripsmall-diagonal-se").mousedown(() => {
+        $(".ui-resizable-sw").mousedown(() => {
             console.log("resizable clicked");
             this.checkWidth();
             $resizable.resizable("option", "maxHeight", this.resizeHeight);
