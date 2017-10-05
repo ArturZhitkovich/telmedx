@@ -580,39 +580,42 @@ module.exports = {
         const $resizable = $('.resizable');
         const $resizableRight = $('.resizable-right');
 
-        this.checkWidth();
+        //this.checkWidth();
         this.locateStream();
 
-        $(window).resize(() => {
-            this.checkWidth();
-            $resizable.resizable("option", "maxHeight", this.resizeHeight);
-            $resizable.resizable("option", "maxWidth", this.resizeWidth);
-            $resizableRight.resizable("option", "maxHeight", this.resizeHeightRight);
-            $resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
+        $(window).resize(function(){
+            //this.checkWidth();
+            console.log("window resize here");
+            $resizable.css("width",$('.resizable').parent().css("width")-20);
+            $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
         });
 
         $resizable.resizable({
+            containment: 'parent',
+            snap: "#video-container", snapMode: "inner",
             aspectRatio: false,
-            handles: "sw",
-            maxHeight: () => {
-                return this.resizeHeight;
-            },
-            maxWidth: () => {
-                return this.resizeWidth;
-            },
+            handles: "se",
             minHeight: 400,
-            minWidth: 400
-        });
+            minWidth: 400,
+
+        }).draggable({
+            containment: 'parent' ,
+            snap: "#video-container", snapMode: "inner"         
+        });    
 
         $resizableRight.resizable({
+            containment: 'parent',
+            snap: "#snap-container", snapMode: "inner",
             handles: "sw",
             minHeight: 500,
-            minWidth: 500,
-            maxHeight: this.resizeHeightRight,
-            maxWidth: this.resizeWidthRight
-        });
+            minWidth: 500,       
 
-        $(".ui-resizable-sw").mousedown(() => {
+        }).draggable({
+            containment: 'parent' ,
+            snap: "#snap-container", snapMode: "inner"         
+        });   
+
+        $(".ui-resizable-sx").mousedown(() => {
             console.log("resizable clicked");
             this.checkWidth();
             $resizable.resizable("option", "maxHeight", this.resizeHeight);

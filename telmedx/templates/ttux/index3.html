@@ -29,8 +29,8 @@
 
 {% block content %}
     <div id="device-video-page" class="container" style="width: 100%;">
-        <div id="first-row" class="row">
-            <div class="col-md-6">
+        <div id="first-row" class="">
+            <div id="video-container" class="col-md-6">
                 <div class="video-panel panel panel-default resizable" style="overflow: hidden;">
                     <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
                         <h3 class="panel-title">
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div id="snap-container"class="col-md-6">
                     <div class="panel panel-default resizable-right" style="overflow: hidden;">
                         <div id="capture-snaper">
                             <div class="panel-heading" id="cap-head">
@@ -112,13 +112,13 @@
             </div>
         </div>
         <div id="second-row" class="row">
-            <div class="col-md-6">
+            <div id="second-left" class="col-md-6">
                 <div id="powered-logo" style="">
                         <p style="margin-bottom: 5px; color: #fff;">Powered By</p>
                         <img src="/static/img/powered-by.png" style="width: 125px;">
                 </div>
             </div>
-            <div class="col-md-6">
+            <div id="second-right" class="col-md-6">
                 <div id="snapshot-panel" class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><img style="height: 30px;" src="/static/img/controls/images10.png"></h3>

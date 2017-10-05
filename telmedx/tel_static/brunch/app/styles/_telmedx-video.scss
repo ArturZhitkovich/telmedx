@@ -8,6 +8,21 @@
 
 #device-video-page {
 
+  #video-container, #snap-container {
+    padding: 2%;
+    height: 700px;
+  }
+
+  #second-left, #second-right {
+    padding: 2%;
+  }
+
+  @media all and (max-width: 1150px) {
+    #video-container, #snap-container {
+      padding-top: 4%;
+    }
+  }
+
   #capture-snaper {
     &.panel {
       margin-bottom: 0;
@@ -24,7 +39,7 @@
   }
 
   div#button-group {
-    margin-top: -.5%;
+    margin-top: -1%;
   }
 
   #video-canvas {
