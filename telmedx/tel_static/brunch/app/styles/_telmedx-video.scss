@@ -55,7 +55,7 @@
   }
 
   .closeDiv {
-    background-image: url(tel_static/brunch/app/assets/img/controls/del-default.png);
+    background-image: url(/static/img/controls/del-default.png);
     height: 20px;
     width: 20px;
     float: left;
@@ -68,7 +68,7 @@
 }
 
 .closeDiv:hover {
-  background-image: url(tel_static/brunch/app/assets/img/controls/del-hover.png);
+  background-image: url(/static/img/controls/del-hover.png);
 }
 
 .snapshot-container {
