@@ -153,6 +153,12 @@ img.snapshot {
   }
 }
 
+@media all and (max-width: 1400px) {
+  #first-row {
+    margin-top: 7%;
+  }
+}
+
 @media all and (max-width: 992px) and (min-width: 768px) {
   .nav {
     height: 45px;

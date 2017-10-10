@@ -9,18 +9,16 @@
 #device-video-page {
 
   #video-container, #snap-container {
-    padding: 2%;
+    padding: 0%;
     height: 700px;
+    width: 48%;
+    margin: 1%;
+    float: left;
+    max-width: 48%;
   }
 
   #second-left, #second-right {
     padding: 2%;
-  }
-
-  @media all and (max-width: 1150px) {
-    #video-container, #snap-container {
-      padding-top: 4%;
-    }
   }
 
   #capture-snaper {

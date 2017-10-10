@@ -531,15 +531,16 @@ module.exports = {
 
         if (windowsize < 992) {
             //if the window is less than 992px wide then...
-            this.resizeHeight = 650;
+            //this.resizeHeight = 650;
             this.resizeWidth = $window.width() - 30;
-            this.resizeHeightRight = 530;
+            //this.resizeHeightRight = 530;
             this.resizeWidthRight = $window.width() - 30;
         } else {
-            this.resizeHeight = 650;
+            //this.resizeHeight = 650;
             this.resizeWidth = 885;
             this.resizeWidthRight = 892.5;
-            this.resizeHeightRight = 650;
+            //this.resizeHeightRight = 650;
+
             //this.resizeWidthRight = $(".col-md-6").width();
             //this.resizeHeightRight = 800;
         }
@@ -588,40 +589,75 @@ module.exports = {
             console.log("window resize here");
             $resizable.css("width",$('.resizable').parent().css("width")-20);
             $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
+
+            var percent = ($(window).width()/100) * 48;
+            console.log("percentpixel: " + percent);
+
+            checkoverlap();
         });
 
+
+        /**
+         * Checks if videoStream container and Snapshot viewer are overlapping 
+         */
+        function checkoverlap() {
+            var positionLeft = $resizable.offset().left + $resizable.width();
+            var positionRight = $resizableRight.offset().left ;
+
+            console.log("leftWidth: " + positionLeft);
+            console.log("right: " + positionRight);
+
+            if (positionLeft > positionRight) {
+                // overlapping = TRUE       
+                console.log("overlapping!");
+                //$resizable.css("width",$('#video-container').css("width")-20);
+                //$resizableRight.css("width",$('#snap-container').css("width")-20); 
+
+                //checkWidth();
+                //$resizable.resizable("option", "maxWidth", this.resizeWidth);
+                //$resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
+            }
+        };
+
         $resizable.resizable({
-            containment: 'parent',
-            snap: "#video-container", snapMode: "inner",
+            //containment: 'parent',
+            //snap: "#video-container", snapMode: "inner",
             aspectRatio: false,
             handles: "se",
             minHeight: 400,
             minWidth: 400,
-
-        }).draggable({
-            containment: 'parent' ,
-            snap: "#video-container", snapMode: "inner"         
-        });    
+            maxHeight: 700,
+            maxWidth: ()=>{
+                return percent = ($(window).width()/100) * 48;
+                //console.log("percentpixel: " + percent);
+            }
+        });   
 
         $resizableRight.resizable({
-            containment: 'parent',
-            snap: "#snap-container", snapMode: "inner",
-            handles: "sw",
+            //containment: 'parent',
+            //snap: "#snap-container", snapMode: "inner",
+            handles: "se",
             minHeight: 500,
-            minWidth: 500,       
-
-        }).draggable({
-            containment: 'parent' ,
-            snap: "#snap-container", snapMode: "inner"         
-        });   
+            minWidth: 500,
+            maxHeight: 700,
+            maxWidth: ()=>{
+                return percent = ($(window).width()/100) * 48;
+                //console.log("percentpixel: " + percent);
+            }      
+        });  
 
         $(".ui-resizable-sx").mousedown(() => {
             console.log("resizable clicked");
             this.checkWidth();
+            $resizable.css("width",$('.resizable').parent().css("width")-20);
+            $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
+
+            /*
             $resizable.resizable("option", "maxHeight", this.resizeHeight);
             $resizable.resizable("option", "maxWidth", this.resizeWidth);
             $resizableRight.resizable("option", "maxHeight", this.resizeHeightRight);
             $resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
+            */
         });
     }
 };
