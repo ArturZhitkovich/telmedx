@@ -10,15 +10,27 @@
 
   #video-container, #snap-container {
     padding: 0%;
-    height: 700px;
+    height: 650px;
     width: 48%;
     margin: 1%;
     float: left;
     max-width: 48%;
   }
 
+  @media all and (max-width: 900px){
+    #video-container, #snap-container {
+      padding: 0;
+      height: 650px;
+      width: 94%;
+      margin: 3%;
+      float: left;
+      max-width: 98%;
+    }
+  }
+
+
   #second-left, #second-right {
-    padding: 2%;
+    /* padding: 2%; */
   }
 
   #capture-snaper {

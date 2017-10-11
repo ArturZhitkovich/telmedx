@@ -626,7 +626,7 @@ module.exports = {
             handles: "se",
             minHeight: 400,
             minWidth: 400,
-            maxHeight: 700,
+            maxHeight: 650,
             maxWidth: ()=>{
                 return percent = ($(window).width()/100) * 48;
                 //console.log("percentpixel: " + percent);
@@ -639,7 +639,7 @@ module.exports = {
             handles: "se",
             minHeight: 500,
             minWidth: 500,
-            maxHeight: 700,
+            maxHeight: 650,
             maxWidth: ()=>{
                 return percent = ($(window).width()/100) * 48;
                 //console.log("percentpixel: " + percent);
