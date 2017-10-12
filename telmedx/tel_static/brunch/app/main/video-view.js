@@ -505,7 +505,7 @@ module.exports = {
             $("#capture-snaper").css("height", snaperh);
             $("#cap-body").css("height", snaperh - $("#cap-head").outerHeight());
         } else {
-            $("#cap-body").css("height", "400px");
+            $("#cap-body").css("height", "100%");
         }
     },
 
@@ -531,18 +531,11 @@ module.exports = {
 
         if (windowsize < 992) {
             //if the window is less than 992px wide then...
-            //this.resizeHeight = 650;
             this.resizeWidth = $window.width() - 30;
-            //this.resizeHeightRight = 530;
             this.resizeWidthRight = $window.width() - 30;
         } else {
-            //this.resizeHeight = 650;
             this.resizeWidth = 885;
             this.resizeWidthRight = 892.5;
-            //this.resizeHeightRight = 650;
-
-            //this.resizeWidthRight = $(".col-md-6").width();
-            //this.resizeHeightRight = 800;
         }
     },
 
@@ -581,14 +574,15 @@ module.exports = {
         const $resizable = $('.resizable');
         const $resizableRight = $('.resizable-right');
 
+        const $videoContainer = $('#video-container');
+        const $snapContainer = $('#snap-container');
+
         //this.checkWidth();
         this.locateStream();
 
         $(window).resize(function(){
             //this.checkWidth();
             console.log("window resize here");
-            $resizable.css("width",$('.resizable').parent().css("width")-20);
-            $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
 
             var percent = ($(window).width()/100) * 48;
             console.log("percentpixel: " + percent);
@@ -610,12 +604,6 @@ module.exports = {
             if (positionLeft > positionRight) {
                 // overlapping = TRUE       
                 console.log("overlapping!");
-                //$resizable.css("width",$('#video-container').css("width")-20);
-                //$resizableRight.css("width",$('#snap-container').css("width")-20); 
-
-                //checkWidth();
-                //$resizable.resizable("option", "maxWidth", this.resizeWidth);
-                //$resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
             }
         };
 
@@ -636,6 +624,7 @@ module.exports = {
         $resizableRight.resizable({
             //containment: 'parent',
             //snap: "#snap-container", snapMode: "inner",
+            aspectRatio: false,
             handles: "se",
             minHeight: 500,
             minWidth: 500,
@@ -651,13 +640,6 @@ module.exports = {
             this.checkWidth();
             $resizable.css("width",$('.resizable').parent().css("width")-20);
             $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
-
-            /*
-            $resizable.resizable("option", "maxHeight", this.resizeHeight);
-            $resizable.resizable("option", "maxWidth", this.resizeWidth);
-            $resizableRight.resizable("option", "maxHeight", this.resizeHeightRight);
-            $resizableRight.resizable("option", "maxWidth", this.resizeWidthRight);
-            */
         });
     }
 };

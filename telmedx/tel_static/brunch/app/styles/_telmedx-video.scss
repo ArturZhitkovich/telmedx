@@ -17,14 +17,14 @@
     max-width: 48%;
   }
 
-  @media all and (max-width: 900px){
+  @media all and (max-width: 950px){
     #video-container, #snap-container {
       padding: 0;
       height: 780px;
       width: 94%;
       margin: 3%;
       float: left;
-      max-width: 98%;
+      max-width: 94%;
     }
   }
 
