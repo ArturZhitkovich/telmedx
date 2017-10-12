@@ -32,9 +32,29 @@
         <div id="first-row" class="row">
                 <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
                     <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
-                        <h3 class="panel-title">
-                            <div style="float:left;">{{ dev.name }} &nbsp;</div>
-                            <div style="float: right;" id="rotate-buttons">
+                        <h3 class="panel-title" style="display: flex;">
+                            <div style="">{{ dev.name }} &nbsp;</div>
+                                    <div class="btn-group">
+
+                                    </div>
+
+                            <div style="margin: 0 auto;">
+                                <button id="camera-toggle" type="button" class="btn btn-default" style="padding: 3px;">
+                                    <div id="camera-toggle-icon">
+                                        <img style="height: 25px;" src="/static/img/controls/switch19.png">
+                                    </div>
+                                </button>
+                                <button type="button" id="capture-button" class="btn btn-default" style="padding: 3px;">
+                                    <img style="height: 25px; cursor:pointer;" src="/static/img/controls/Capture_Button.png"/>
+                                </button>
+                                <button id="flash-toggle" type="button" class="btn btn-default" style="padding: 3px; width: auto !important;">
+                                    <img style="height: 25px;" src="/static/img/controls/open103.png">
+                                </button>
+                            </div>
+
+
+                            <div style="" id="rotate-buttons">
+
                                 <button id="rotate-left" class="btn btn-default" style="padding: 3px;">
                                     <img style="height: 25px;" src="/static/img/controls/rotating1.png">
                                 </button>
@@ -56,23 +76,6 @@
                             </div>
                         </div>
                         <div class="row ui-widget-content" style="resize: both;">
-                            <div id="button-group" class="text-center">
-                                <div class="btn-group">
-                                    <button id="camera-toggle" style="width: 86px; height: 64px; display:none;"
-                                            type="button" class="btn btn-default">
-                                        <div id="camera-toggle-icon">
-                                            <img style="height: 50px;" src="/static/img/controls/switch19.png">
-                                        </div>
-                                    </button>
-                                    <button type="button" id="capture-button" class="btn btn-default"><img
-                                            style="height: 50px; cursor:pointer;"
-                                            src="/static/img/controls/Capture_Button.png"/></button>
-                                    <button id="flash-toggle" type="button" style="width: 86px; display:none;"
-                                            class="btn btn-default"><img style="height: 50px;"
-                                                                            src="/static/img/controls/open103.png">
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

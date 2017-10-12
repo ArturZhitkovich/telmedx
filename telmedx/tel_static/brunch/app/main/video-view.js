@@ -128,7 +128,7 @@ module.exports = {
             }
         });
 
-        $("#flash-toggle").css("width", $("#flash-toggle").outerWidth());
+        //$("#flash-toggle").css("width", $("#flash-toggle").outerWidth());
 
         $(window).resize(function () {
             context.sizePreview();
@@ -511,13 +511,13 @@ module.exports = {
 
     flashOn() {
         this.isFlashOn = true;
-        $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103off.png">');
+        $("#flash-toggle").html('<img style="height: 25px;" src="/static/img/controls/open103off.png">');
         $("#flash-toggle").removeClass('active');
     },
 
     flashOff() {
         this.isFlashOn = false;
-        $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103.png">');
+        $("#flash-toggle").html('<img style="height: 25px;" src="/static/img/controls/open103.png">');
         $("#flash-toggle").removeClass('active');
     },
 
@@ -624,9 +624,9 @@ module.exports = {
             //snap: "#video-container", snapMode: "inner",
             aspectRatio: false,
             handles: "se",
-            minHeight: 400,
-            minWidth: 400,
-            maxHeight: 650,
+            minHeight: 500,
+            minWidth: 500,
+            maxHeight: 670,
             maxWidth: ()=>{
                 return percent = ($(window).width()/100) * 48;
                 //console.log("percentpixel: " + percent);
@@ -639,7 +639,7 @@ module.exports = {
             handles: "se",
             minHeight: 500,
             minWidth: 500,
-            maxHeight: 650,
+            maxHeight: 670,
             maxWidth: ()=>{
                 return percent = ($(window).width()/100) * 48;
                 //console.log("percentpixel: " + percent);

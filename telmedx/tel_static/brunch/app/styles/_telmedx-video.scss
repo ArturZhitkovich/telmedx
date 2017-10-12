@@ -1,7 +1,7 @@
 // Dynamically created by video-view.js
 #hollywood {
   height: 100%;
-  width: 65%;
+  width: 85%;
   display: block;
   margin: auto auto 8px;
 }
@@ -10,7 +10,7 @@
 
   #video-container, #snap-container {
     padding: 0%;
-    height: 650px;
+    height: 670px;
     width: 48%;
     margin: 1%;
     float: left;
@@ -20,7 +20,7 @@
   @media all and (max-width: 900px){
     #video-container, #snap-container {
       padding: 0;
-      height: 650px;
+      height: 780px;
       width: 94%;
       margin: 3%;
       float: left;
@@ -45,6 +45,7 @@
     // Inside of .panzoom
     #activeSnapshot {
       height: 100%;
+      width: 90%
     }
   }
 
