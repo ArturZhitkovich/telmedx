@@ -32,28 +32,10 @@
         <div id="first-row" class="row">
                 <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
                     <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
-                        <h3 class="panel-title" style="display: flex;">
-                            <div style="">{{ dev.name }} &nbsp;</div>
-                                    <div class="btn-group">
+                        <h3 class="panel-title" style="">
+                            <div style="float: left">{{ dev.name }} &nbsp;</div>
 
-                                    </div>
-
-                            <div style="margin: 0 auto;">
-                                <button id="camera-toggle" type="button" class="btn btn-default" style="padding: 3px;">
-                                    <div id="camera-toggle-icon">
-                                        <img style="height: 25px;" src="/static/img/controls/switch19.png">
-                                    </div>
-                                </button>
-                                <button type="button" id="capture-button" class="btn btn-default" style="padding: 3px;">
-                                    <img style="height: 25px; cursor:pointer;" src="/static/img/controls/Capture_Button.png"/>
-                                </button>
-                                <button id="flash-toggle" type="button" class="btn btn-default" style="padding: 3px; width: auto !important;">
-                                    <img style="height: 25px;" src="/static/img/controls/open103.png">
-                                </button>
-                            </div>
-
-
-                            <div style="" id="rotate-buttons">
+                            <div style="float: right" id="rotate-buttons">
 
                                 <button id="rotate-left" class="btn btn-default" style="padding: 3px;">
                                     <img style="height: 25px;" src="/static/img/controls/rotating1.png">
@@ -76,34 +58,60 @@
                             </div>
                         </div>
                         <div class="row ui-widget-content" style="resize: both;">
+                                <div class="text-center" style="margin: 0 auto; margin-top: -2%;">
+                                    <div class="btn-group">
+                                        <button id="camera-toggle" type="button" class="btn btn-default" style="padding: 3px;">
+                                            <div id="camera-toggle-icon">
+                                                <img style="height: 50px;" src="/static/img/controls/switch19.png">
+                                            </div>
+                                        </button>
+                                        <button type="button" id="capture-button" class="btn btn-default" style="padding: 3px;">
+                                            <img style="height: 50px; cursor:pointer;" src="/static/img/controls/Capture_Button.png"/>
+                                        </button>
+                                        <button id="flash-toggle" type="button" class="btn btn-default" style="padding: 3px; width: auto !important;">
+                                            <img style="height: 50px;" src="/static/img/controls/open103.png">
+                                        </button>
+                                    </div>   
+                                </div>
+
                         </div>
                     </div>
                 </div>
-                <div id="snap-container" class="panel panel-default resizable-right" style="overflow: hidden;">
-                    <div id="capture-snaper">
-                        <div class="panel-heading" id="cap-head">
-                            <h3 class="panel-title">
-                                <img style="height: 30px;" src="/static/img/controls/picture11.png">
-                                <div style="float: right;" id="zoom-controls">
-                                    <div style="clear: both;">
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-default zoom-in">
-                                                <img style="height: 20px;" src="/static/img/controls/zoom7.png">
-                                            </button>
-                                            <button class="btn btn-sm btn-default zoom-out">
-                                                <img style="height: 20px;" src="/static/img/controls/minus13.png">
-                                            </button>
+                <div id="first-middle" class="">
+                    <div id="snapshot-panel" class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><img style="height: 30px;" src="/static/img/controls/images10.png"></h3>
+                        </div>
+                        <div id="pastSnapshots" style="min-height:100px; display: block;" class="panel-body"></div>
+                    </div>
+                </div>
+                <div id="first-right">
+                    <div id="snap-container" class="panel panel-default resizable-right" style="overflow: hidden;">
+                        <div id="capture-snaper">
+                            <div class="panel-heading" id="cap-head">
+                                <h3 class="panel-title">
+                                    <img style="height: 30px;" src="/static/img/controls/picture11.png">
+                                    <div style="float: right;" id="zoom-controls">
+                                        <div style="clear: both;">
+                                            <div class="btn-group">
+                                                <button class="btn btn-sm btn-default zoom-in">
+                                                    <img style="height: 20px;" src="/static/img/controls/zoom7.png">
+                                                </button>
+                                                <button class="btn btn-sm btn-default zoom-out">
+                                                    <img style="height: 20px;" src="/static/img/controls/minus13.png">
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </h3>
-                        </div>
-                        <div id="cap-body" class="panel-body">
-                            <div id="snapshots" style="position:relative; height:100%;">
-                                <div class="panzoom">
-                                    <img id="activeSnapshot"
-                                        src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-                                        alt=""/>
+                                </h3>
+                            </div>
+                            <div id="cap-body" class="panel-body">
+                                <div id="snapshots" style="position:relative; height:100%;">
+                                    <div class="panzoom">
+                                        <img id="activeSnapshot"
+                                            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                            alt=""/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,14 +123,6 @@
                 <div id="powered-logo" style="">
                         <p style="margin-bottom: 5px; color: #fff;">Powered By</p>
                         <img src="/static/img/powered-by.png" style="width: 125px;">
-                </div>
-            </div>
-            <div id="second-right" class="col-md-6">
-                <div id="snapshot-panel" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><img style="height: 30px;" src="/static/img/controls/images10.png"></h3>
-                    </div>
-                    <div id="pastSnapshots" style="min-height:100px; display: block;" class="panel-body"></div>
                 </div>
             </div>
         </div>

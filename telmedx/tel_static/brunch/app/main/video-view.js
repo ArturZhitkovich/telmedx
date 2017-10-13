@@ -336,6 +336,8 @@ module.exports = {
                     var container = document.createElement("div");
                     // maybe make class unique, or an id via the const id above
                     container.setAttribute('class', 'container-'+ id);
+                    container.setAttribute('style', 'display: inline-flex;');
+                    
     
                     var div = document.createElement("div");
                     //div.innerHTML = "&times";
@@ -355,11 +357,12 @@ module.exports = {
                 context.$section.find('.panzoom').panzoom("reset");
                 const id = "snapshot-" + new Date().getTime().toString();
 
-                var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" style="float:left;" width="75" height="50">`);                
+                var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50">`);                
             
                 var container = document.createElement("div");
                 // maybe make class unique, or an id via the const id above
                 container.setAttribute('class', 'container-'+ id);
+                container.setAttribute('style', 'display: inline-flex;');
 
                 var div = document.createElement("div");
                 //div.innerHTML = "&times";
@@ -511,13 +514,13 @@ module.exports = {
 
     flashOn() {
         this.isFlashOn = true;
-        $("#flash-toggle").html('<img style="height: 25px;" src="/static/img/controls/open103off.png">');
+        $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103off.png">');
         $("#flash-toggle").removeClass('active');
     },
 
     flashOff() {
         this.isFlashOn = false;
-        $("#flash-toggle").html('<img style="height: 25px;" src="/static/img/controls/open103.png">');
+        $("#flash-toggle").html('<img style="height: 50px;" src="/static/img/controls/open103.png">');
         $("#flash-toggle").removeClass('active');
     },
 
@@ -607,6 +610,8 @@ module.exports = {
             }
         };
 
+
+        /* 
         $resizable.resizable({
             //containment: 'parent',
             //snap: "#video-container", snapMode: "inner",
@@ -620,20 +625,26 @@ module.exports = {
                 //console.log("percentpixel: " + percent);
             }
         });   
+        */
 
         $resizableRight.resizable({
-            //containment: 'parent',
-            //snap: "#snap-container", snapMode: "inner",
+            containment: '#first-right',
+            //snap: '#first-right', snapMode: "inner",
             aspectRatio: false,
-            handles: "se",
-            minHeight: 500,
-            minWidth: 500,
+            handles: "sw",
+            minHeight: 400,
+            minWidth: 400,
             maxHeight: 670,
             maxWidth: ()=>{
-                return percent = ($(window).width()/100) * 48;
+                return percent = ($(window).width()/100) * 20;
                 //console.log("percentpixel: " + percent);
             }      
+        });
+        /*.draggable({
+            containment: 'parent' ,
+            snap: "#first-right", snapMode: "inner"         
         });  
+        */   
 
         $(".ui-resizable-sx").mousedown(() => {
             console.log("resizable clicked");
