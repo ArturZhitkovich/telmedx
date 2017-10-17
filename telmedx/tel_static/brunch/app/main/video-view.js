@@ -619,9 +619,18 @@ module.exports = {
             maxHeight: 670,
             resize: function(event, ui){
                 // sets maxWidth based on screen percentage
-                var calc = ($(window).width()/100) * 40;
+                var calc;
                 console.log("CALCpercentpixel: " + calc);
-                $resizableRight.resizable("option","maxWidth", calc);
+
+                //if column layout, set percentage to 94
+                if($(window).width() < 950){
+                    calc = ($(window).width()/100) * 94;
+                    $resizableRight.resizable("option","maxWidth", calc);
+
+                } else {
+                    calc = ($(window).width()/100) * 40;
+                    $resizableRight.resizable("option","maxWidth", calc);
+                }
             }
         }).on('resize', function(e){
             e.stopPropagation();
