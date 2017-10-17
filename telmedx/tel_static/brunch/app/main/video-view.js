@@ -130,9 +130,11 @@ module.exports = {
 
         //$("#flash-toggle").css("width", $("#flash-toggle").outerWidth());
 
+        
         $(window).resize(function () {
             context.sizePreview();
         });
+        
 
         this.sizePreview();
 
@@ -556,19 +558,6 @@ module.exports = {
         }
     },
 
-    checkoverflow(el) {
-        const element = document.querySelector('' + ele);
-        console.log("checkoverflow called");
-        if (element.offsetHeight < element.scrollHeight ||
-            element.offsetWidth < element.scrollWidth) {
-            // your element have overflow
-            console.log("element has overflow");
-        } else {
-            // your element doesn't have overflow
-            console.log("element is fine");
-        }
-    },
-
     /**
      * Bindings to adjust layout based on window size.
      */
@@ -587,12 +576,17 @@ module.exports = {
             //this.checkWidth();
             console.log("window resize here");
 
-            var percent = ($(window).width()/100) * 48;
-            console.log("percentpixel: " + percent);
+            // sets snapContainer width to percentage of screen
+            var calc = ($(window).width()/100) * 40;
+            $snapContainer.css("width",calc);
+            $snapContainer.css("width",$("#first-right").width());
 
+            // sets maxWidth based on screen percentage
+            $resizableRight.resizable("option","maxWidth", calc);
+
+            setOffset();
             checkoverlap();
         });
-
 
         /**
          * Checks if videoStream container and Snapshot viewer are overlapping 
@@ -601,57 +595,37 @@ module.exports = {
             var positionLeft = $resizable.offset().left + $resizable.width();
             var positionRight = $resizableRight.offset().left ;
 
-            console.log("leftWidth: " + positionLeft);
-            console.log("right: " + positionRight);
-
             if (positionLeft > positionRight) {
                 // overlapping = TRUE       
                 console.log("overlapping!");
             }
         };
 
+        function setOffset(){
+            // sets snapshot resizable, to the top left corner of its div, upon window resize
+            var positionRight = $resizableRight.offset().left;
+            var positionRightParent = $('#first-right').offset();
 
-        /* 
-        $resizable.resizable({
-            //containment: 'parent',
-            //snap: "#video-container", snapMode: "inner",
-            aspectRatio: false,
-            handles: "se",
-            minHeight: 500,
-            minWidth: 500,
-            maxHeight: 670,
-            maxWidth: ()=>{
-                return percent = ($(window).width()/100) * 48;
-                //console.log("percentpixel: " + percent);
-            }
-        });   
-        */
+            $resizableRight.offset({ top: positionRightParent.top, left: positionRightParent.left});
+        }
 
         $resizableRight.resizable({
-            containment: '#first-right',
-            //snap: '#first-right', snapMode: "inner",
+            //containment: '#first-right',
+            snap: '#first-right', snapMode: "inner",
             aspectRatio: false,
             handles: "sw",
             minHeight: 400,
             minWidth: 400,
             maxHeight: 670,
-            maxWidth: ()=>{
-                return percent = ($(window).width()/100) * 20;
-                //console.log("percentpixel: " + percent);
-            }      
+            resize: function(event, ui){
+                // sets maxWidth based on screen percentage
+                var calc = ($(window).width()/100) * 40;
+                console.log("CALCpercentpixel: " + calc);
+                $resizableRight.resizable("option","maxWidth", calc);
+            }
+        }).on('resize', function(e){
+            e.stopPropagation();
         });
-        /*.draggable({
-            containment: 'parent' ,
-            snap: "#first-right", snapMode: "inner"         
-        });  
-        */   
-
-        $(".ui-resizable-sx").mousedown(() => {
-            console.log("resizable clicked");
-            this.checkWidth();
-            $resizable.css("width",$('.resizable').parent().css("width")-20);
-            $resizableRight.css("width",$('.resizable-right').parent().css("width")-20); 
-        });
-    }
+    },
 };
 
