@@ -12,6 +12,9 @@ class mobileCam(models.Model):
     first_name = models.CharField(max_length=255, default='')
     phone_number = models.CharField(max_length=32, default='')
 
+    def __str__(self):
+        return self.name
+
 
 class sessionRecord(models.Model):
     mobile = models.ForeignKey(mobileCam)  # the mobile device used for this session
