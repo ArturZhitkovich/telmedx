@@ -31,12 +31,17 @@ class sessionLog(models.Model):
     frames = models.IntegerField()
     captured_images = models.IntegerField()
 
+    def __str__(self):
+        return 'Log for {device} on {date}'.format(
+            device=self.device,
+            date=self.begin_timestamp
+        )
+
     @property
     def duration(self):
         return self.end_timestamp - self.begin_timestamp
 
-    # return HumanTimeFormatter(self.end_timestamp - self.begin_timestamp).format()
-
     @property
     def begin(self):
         return self.begin_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+
