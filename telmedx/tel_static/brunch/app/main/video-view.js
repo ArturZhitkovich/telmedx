@@ -611,6 +611,7 @@ module.exports = {
 
         $resizableRight.resizable({
             //containment: '#first-right',
+            disabled: true,
             snap: '#first-right', snapMode: "inner",
             aspectRatio: false,
             handles: "sw",
