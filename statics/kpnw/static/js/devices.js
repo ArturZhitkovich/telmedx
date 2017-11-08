@@ -1,1 +1,0 @@
-../../../base/static/js/devices.js
