@@ -8,4 +8,6 @@ API_KEYS = {
     'fca7142d6dc475168ce538f8cfdedca8f227f22d': 'mahiri1',
     '5245a50da8bf41865712b8fae54cd5c44fdd910a': 'mahiri2',
     'ae22a5876c0a08bb91b8a97a2d58f3b320fe8c88': 'mahiri3',
+
+    'b4e868c71a3b116b863ceb61ee18d977c5c81c16': 'providence',
 }
