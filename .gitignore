@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
 *.DS_Store
 ttuxenv/*
 *.pyc
-database.db
-mysite/settings.py
-=======
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -116,4 +113,3 @@ pyvenv.cfg
 pip-selfcheck.json
 
 telmedx/static
->>>>>>> Stashed changes
