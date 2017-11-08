@@ -1,0 +1,1 @@
+../../../base/static/js/drag.js
