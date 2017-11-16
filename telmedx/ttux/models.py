@@ -15,6 +15,10 @@ class mobileCam(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def name_display(self):
+        return self.name.split('@')[0]
+
 
 class sessionRecord(models.Model):
     mobile = models.ForeignKey(mobileCam)  # the mobile device used for this session
