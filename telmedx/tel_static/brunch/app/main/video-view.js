@@ -92,6 +92,7 @@ module.exports = {
         this.deviceName = $("#deviceName").data('name');
 
         this.$section.find('.panzoom').panzoom({
+            exponential: false,
             $zoomIn: this.$section.find(".zoom-in"),
             $zoomOut: this.$section.find(".zoom-out"),
             $zoomRange: this.$section.find(".zoom-range"),
