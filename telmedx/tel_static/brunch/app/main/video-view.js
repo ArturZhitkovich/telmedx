@@ -226,6 +226,11 @@ module.exports = {
             context.showSnapshot(sid);
         });
 
+        $("#activeSnapshot").dblclick(function () {
+            // calls panzoom zoom function click
+            $('#capture-snaper').first().find('.zoom-in').click();
+        });
+
         this.bindResizeEvents();
     },
 
