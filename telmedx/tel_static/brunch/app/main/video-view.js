@@ -371,11 +371,14 @@ module.exports = {
                 };
             } else {
                 // Canvas should not be called, so this code is executed
-                $("#activeSnapshot").attr("src", dataUri);
-                context.$section.find('.panzoom').panzoom("reset");
                 const id = "snapshot-" + new Date().getTime().toString();
                 var currentRotation = context.currentRotation;
                 console.log("current: " + currentRotation);
+
+                $("#activeSnapshot").attr("src", dataUri);
+                $("#activeSnapshot").css({'transform': 'rotate(' + currentRotation + 'deg)'});
+
+                context.$section.find('.panzoom').panzoom("reset");
 
                 var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50" data-rotate="${currentRotation}">`);                
             
