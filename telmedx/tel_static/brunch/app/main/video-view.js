@@ -50,6 +50,8 @@ module.exports = {
     resizeWidthRight: 0,
     resizeHeightRight: 0,
 
+    currentRotation: 0,
+
 
     init(el) {
         this.$el = $(el);
@@ -167,12 +169,18 @@ module.exports = {
             var angle = ($('#hollywood').data('angle') + 90) || 90;
             $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
             $('#hollywood').data('angle', angle);
+            // set global rotation value
+            context.currentRotation = angle;
+            console.log("angle: " + context.currentRotation);
         });
 
         $("#rotate-left").click(function () {
             var angle = ($('#hollywood').data('angle') - 90) || - 90;
             $('#hollywood').css({'transform': 'rotate(' + angle + 'deg)'});
             $('#hollywood').data('angle', angle);
+            // set global rotation value
+            context.currentRotation = angle;
+            console.log("angle: " + context.currentRotation);
         });
 
         $("#capture-button").click(function () {
@@ -241,6 +249,8 @@ module.exports = {
     showSnapshot(id) {
         const selected = $("#" + id);
         $("#activeSnapshot").attr("src", selected.attr("src"));
+        //tr
+        $('#activeSnapshot').css({'transform': 'rotate(' + selected.data("rotate") + 'deg)'});
         this.select(id);
     },
 
@@ -340,10 +350,9 @@ module.exports = {
                     // maybe make class unique, or an id via the const id above
                     container.setAttribute('class', 'container-'+ id);
                     container.setAttribute('style', 'display: inline-flex;');
-                    
-    
+
+                    // create delete icon
                     var div = document.createElement("div");
-                    //div.innerHTML = "&times";
                     div.setAttribute('class', 'closeDiv');
                     div.setAttribute('id', "delete-" + id);
 
@@ -356,19 +365,25 @@ module.exports = {
                     context.select(id);
                 };
             } else {
+                // Canvas should not be called, so this code is executed
                 $("#activeSnapshot").attr("src", dataUri);
                 context.$section.find('.panzoom').panzoom("reset");
                 const id = "snapshot-" + new Date().getTime().toString();
+                var currentRotation = context.currentRotation;
+                console.log("current: " + currentRotation);
 
-                var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50">`);                
+                var imageElement = $.parseHTML(`<img data-sid="${id}" class="snap-item snapshot" id="${id}" src="${dataUri}" width="75" height="50" data-rotate="${currentRotation}">`);                
             
                 var container = document.createElement("div");
                 // maybe make class unique, or an id via the const id above
                 container.setAttribute('class', 'container-'+ id);
                 container.setAttribute('style', 'display: inline-flex;');
 
+                // Uncomment this line to set rotation on snapshot panel
+                //container.style.transform = "rotate(" + currentRotation + "deg)";
+
+                // create delete icon
                 var div = document.createElement("div");
-                //div.innerHTML = "&times";
                 div.setAttribute('class', 'closeDiv');
                 div.setAttribute('id', "delete-" + id);
 
