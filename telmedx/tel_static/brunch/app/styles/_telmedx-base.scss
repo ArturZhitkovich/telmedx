@@ -140,6 +140,11 @@ img.snapshot {
   background: none !important;
 }
 
+textarea {
+  resize: none;
+  width: 100%;
+}
+
 // Not in use?
 #camera-back-icon span {
   font-size: 40px;
