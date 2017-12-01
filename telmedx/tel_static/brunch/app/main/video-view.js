@@ -56,7 +56,7 @@ module.exports = {
 
     if (this.$el.length) {
       this.bindUiActions();
-      this.frameOne_jq();
+      this.getFrame();
     }
   },
 
@@ -123,7 +123,7 @@ module.exports = {
         return;
       }
 
-      _this.toggle_jq();
+      _this.toggleFlash();
       if (_this.isFlashOn) {
         _this.flashOff();
       } else {
@@ -144,7 +144,7 @@ module.exports = {
       }
 
       _this.flashOff();
-      _this.toggle_camera_jq();
+      _this.toggleCamera();
       if (!_this.frontCamera) {
         // $('#camera-toggle div:not('#camera-front-icon')').hide();
         $('#flash-toggle').addClass('disabled');
@@ -167,7 +167,7 @@ module.exports = {
 
     $('#rotate-right').click(function () {
       let angle = ($hollywood.data('angle') + 90) || 90;
-      $hollywood.css({ 'transform': `rotate(${angle}deg)` });
+      $hollywood.css({ transform: `rotate(${angle}deg)` });
       $hollywood.data('angle', angle);
 
       // set global rotation value
@@ -177,7 +177,7 @@ module.exports = {
 
     $('#rotate-left').click(function () {
       let angle = ($hollywood.data('angle') - 90) || -90;
-      $hollywood.css({ 'transform': `rotate(${angle}deg)` });
+      $hollywood.css({ transform: `rotate(${angle}deg)` });
       $hollywood.data('angle', angle);
 
       // set global rotation value
@@ -276,7 +276,7 @@ module.exports = {
     return text;
   },
 
-  toggle_jq() {
+  toggleFlash() {
     const _this = this;
     this.flashToggeling = true;
 
@@ -345,7 +345,8 @@ module.exports = {
           dataUri = _this.canvas2.toDataURL();
 
           $activeSnapshot.attr('src', dataUri);
-          $activeSnapshot.css('margin-left', ($('#snapshots').innerWidth() - $('#activeSnapshot').innerWidth()) / 2);
+          $activeSnapshot.css('margin-left', ($('#snapshots').innerWidth() -
+            $('#activeSnapshot').innerWidth()) / 2);
 
           const id = 'snapshot-' + new Date().getTime().toString();
           if (_this.rotate === 90 || _this.rotate === 270) {
@@ -386,7 +387,7 @@ module.exports = {
         console.log('current: ' + currentRotation);
 
         $activeSnapshot.attr('src', dataUri);
-        $activeSnapshot.css({ 'transform': `rotate(${currentRotation}deg)` });
+        $activeSnapshot.css({ transform: `rotate(${currentRotation}deg)` });
         _this.$section.find('.panzoom').panzoom('reset');
 
         let imageElement = $.parseHTML(`<img data-sid='${id}' 
@@ -422,42 +423,37 @@ module.exports = {
    * Contains the main logic for requesting and processing command and image
    * frames requested from the server.
    */
-  frameOne_jq() {
+  getFrame() {
     const _this = this;
 
-    $.ajax({//Go get frame
+    $.ajax({
       url: `/ttux/lastFrame/${this.deviceName}/${this.lastFrame}`
     }).done(function (msg) {
-      // console.log(msg.substring(0,15));
       let fnumber = msg.substring(0, 8);
-      let begin_img_data = 8;
+      let beginImgData = 8;
 
       if (msg.substring(0, 2) === '!!') {
-        let begin_end = msg.indexOf('!!', 2);
-        let control = $.parseJSON(msg.substring(2, parseInt(begin_end, 10)));
+        let beginEnd = msg.indexOf('!!', 2);
+        let control = $.parseJSON(msg.substring(2, parseInt(beginEnd, 10)));
         _this.controlOutput = control;
 
         if (control.command === 'update_controls' && !$('html').hasClass('lt-ie9')) {
           if (control.parameters.indexOf('flash') !== -1) {
-            console.log('flash');
             $('#flash-toggle').show();
           }
 
           if (control.parameters.indexOf('flip') !== -1) {
-            console.log('flip');
             $('#camera-toggle').show();
           }
         }
 
-        fnumber = msg.substring(parseInt(begin_end, 10) + 2, parseInt(begin_end, 10) + 10);
-        console.log(_this.fnumber);
-        begin_img_data = parseInt(begin_end, 10) + 10;
-        console.log(begin_img_data);
+        fnumber = msg.substring(parseInt(beginEnd, 10) + 2, parseInt(beginEnd, 10) + 10);
+        beginImgData = parseInt(beginEnd, 10) + 10;
       }
 
       _this.lastFrame = fnumber;
       if (msg.substring(8).length > 0) {
-        let videoSrc = 'data:image/jpg;base64,' + msg.substring(begin_img_data);
+        let videoSrc = 'data:image/jpg;base64,' + msg.substring(beginImgData);
 
         if (_this.canvasSupport) {
           const image = new Image();
@@ -468,6 +464,7 @@ module.exports = {
             let ch = image.height;
             let cx = 0;
             let cy = 0;
+
             // Calculate new canvas size and x/y coorditates for image
             switch (_this.rotate) {
               case 90:
@@ -512,22 +509,22 @@ module.exports = {
         _this.fCounter++; //Adds to frame couter
       }
 
-      _this.frameOne_jq(); //Let the function call itself
-    })//.error(function (msg) {
+      _this.getFrame(); //Let the function call itself
+    });
+
+    //.error(function (msg) {
     // console.log('got error');
     // setTimeout('frameOne_jq()', 500);
     // });
-
   },
 
-  toggle_camera_jq() {
+  toggleCamera() {
     const _this = this;
     this.cameraToggeling = true;
 
     $.ajax({
       url: '/ttux/flipcamera/' + this.deviceName
     }).done(function (data) {
-      console.log(data);
       _this.cameraToggeling = false;
       if (data.status === 'front') {
         _this.frontCamera = true;
@@ -538,9 +535,6 @@ module.exports = {
         _this.frontCamera = false;
         $('#camera-back-icon').show();
         $('#flash-toggle').removeClass('disabled');
-
-      } else {
-        console.log('Something went wrong with the camera');
       }
     });
   },
@@ -594,8 +588,8 @@ module.exports = {
 
     // see if stream elementExists
     // if it does not, disable resizing?
-    const elementExists = $('#hollywood');
-    if (!elementExists) {
+    const $elementExists = $('#hollywood');
+    if (!$elementExists) {
       console.log('Cannot find hollywood');
     } else {
       console.log('hollywood exists');
