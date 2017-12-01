@@ -8,21 +8,21 @@
 
 #device-video-page {
 
-  #video-container{
-    padding: 0%;
+  #video-container {
+    padding: 0;
     margin: 1%;
     float: left;
     width: 40%;
   }
 
-  #stream-container-child{
-      padding: 0px;
+  #stream-container-child {
+    padding: 0;
   }
 
   #snap-container {
-    padding: 0%;
+    padding: 0;
     width: 100%;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     /* height: 670px; */
     /* width: 48%; */
     /* max-width: 48%; */
@@ -41,7 +41,7 @@
     width: 40%;
   }
 
-  @media all and (max-width: 950px){
+  @media all and (max-width: 950px) {
     #video-container, #snap-container {
       padding: 0;
       /* height: 780px; */
@@ -62,15 +62,13 @@
       margin: 3%;
     }
 
-    #snap-container{
-      margin: 0%;
+    #snap-container {
+      margin: 0;
       width: 100%;
       max-width: 100%;
-      margin-bottom: 0px;
     }
 
   }
-
 
   #second-left, #second-right {
     /* padding: 2%; */
@@ -133,15 +131,15 @@
     position: relative;
     top: 1px;
     margin-left: 1px;
-}
+  }
 
-.closeDiv:hover {
-  background-image: url(/static/img/controls/del-hover.png);
-}
+  .closeDiv:hover {
+    background-image: url(/static/img/controls/del-hover.png);
+  }
 
-.snapshot-container {
-  padding-right: 2%;
-}
+  .snapshot-container {
+    padding-right: 2%;
+  }
 
 }
 
@@ -163,7 +161,7 @@
   width: 12px;
   height: 12px;
   left: 5px;
-  right: 0px;
+  right: 0;
   bottom: 4px;
   z-index: 90;
   position: absolute;
