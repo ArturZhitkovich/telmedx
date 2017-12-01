@@ -86,38 +86,17 @@ module.exports = {
     }
   },
 
-  bindUiActions() {
-    const _this = this;
-    this.$section = $('#capture-snaper').first();
-
-    this.deviceName = $('#deviceName').data('name');
-
-    this.$section.find('.panzoom').panzoom({
+  _initPanzoom($section) {
+    return $section.panzoom({
       exponential: false,
       $zoomIn: this.$section.find('.zoom-in'),
       $zoomOut: this.$section.find('.zoom-out'),
       $zoomRange: this.$section.find('.zoom-range'),
       $reset: this.$section.find('.reset')
     });
+  },
 
-    $('#open-editor').click(function () {
-      const $editSnapshot = $('#editSnapshot');
-      const $drawingLayer = $('#drawing-layer');
-
-      setTimeout(function () {
-        $editSnapshot.removeClass('hundo');
-        $editSnapshot.attr('src', $('#activeSnapshot').attr('src'));
-
-        const marginleft = ($editSnapshot.parent('.modal-body').innerWidth() -
-          $editSnapshot.innerWidth()) / 2;
-        $editSnapshot.css('margin-left', marginleft);
-
-        $drawingLayer.css('marginleft', marginleft);
-        $drawingLayer.css('height', $editSnapshot.height());
-        $drawingLayer.css('width', $editSnapshot.width());
-      }, 1000);
-    });
-
+  _initVideoContainer() {
     $('#flash-toggle').click(function () {
       if (_this.flashToggeling || _this.frontCamera || _this.cameraToggeling) {
         return;
@@ -131,12 +110,6 @@ module.exports = {
       }
     });
 
-    //$('#flash-toggle').css('width', $('#flash-toggle').outerWidth());
-    $(window).resize(function () {
-      _this.sizePreview();
-    });
-
-    this.sizePreview();
     $('#camera-toggle').click(function () {
       if (_this.cameraToggeling) {
         console.log('I\'m toggleing');
@@ -193,15 +166,6 @@ module.exports = {
       _this.deleteSnapshot();
     });
 
-    $('div').on('click', '.closeDiv', function () {
-      let snapDeleteID = $(this).attr('id');
-      let snapID = snapDeleteID.replace('delete-', '');
-      $('#' + snapID).remove();
-      $('#' + snapDeleteID).remove();
-      $('.' + 'container-' + snapID).remove();
-      console.log('item deleted');
-    });
-
     this.canvasSupport = this.isCanvasSupported();
     const $stream = $('#stream');
 
@@ -220,6 +184,41 @@ module.exports = {
       $('#rotate-buttons').css('visibility', 'hidden');
       $('#zoom-controls').css('visibility', 'hidden');
     }
+  },
+
+  _initSnapshotContainers() {
+    $('#open-editor').click(function () {
+      const $editSnapshot = $('#editSnapshot');
+      const $drawingLayer = $('#drawing-layer');
+
+      setTimeout(function () {
+        $editSnapshot.removeClass('hundo');
+        $editSnapshot.attr('src', $('#activeSnapshot').attr('src'));
+
+        const marginleft = ($editSnapshot.parent('.modal-body').innerWidth() -
+          $editSnapshot.innerWidth()) / 2;
+        $editSnapshot.css('margin-left', marginleft);
+
+        $drawingLayer.css('marginleft', marginleft);
+        $drawingLayer.css('height', $editSnapshot.height());
+        $drawingLayer.css('width', $editSnapshot.width());
+      }, 1000);
+    });
+
+    $(window).resize(function () {
+      _this.sizePreview();
+    });
+
+    this.sizePreview();
+
+    $('div').on('click', '.closeDiv', function () {
+      let snapDeleteID = $(this).attr('id');
+      let snapID = snapDeleteID.replace('delete-', '');
+      $('#' + snapID).remove();
+      $('#' + snapDeleteID).remove();
+      $('.' + 'container-' + snapID).remove();
+      console.log('item deleted');
+    });
 
     // Bind pastSnapshots for future snapshots
     $('#pastSnapshots').on('click', '.snap-item', function (ev) {
@@ -232,6 +231,21 @@ module.exports = {
       // calls panzoom zoom function click
       $('#capture-snaper').first().find('.zoom-in').click();
     });
+  },
+
+  bindUiActions() {
+    const _this = this;
+    this.$section = $('#capture-snaper').first();
+    this.deviceName = $('#deviceName').data('name');
+
+    // Initialize Panzoom container
+    this._initPanzoom(this.$section.find('.panzoom'));
+
+    // Initialize all elements in the streaming video container
+    this._initVideoContainer();
+
+    // Initialize snapshot containers
+    this._initSnapshotContainers();
 
     this.bindResizeEvents();
   },
