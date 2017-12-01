@@ -1,4 +1,5 @@
 {
     "preset": "airbnb",
-    "requireMultipleVarDecl": false
+    "requireMultipleVarDecl": false,
+    "requireTrailingComma": false
 }
