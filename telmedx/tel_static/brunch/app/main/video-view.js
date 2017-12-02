@@ -86,13 +86,13 @@ module.exports = {
     }
   },
 
-  _initPanzoom($section) {
+  _initPanzoom(_this, $section) {
     return $section.panzoom({
       exponential: false,
-      $zoomIn: this.$section.find('.zoom-in'),
-      $zoomOut: this.$section.find('.zoom-out'),
-      $zoomRange: this.$section.find('.zoom-range'),
-      $reset: this.$section.find('.reset')
+      $zoomIn: _this.$section.find('.zoom-in'),
+      $zoomOut: _this.$section.find('.zoom-out'),
+      $zoomRange: _this.$section.find('.zoom-range'),
+      $reset: _this.$section.find('.reset')
     });
   },
 
@@ -239,7 +239,7 @@ module.exports = {
     this.deviceName = $('#deviceName').data('name');
 
     // Initialize Panzoom container
-    this._initPanzoom(this.$section.find('.panzoom'));
+    this._initPanzoom(_this, this.$section.find('.panzoom'));
 
     // Initialize all elements in the streaming video container
     this._initVideoContainer(_this);
