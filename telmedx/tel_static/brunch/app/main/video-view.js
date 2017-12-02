@@ -209,10 +209,10 @@ module.exports = {
       _this.sizePreview();
     });
 
-    this.sizePreview();
+    _this.sizePreview();
 
     $('div').on('click', '.closeDiv', function () {
-      let snapDeleteID = $(this).attr('id');
+      let snapDeleteID = $(_this).attr('id');
       let snapID = snapDeleteID.replace('delete-', '');
       $('#' + snapID).remove();
       $('#' + snapDeleteID).remove();
@@ -227,10 +227,12 @@ module.exports = {
       _this.showSnapshot(sid);
     });
 
-    $('#activeSnapshot').dblclick(function () {
+    const $activeSnapshot = $('#activeSnapshot');
+    $activeSnapshot.dblclick(function () {
       // calls panzoom zoom function click
       $('#capture-snaper').first().find('.zoom-in').click();
     });
+
   },
 
   bindUiActions() {
