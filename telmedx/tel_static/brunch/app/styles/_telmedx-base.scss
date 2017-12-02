@@ -140,12 +140,17 @@ img.snapshot {
   background: none !important;
 }
 
+// Should assign to a specific identifier
 textarea {
   resize: none;
   width: 100%;
   padding-top: 1%;
   border-radius: 0 0 4px 4px;
   border: 1px;
+}
+
+#download-snapshot {
+  padding-right: 1%;
 }
 
 // Not in use?
