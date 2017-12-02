@@ -96,7 +96,7 @@ module.exports = {
     });
   },
 
-  _initVideoContainer() {
+  _initVideoContainer(_this) {
     $('#flash-toggle').click(function () {
       if (_this.flashToggeling || _this.frontCamera || _this.cameraToggeling) {
         return;
@@ -186,7 +186,7 @@ module.exports = {
     }
   },
 
-  _initSnapshotContainers() {
+  _initSnapshotContainers(_this) {
     $('#open-editor').click(function () {
       const $editSnapshot = $('#editSnapshot');
       const $drawingLayer = $('#drawing-layer');
@@ -242,10 +242,10 @@ module.exports = {
     this._initPanzoom(this.$section.find('.panzoom'));
 
     // Initialize all elements in the streaming video container
-    this._initVideoContainer();
+    this._initVideoContainer(_this);
 
     // Initialize snapshot containers
-    this._initSnapshotContainers();
+    this._initSnapshotContainers(_this);
 
     this.bindResizeEvents();
   },
