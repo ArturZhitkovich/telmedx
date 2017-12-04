@@ -127,6 +127,26 @@ module.exports = {
       }
     });
 
+    this.canvasSupport = this.isCanvasSupported();
+    const $stream = $('#stream');
+
+    // This must be before the `const $hollywood` code since it gets created here.
+    if (!this.canvasSupport) {
+      $('#c').remove();
+      $stream.html(`<img id="hollywood" src="/static/img/controls/spinner.gif" />`);
+    } else {
+      this.canvas = document.getElementById('video-canvas');
+      this.ctx = this.canvas.getContext('2d');
+      this.canvas2 = document.getElementById('b');
+      this.ctx2 = this.canvas2.getContext('2d');
+    }
+
+    $stream.css('overflow', 'hidden');
+    if ($('html').hasClass('lt-ie9')) {
+      $('#rotate-buttons').css('visibility', 'hidden');
+      $('#zoom-controls').css('visibility', 'hidden');
+    }
+
     const $myModal = $('#myModal');
     const $hollywood = $('#hollywood');
 
@@ -165,25 +185,6 @@ module.exports = {
     $('#delete-snapshot').click(function () {
       _this.deleteSnapshot();
     });
-
-    this.canvasSupport = this.isCanvasSupported();
-    const $stream = $('#stream');
-
-    if (!this.canvasSupport) {
-      $('#c').remove();
-      $stream.html(`<img id="hollywood" src="/static/img/controls/spinner.gif" />`);
-    } else {
-      this.canvas = document.getElementById('video-canvas');
-      this.ctx = this.canvas.getContext('2d');
-      this.canvas2 = document.getElementById('b');
-      this.ctx2 = this.canvas2.getContext('2d');
-    }
-
-    $stream.css('overflow', 'hidden');
-    if ($('html').hasClass('lt-ie9')) {
-      $('#rotate-buttons').css('visibility', 'hidden');
-      $('#zoom-controls').css('visibility', 'hidden');
-    }
   },
 
   _initSnapshotContainers(_this) {
