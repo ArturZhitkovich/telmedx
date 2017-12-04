@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
     url(r'^deviceList$', views.device_view),
     url(r'^initializeDevice', views.initialize_device),
+    url(r'^imageDownload', views.image_download),
     url(r'^viewSessionInfo', views.view_session_info),
     url(r'^logout$', views.logout_view),
 
