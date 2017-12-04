@@ -234,6 +234,13 @@ module.exports = {
       $('#capture-snaper').first().find('.zoom-in').click();
     });
 
+    const $imageDownloadForm = $('#imageDownloadForm');
+    $imageDownloadForm.submit(() => {
+      // Set hidden input to have data of the current screenshot
+      let $input = $imageDownloadForm.find('input[name="imageData"]');
+      console.log($('#activeSnapshot').attr('src'));
+      $input.attr('value', $('#activeSnapshot').attr('src'));
+    });
   },
 
   bindUiActions() {

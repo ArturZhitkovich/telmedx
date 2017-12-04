@@ -121,9 +121,13 @@
                             </div>
                             
                         </div>
-                        
-                    </div> 
-                    <textarea rows="4" cols="100">We offer free tutorials in all web development technologies. </textarea>
+
+                    </div>
+                        <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
+                            <input type="hidden" name="imageData" value="" />
+                            <textarea rows="4" cols="100">We offer free tutorials in all web development technologies. </textarea>
+                            <button id="download-snapshot" class="btn btn-primary">Download</button>
+                        </form>
                 </div>
         </div>
         <div id="second-row" class="row">

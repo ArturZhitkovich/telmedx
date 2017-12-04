@@ -656,7 +656,7 @@ def image_download(request):
 
     from io import BytesIO
     from PIL import Image
-    import json
+    from time import time
     # Get POST data and convert into image
     # Image will be base64 encoded, so decode and throw into PIL
     # data will be in format:
@@ -664,14 +664,15 @@ def image_download(request):
 
     # This should be the image data decoded
     data = request.POST
-    image_data = base64.b64decode(data.get('imageData').split(',')[1])
+    encoded_image_data = data.get('imageData')
+    image_data = base64.b64decode(encoded_image_data.split(',')[1])
 
     image = Image.open(BytesIO(image_data))
     image_content_type = ''
 
     # Return image for download
     response = HttpResponse(image_data, content_type=image_content_type)
-    filename = "thefile"
+    filename = '{}.jpg'.format(int(time()))
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
     return response
 
