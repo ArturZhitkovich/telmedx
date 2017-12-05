@@ -673,7 +673,7 @@ def image_download(request):
 
     tf = TemporaryFile()
     image = Image.open(BytesIO(image_data))
-    annotated = annotate_image(image, annotation_text, int(-(rotation)))
+    annotated = annotate_image(image, annotation_text, - int((rotation)))
     annotated.save(tf, image.format, quality=90)
 
     tf.seek(0)
