@@ -12,7 +12,7 @@ def annotate_image(original_image, text):
     :return:
     :rtype: Image.Image
     """
-    font = ImageFont.truetype('DroidSans.ttf', 16)
+    font = ImageFont.truetype('fonts/DroidSans.ttf', 16)
 
     original = original_image
     (orig_w, orig_h) = original.size
