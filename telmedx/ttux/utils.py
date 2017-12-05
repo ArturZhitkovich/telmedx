@@ -3,12 +3,21 @@ import textwrap
 from PIL import ImageFont, Image, ImageDraw
 
 
-def annotate_image(original_image, text=None, rotation=0):
+def annotate_image(original_image, text=None, rotation=0, extend_by=65,
+                   margin_top=4, margin_left=8):
     """
     :param original_image:
     :type original_image: Image.Image
     :param text:
     :type text: str
+    :param rotation:
+    :type rotation: int
+    :param extend_by: Number of pixels to extend canvas by (bottom)
+    :type extend_by: int
+    :param margin_top:
+    :type margin_top: int
+    :param margin_left:
+    :type margin_left: int
     :return:
     :rtype: Image.Image
     """
@@ -19,8 +28,7 @@ def annotate_image(original_image, text=None, rotation=0):
     # Only expand the canvas when we have text for it
     if text:
         # New image with an expanded canvas
-        # COLOR, HEIGHT, RBG VALUES 
-        ret = Image.new('RGB', (orig_w, orig_h + 65), (255, 255, 255))
+        ret = Image.new('RGB', (orig_w, orig_h + extend_by), (255, 255, 255))
 
         # Paste original here, original is now "expanded"
         ret.paste(rotated)
@@ -28,8 +36,8 @@ def annotate_image(original_image, text=None, rotation=0):
         # Get drawing context for text on top of expanded
         d = ImageDraw.Draw(ret)
 
-        margin = 8
-        offset = orig_h + 4
+        margin = margin_left
+        offset = orig_h + margin_top
         for line in textwrap.wrap(text, width=72):
             d.text((margin, offset), line, font=font, fill=(0, 0, 0, 255))
             offset += font.getsize(line)[1]
