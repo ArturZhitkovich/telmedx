@@ -232,8 +232,10 @@ module.exports = {
     const $imageDownloadForm = $('#imageDownloadForm');
     $imageDownloadForm.submit(() => {
       // Set hidden input to have data of the current screenshot
-      let $input = $imageDownloadForm.find('input[name="imageData"]');
-      $input.attr('value', $('#activeSnapshot').attr('src'));
+      let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
+      let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
+      $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
+      $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
     });
   },
 
@@ -271,11 +273,18 @@ module.exports = {
     this.$section.find('.panzoom').panzoom('reset');
   },
 
+  /**
+   *
+   * @param id
+   */
   showSnapshot(id) {
     const $selected = $('#' + id);
     const $activeSnapshot = $('#activeSnapshot');
+    const imageRotation = $selected.data('rotate');
     $activeSnapshot.attr('src', $selected.attr('src'));
-    $activeSnapshot.css({ transform: `rotate(${$selected.data('rotate')}deg)` });
+    $activeSnapshot.css({ transform: `rotate(${imageRotation}deg)` });
+    $activeSnapshot.data('rotate', imageRotation);
+    console.log('Data: ' + $activeSnapshot.data('rotate'));
     this.select(id);
   },
 
@@ -406,6 +415,7 @@ module.exports = {
 
         $activeSnapshot.attr('src', dataUri);
         $activeSnapshot.css({ transform: `rotate(${currentRotation}deg)` });
+        $activeSnapshot.data('rotate', currentRotation);
         _this.$section.find('.panzoom').panzoom('reset');
 
         let imageElement = $.parseHTML(`<img data-sid='${id}' 

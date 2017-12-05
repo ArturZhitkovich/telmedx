@@ -668,11 +668,12 @@ def image_download(request):
     data = request.POST
     encoded_image_data = data.get('imageData')
     annotation_text = data.get('annotationText')
+    rotation = data.get('rotation', 0)
     image_data = base64.b64decode(encoded_image_data.split(',')[1])
 
     tf = TemporaryFile()
     image = Image.open(BytesIO(image_data))
-    annotated = annotate_image(image, annotation_text)
+    annotated = annotate_image(image, annotation_text, int(-(rotation)))
     annotated.save(tf, image.format, quality=90)
 
     tf.seek(0)

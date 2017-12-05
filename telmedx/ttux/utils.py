@@ -3,7 +3,7 @@ import textwrap
 from PIL import ImageFont, Image, ImageDraw
 
 
-def annotate_image(original_image, text):
+def annotate_image(original_image, text=None, rotation=0):
     """
     :param original_image:
     :type original_image: Image.Image
@@ -13,23 +13,26 @@ def annotate_image(original_image, text):
     :rtype: Image.Image
     """
     font = ImageFont.truetype('fonts/DroidSans.ttf', 16)
+    (orig_w, orig_h) = original_image.size
+    rotated = original_image.rotate(rotation)
 
-    original = original_image
-    (orig_w, orig_h) = original.size
+    # Only expand the canvas when we have text for it
+    if text:
+        # New image with an expanded canvas
+        ret = Image.new('RGB', (orig_w, orig_h + 50), (255, 255, 255))
 
-    # New image with an expanded canvas
-    expanded = Image.new('RGB', (orig_w, orig_h + 50), (255, 255, 255))
+        # Paste original here, original is now "expanded"
+        ret.paste(rotated)
 
-    # Paste original here, original is now "expanded"
-    expanded.paste(original)
+        # Get drawing context for text on top of expanded
+        d = ImageDraw.Draw(ret)
 
-    # Get drawing context for text on top of expanded
-    d = ImageDraw.Draw(expanded)
+        margin = 5
+        offset = orig_h + 2
+        for line in textwrap.wrap(text, width=85):
+            d.text((margin, offset), line, font=font, fill=(0, 0, 0, 255))
+            offset += font.getsize(line)[1]
+    else:
+        ret = rotated
 
-    margin = 5
-    offset = orig_h + 2
-    for line in textwrap.wrap(text, width=85):
-        d.text((margin, offset), line, font=font, fill=(0, 0, 0, 255))
-        offset += font.getsize(line)[1]
-
-    return expanded
+    return ret
