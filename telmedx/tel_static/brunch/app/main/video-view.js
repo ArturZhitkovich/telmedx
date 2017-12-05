@@ -44,11 +44,6 @@ module.exports = {
   $section: null,
   controlOutput: null,
 
-  resizeWidth: 0,
-  resizeHeight: 0,
-  resizeWidthRight: 0,
-  resizeHeightRight: 0,
-
   currentRotation: 0,
 
   init(el) {
@@ -586,29 +581,10 @@ module.exports = {
     $flashToggle.removeClass('active');
   },
 
-  /**
-   * Function to check the width on resize on the entire window.
-   * To be used for adjusting the panel layouts depending on resolution.
+  /*
+   * This function is to allow or disable resizing of the container before stream has loaded in
    */
-  checkWidth() {
-    const $window = $(window);
-    const windowsize = $window.width();
-
-    if (windowsize < 992) {
-      //if the window is less than 992px wide then...
-      this.resizeWidth = $window.width() - 30;
-      this.resizeWidthRight = $window.width() - 30;
-    } else {
-      this.resizeWidth = 885;
-      this.resizeWidthRight = 892.5;
-    }
-  },
-
   locateStream() {
-    /*
-     * This function is to allow or disable resizing of the container before stream has loaded in
-    */
-
     // see if stream elementExists
     // if it does not, disable resizing?
     const $elementExists = $('#hollywood');
@@ -630,11 +606,9 @@ module.exports = {
     const $videoContainer = $('#video-container');
     const $snapContainer = $('#snap-container');
 
-    //this.checkWidth();
     this.locateStream();
 
     $(window).resize(function () {
-      //this.checkWidth();
       console.log('window resize here');
 
       // sets snapContainer width to percentage of screen
