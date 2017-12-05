@@ -19,7 +19,8 @@ def annotate_image(original_image, text=None, rotation=0):
     # Only expand the canvas when we have text for it
     if text:
         # New image with an expanded canvas
-        ret = Image.new('RGB', (orig_w, orig_h + 50), (255, 255, 255))
+        # COLOR, HEIGHT, RBG VALUES 
+        ret = Image.new('RGB', (orig_w, orig_h + 65), (255, 255, 255))
 
         # Paste original here, original is now "expanded"
         ret.paste(rotated)
@@ -27,9 +28,9 @@ def annotate_image(original_image, text=None, rotation=0):
         # Get drawing context for text on top of expanded
         d = ImageDraw.Draw(ret)
 
-        margin = 5
-        offset = orig_h + 2
-        for line in textwrap.wrap(text, width=85):
+        margin = 8
+        offset = orig_h + 4
+        for line in textwrap.wrap(text, width=72):
             d.text((margin, offset), line, font=font, fill=(0, 0, 0, 255))
             offset += font.getsize(line)[1]
     else:
