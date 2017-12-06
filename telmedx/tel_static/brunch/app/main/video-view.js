@@ -287,10 +287,50 @@ module.exports = {
     $activeSnapshot.data('rotate', imageRotation);
     console.log('Data: ' + $activeSnapshot.data('rotate'));
     this.select(id);
+
+    this.updateTextArea($selected);
   },
 
   deleteSnapshot(id) {
     console.log('Snapshot deleted');
+  },
+
+  updateTextArea($selected){
+    // TODO: fix Thumbnail deletion
+
+    // select textarea by its ID
+    const $snapText =  $('#snapText');
+    
+    // look at current textarea sid
+    var $currentSid = $('#snapText').data('sid');
+    console.log('currentsid: ' + $currentSid);
+
+    // find thumbnail with same sid
+    var $prevThumbnail = $('#' + $currentSid);
+
+    // current textarea content
+    var $textareaText = $snapText.val();
+    console.log('textarea: ' + $textareaText);
+
+    // take current textarea content and send to thumbnail with same sid
+    $prevThumbnail.attr('data-snaptext', $textareaText);
+    
+    // clear current textarea
+    $snapText.val('');
+
+    // THEN load in info from selected snapShot
+    // Get selected sid
+    var $selectedsid =  $selected.data('sid');
+    console.log('selectedsid: ' + $selectedsid);
+
+    // load text from thumbnail
+    var $currentSnapText = $selected.data('snaptext');
+
+    // set textarea sid to selected sid
+    $snapText.attr('data-sid',$selectedsid);
+
+    // load selected text into textarea
+    $snapText.append($currentSnapText);
   },
 
   makeid() {
@@ -421,7 +461,7 @@ module.exports = {
 
         let imageElement = $.parseHTML(`<img data-sid='${id}' 
             class='snap-item snapshot' id='${id}' src='${dataUri}' 
-            width='75' height='50' data-rotate='${currentRotation}'>`);
+            width='75' height='50' data-snaptext="" data-rotate='${currentRotation}'>`);
 
         let container = document.createElement('div');
 
@@ -440,6 +480,10 @@ module.exports = {
         const $container = $(container);
         $container.append(imageElement);
         $container.append(div);
+
+        // set annotation textarea sid to this snapShot id
+        $('#snapText').attr('data-sid', id);
+        console.log("snapshot taken");
 
         $('#pastSnapshots').append($container);
 

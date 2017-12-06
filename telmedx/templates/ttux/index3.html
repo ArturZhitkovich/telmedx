@@ -113,7 +113,8 @@
                                     <div class="panzoom">
                                         <img id="activeSnapshot"
                                             src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-                                            alt=""/>
+                                            alt=""
+                                            data-sid=""/>
                                     </div>
                                     
                                 </div>
@@ -126,7 +127,7 @@
                         <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
                             <input type="hidden" name="imageData" value="" />
                             <input type="hidden" name="rotation" value="0" />
-                            <textarea rows="4" name="annotationText" cols="100" maxlength="160" placeholder="Add Notes"></textarea>
+                            <textarea id="snapText" data-sid="" rows="4" name="annotationText" cols="100" maxlength="160" placeholder="Add Notes"></textarea>
                         </form>
                 </div>
         </div>
