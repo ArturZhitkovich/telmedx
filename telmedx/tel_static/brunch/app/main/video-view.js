@@ -303,17 +303,19 @@ module.exports = {
   },
 
   updateTextArea($currentSelected, $next) {
-    // TODO: fix Thumbnail deletion
-
     // Get current textarea el for currently selected snapshot
     let $snapText = $('#snapText');
     const snapValue = $snapText.val();
 
-    // Save the text to the currently selected el and reset
-    $currentSelected.attr('data-snaptext', snapValue);
-
-    // If the $next el has data in it, replace $snapText data
-    $snapText.val($next.attr('data-snaptext'));
+    if($currentSelected == null){
+      $snapText.val('');
+    } else {
+      // Save the text to the currently selected el and reset
+      $currentSelected.attr('data-snaptext', snapValue);
+    
+      // If the $next el has data in it, replace $snapText data
+      $snapText.val($next.attr('data-snaptext'));
+    }
   },
 
   makeid() {
@@ -465,8 +467,10 @@ module.exports = {
         $container.append(div);
 
         // set annotation textarea sid to this snapShot id
-        $('#snapText').attr('data-sid', id);
+        //$('#snapText').val('')
+        //$('#snapText').attr('data-sid', id);
         console.log('snapshot taken');
+        _this.updateTextArea(null,'#' + id);
 
         $('#pastSnapshots').append($container);
 
