@@ -209,7 +209,7 @@ module.exports = {
     _this.sizePreview();
 
     $('div').on('click', '.closeDiv', function () {
-      let snapDeleteID = $(_this).attr('id');
+      let snapDeleteID = $(this).attr('id');
       let snapID = snapDeleteID.replace('delete-', '');
       $('#' + snapID).remove();
       $('#' + snapDeleteID).remove();
