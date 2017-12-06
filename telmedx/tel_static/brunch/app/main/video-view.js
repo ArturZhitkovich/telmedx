@@ -174,6 +174,7 @@ module.exports = {
     });
 
     $('#capture-button').click(function () {
+      $("#downloadSnap").prop("disabled",false);
       _this.takeSnapshotClicked();
     });
 
@@ -231,11 +232,11 @@ module.exports = {
 
     const $imageDownloadForm = $('#imageDownloadForm');
     $imageDownloadForm.submit(() => {
-      // Set hidden input to have data of the current screenshot
-      let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
-      let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
-      $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
-      $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
+        // Set hidden input to have data of the current screenshot
+        let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
+        let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
+        $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
+        $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
     });
   },
 
