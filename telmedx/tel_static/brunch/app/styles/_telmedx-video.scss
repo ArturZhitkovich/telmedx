@@ -142,6 +142,12 @@
     padding-right: 2%;
   }
 
+  .snapshot {
+    border: 1px solid black;
+    &.active {
+      border: 4px solid black;
+    }
+  }
 }
 
 #myModal {

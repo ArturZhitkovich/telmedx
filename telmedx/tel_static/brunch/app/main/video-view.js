@@ -174,7 +174,7 @@ module.exports = {
     });
 
     $('#capture-button').click(function () {
-      $("#downloadSnap").prop("disabled",false);
+      $('#downloadSnap').prop('disabled', false);
       _this.takeSnapshotClicked();
     });
 
@@ -232,11 +232,11 @@ module.exports = {
 
     const $imageDownloadForm = $('#imageDownloadForm');
     $imageDownloadForm.submit(() => {
-        // Set hidden input to have data of the current screenshot
-        let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
-        let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
-        $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
-        $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
+      // Set hidden input to have data of the current screenshot
+      let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
+      let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
+      $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
+      $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
     });
   },
 
@@ -269,8 +269,8 @@ module.exports = {
 
   // adds border to snapshot
   select(id) {
-    $('.snapshot').css('border', 'none');
-    $('#' + id).css('border', '4px solid');
+    $('.snapshot').removeClass('active');
+    $('#' + id).toggleClass('active');
     this.$section.find('.panzoom').panzoom('reset');
   },
 
@@ -280,57 +280,40 @@ module.exports = {
    */
   showSnapshot(id) {
     const $selected = $('#' + id);
-    const $activeSnapshot = $('#activeSnapshot');
     const imageRotation = $selected.data('rotate');
+
+    // Active snapshot is the snapshot in the preview pane
+    const $activeSnapshot = $('#activeSnapshot');
+
+    // currentSelected is the currently selected thumbnail (with active class on)
+    const $currentSelected = $('#pastSnapshots').find('.active');
+
     $activeSnapshot.attr('src', $selected.attr('src'));
     $activeSnapshot.css({ transform: `rotate(${imageRotation}deg)` });
     $activeSnapshot.data('rotate', imageRotation);
-    console.log('Data: ' + $activeSnapshot.data('rotate'));
-    this.select(id);
 
-    this.updateTextArea($selected);
+    this.updateTextArea($currentSelected, $selected);
+
+    // Select method should occur after saving associated text data to thumbnails
+    this.select(id);
   },
 
   deleteSnapshot(id) {
     console.log('Snapshot deleted');
   },
 
-  updateTextArea($selected){
+  updateTextArea($currentSelected, $next) {
     // TODO: fix Thumbnail deletion
 
-    // select textarea by its ID
-    const $snapText =  $('#snapText');
-    
-    // look at current textarea sid
-    var $currentSid = $('#snapText').data('sid');
-    console.log('currentsid: ' + $currentSid);
+    // Get current textarea el for currently selected snapshot
+    let $snapText = $('#snapText');
+    const snapValue = $snapText.val();
 
-    // find thumbnail with same sid
-    var $prevThumbnail = $('#' + $currentSid);
+    // Save the text to the currently selected el and reset
+    $currentSelected.attr('data-snaptext', snapValue);
 
-    // current textarea content
-    var $textareaText = $snapText.val();
-    console.log('textarea: ' + $textareaText);
-
-    // take current textarea content and send to thumbnail with same sid
-    $prevThumbnail.attr('data-snaptext', $textareaText);
-    
-    // clear current textarea
-    $snapText.val('');
-
-    // THEN load in info from selected snapShot
-    // Get selected sid
-    var $selectedsid =  $selected.data('sid');
-    console.log('selectedsid: ' + $selectedsid);
-
-    // load text from thumbnail
-    var $currentSnapText = $selected.data('snaptext');
-
-    // set textarea sid to selected sid
-    $snapText.attr('data-sid',$selectedsid);
-
-    // load selected text into textarea
-    $snapText.append($currentSnapText);
+    // If the $next el has data in it, replace $snapText data
+    $snapText.val($next.attr('data-snaptext'));
   },
 
   makeid() {
@@ -483,7 +466,7 @@ module.exports = {
 
         // set annotation textarea sid to this snapShot id
         $('#snapText').attr('data-sid', id);
-        console.log("snapshot taken");
+        console.log('snapshot taken');
 
         $('#pastSnapshots').append($container);
 
