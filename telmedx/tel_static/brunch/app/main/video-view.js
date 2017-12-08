@@ -474,6 +474,9 @@ module.exports = {
 
         $('#pastSnapshots').append($container);
 
+        //$('#capture-snaper').css('cssText','height: auto !important');
+        //$('#cap-body').css('cssText','height: auto !important');
+
         _this.select(id);
       }
     });
@@ -602,10 +605,10 @@ module.exports = {
   sizePreview() {
     if ($('body').innerWidth() > 992) {
       let snaperh = $(window).height() - 110 - 30;
-      $('#capture-snaper').css('height', snaperh);
-      $('#cap-body').css('height', snaperh - $('#cap-head').outerHeight());
+      $('#capture-snaper').css('height', 'auto');
+      $('#cap-body').css('height', 'auto');
     } else {
-      $('#cap-body').css('height', '100%');
+      $('#cap-body').css('height', 'auto');
     }
   },
 

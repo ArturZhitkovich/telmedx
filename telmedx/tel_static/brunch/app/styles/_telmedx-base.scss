@@ -111,16 +111,6 @@ html, body {
   margin-top: 4%;
 }
 
-.resizable-right.ui-resizable {
-  height: 650px;
-  border-radius: 4px 4px 0 0;
-}
-
-div#capture-snaper {
-  height: 650px;
-  border-radius: 4px 4px 0 0;
-}
-
 div#cap-head {
   color: #333;
   border: 1px solid #ddd;
@@ -140,12 +130,13 @@ img.snapshot {
   background: none !important;
 }
 
+
+/* SNAPSHOTS */
 #snapText {
   resize: none;
   width: 100%;
   padding-top: 1%;
-  border-radius: 0 0 4px 4px;
-  border: 1px;
+  border: solid 1px #d3d3d3;
   padding-left: 1%;
 }
 
@@ -153,9 +144,26 @@ img.snapshot {
   color: #000;
 }
 
+#snapshots {
+  padding-bottom: 5.5%;
+  width: 90%;
+  margin: auto;
+}
+
 #download-snapshot {
   padding-right: 1%;
 }
+
+#imageDownloadForm {
+  width: 90%;
+  margin: auto;
+}
+
+#downloadSnap {
+  margin: 2% 0% 2% 2%;
+}
+
+/* END SNAPSHOTS */
 
 // Not in use?
 #camera-back-icon span {
