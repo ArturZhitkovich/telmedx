@@ -31,7 +31,6 @@ ALLOWED_HOSTS = [
     '10.0.0.48',
     'telmedx.local',
     'localhost',
-    '10.0.0.96',
 ]
 
 INSTANCE_BRAND = 'kpnw'
