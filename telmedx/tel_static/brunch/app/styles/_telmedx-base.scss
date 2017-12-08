@@ -149,6 +149,10 @@ img.snapshot {
   padding-left: 1%;
 }
 
+#snapText::placeholder {
+  color: #000;
+}
+
 #download-snapshot {
   padding-right: 1%;
 }
