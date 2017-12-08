@@ -174,7 +174,8 @@ module.exports = {
     });
 
     $('#capture-button').click(function () {
-      $('#downloadSnap').prop('disabled', false);
+      $('#downloadSnap-1').prop('disabled', false);
+      $('#downloadSnap-2').prop('disabled', false);
       _this.takeSnapshotClicked();
     });
 
