@@ -2,6 +2,7 @@ import os
 from subprocess import run
 
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from ttux.models import *
 
@@ -68,11 +69,17 @@ class Command(BaseCommand):
         frontend_dir = os.path.join(settings.PROJECT_DIR, 'tel_static', 'brunch')
 
         # Remove link if it exists, then link active stylesheet to one
-        # selected in CLI.
-        run(['rm', 'app/styles/_telmedx-active.scss'], cwd=frontend_dir)
+        # selected in CLI. Do not show STDOUT, so send to /dev/null
+        run(['rm', 'app/styles/_telmedx-active.scss'],
+            cwd=frontend_dir, stdout=open(os.devnull, 'wb'))
+
+        # Link file to active scss file
         run(['ln', '-s',
              '_telmedx-{}.scss'.format(site),
              'app/styles/_telmedx-active.scss'],
             cwd=frontend_dir)
 
+        # Run brunch command and compile/build by default
         run(['brunch', watch if watch else build], cwd=frontend_dir)
+
+        call_command('collectstatic', '--noinput')
