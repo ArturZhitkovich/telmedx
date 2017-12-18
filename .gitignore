@@ -116,3 +116,6 @@ telmedx/static
 unfinished_start.sh
 local_brunch.sh
 local_restart.sh
+local_readme.txt
+telmedx/db.sqlite3
+
