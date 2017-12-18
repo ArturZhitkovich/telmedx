@@ -82,4 +82,5 @@ class Command(BaseCommand):
         # Run brunch command and compile/build by default
         run(['brunch', watch if watch else build], cwd=frontend_dir)
 
-        call_command('collectstatic', '--noinput')
+        if build:
+            call_command('collectstatic', '--noinput')
