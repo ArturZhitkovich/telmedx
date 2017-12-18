@@ -29,7 +29,6 @@ urlpatterns = [
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
     url(r'^devices/?$', ttux_views.device_view),
     url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
