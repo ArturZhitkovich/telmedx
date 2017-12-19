@@ -67,6 +67,7 @@ class Command(BaseCommand):
             build = 'build'
 
         frontend_dir = os.path.join(settings.PROJECT_DIR, 'tel_static', 'brunch')
+        settings_dir = os.path.join(settings.PROJECT_DIR, 'telmedx', 'settings')
 
         # Remove link if it exists, then link active stylesheet to one
         # selected in CLI. Do not show STDOUT, so send to /dev/null
@@ -78,6 +79,15 @@ class Command(BaseCommand):
              '_telmedx-{}.scss'.format(site),
              'app/styles/_telmedx-active.scss'],
             cwd=frontend_dir)
+
+        # Remove existing active settings
+        run(['rm', 'active.py'], cwd=settings_dir)
+
+        # Link new active settings
+        run(['ln', '-s',
+             'env_{}.py'.format(site),
+             'active.py'],
+            cwd=settings_dir)
 
         # Run brunch command and compile/build by default
         run(['brunch', watch if watch else build], cwd=frontend_dir)
