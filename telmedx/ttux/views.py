@@ -13,6 +13,7 @@ from django.contrib.auth import logout, login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from rest_framework.exceptions import MethodNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
@@ -646,6 +647,45 @@ def initialize_device(request):
                 Session.put(device_name, Session())
 
             return JsonResponse({'status': 'OK', 'device_name': cam.name})
+
+
+@csrf_exempt
+def image_download(request):
+    if request.method != 'POST':
+        raise MethodNotAllowed(request.method)
+
+    from io import BytesIO
+    from PIL import Image
+    from time import time
+    from .utils import annotate_image
+    from tempfile import TemporaryFile
+    # Get POST data and convert into image
+    # Image will be base64 encoded, so decode and throw into PIL
+    # data will be in format:
+    # data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
+
+    # This should be the image data decoded
+    data = request.POST
+    encoded_image_data = data.get('imageData')
+    annotation_text = data.get('annotationText')
+    rotation = data.get('rotation', 0)
+    image_data = base64.b64decode(encoded_image_data.split(',')[1])
+
+    tf = TemporaryFile()
+    image = Image.open(BytesIO(image_data))
+    annotated = annotate_image(image, annotation_text, - int((rotation)))
+    annotated.save(tf, image.format, quality=90)
+
+    tf.seek(0)
+
+    image_content_type = 'image/jpeg'
+
+    # Return image for download
+    response = HttpResponse(tf, content_type=image_content_type)
+    filename = '{}.jpg'.format(int(time()))
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+    return response
+
 
 
 def logout_view(request):

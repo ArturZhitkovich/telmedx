@@ -97,28 +97,18 @@ html, body {
 
 #snapshot-panel {
   float: left;
-  width: 100%; 
+  width: 100%;
   margin-right: 1%;
 }
 
 #second-row {
-    width: 100%;
-    margin-top: 1%;
-    margin-left: 0;
+  width: 100%;
+  margin-top: 1%;
+  margin-left: 0;
 }
 
 #first-row {
   margin-top: 4%;
-}
-
-.resizable-right.ui-resizable {
-  height: 650px;
-  border-radius: 4px;
-}
-
-div#capture-snaper {
-  height: 650px;
-  border-radius: 4px;
 }
 
 div#cap-head {
@@ -139,6 +129,52 @@ img.snapshot {
   pointer-events: none;
   background: none !important;
 }
+
+
+/* SNAPSHOTS */
+#snapText {
+  resize: none;
+  width: 100%;
+  padding-top: 1%;
+  border: solid 1px #d3d3d3;
+  padding-left: 1%;
+}
+
+#snapText::placeholder {
+  color: #000;
+}
+
+#snapshots {
+  padding-bottom: 11%;
+  width: 90%;
+  margin: auto;
+}
+
+#download-snapshot {
+  padding-right: 1%;
+}
+
+#imageDownloadForm {
+  width: 90%;
+  margin: auto;
+}
+
+#downloadSnap-2 {
+  margin: 2% 0% 2% 2%;
+  background: #0E6CA4;
+  color: #FFF;
+  font-weight: bold;
+}
+
+#downloadSnap-2:hover {
+  background: rgb(13, 90, 134);
+}
+
+.panzoom {
+  max-height: 500px;
+}
+
+/* END SNAPSHOTS */
 
 // Not in use?
 #camera-back-icon span {

@@ -24,3 +24,6 @@ node_modules/
 
 # Brunch output folder.
 public/
+
+# Active env-specific scss file
+app/styles/_telmedx-active.scss

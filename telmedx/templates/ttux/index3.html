@@ -103,16 +103,25 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div style="float: right;" id="download-snapshot">
+                                    </div>
                                 </h3>
                             </div>
                             <div id="cap-body" class="panel-body">
-                                <div id="snapshots" style="position:relative; height:100%;">
+                                <div id="snapshots" style="position:relative;">
                                     <div class="panzoom">
                                         <img id="activeSnapshot"
                                             src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-                                            alt=""/>
+                                            alt=""
+                                            data-sid=""/>
                                     </div>
                                 </div>
+                                <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
+                                    <input type="hidden" name="imageData" value="" />
+                                    <input type="hidden" name="rotation" value="0" />
+                                    <textarea id="snapText" data-sid="" rows="2" name="annotationText" cols="100" maxlength="160" placeholder="Add Notes"></textarea>
+                                    <button id="downloadSnap-2" style="float: right;" form="imageDownloadForm" type="submit" class="btn btn-sm btn-default" disabled>Save Photo + Text</button>
+                                </form>
                             </div>
                         </div>
                     </div>
