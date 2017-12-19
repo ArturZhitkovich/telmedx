@@ -4,6 +4,6 @@ from .base import *
 Add overrides to base settings here
 """
 
-DEBUG = False
+DEBUG = True
 INSTANCE_BRAND = 'kpnw'
 
