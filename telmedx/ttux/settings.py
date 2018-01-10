@@ -12,4 +12,5 @@ API_KEYS = {
     'b4e868c71a3b116b863ceb61ee18d977c5c81c16': 'providence',
 
     'e3b0c44298fc1c149afbf4c8996fb92427ae41e4': 'uk',
+    'ae452dde8e37077365d3fda1dffb93e808db29ff': 'cruzroja',
 }
