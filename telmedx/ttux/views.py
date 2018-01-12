@@ -5,14 +5,15 @@ import logging
 import socket
 import time
 
-# from time import sleep
 import gevent
 import gevent.queue
 from django.conf import settings
 from django.contrib.auth import logout, login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.views.generic import ListView, UpdateView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse_lazy
 from rest_framework.exceptions import MethodNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -699,3 +700,19 @@ class TelmedxLoginView(LoginView):
         # Add branding context
         context.update({'brand': settings.INSTANCE_BRAND})
         return context
+
+    def get_redirect_url(self):
+        # Check if user is an admin, go to the admin version
+        return reverse_lazy('admin-users-list')
+
+
+class TelmedxAdminUsersListView(ListView):
+    template_name = 'admin/users_list.html'
+    model = User
+
+
+class TelmedxAdminUsersUpdateView(UpdateView):
+    template_name = 'admin/users_update.html'
+    model = User
+    # TODO fields and form_class
+

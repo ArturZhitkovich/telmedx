@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block metatitle %}telmedx | Devices{% endblock %}
+{% block metadescription %}Find all the registered device right here.{% endblock %}
+
+{% block nav %}
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a href="#">
+                <span class="partition">
+                    {{ brand }} - {{ user }}
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="/usage">
+                <span class="glyphicon glyphicon-cog"></span>
+            </a>
+        </li>
+        <li>
+            <a href="ttux/logout">
+                <span class="glyphicon glyphicon-off"></span>
+            </a>
+        </li>
+    </ul>
+{% endblock nav %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12">
+            <div class="row" style="margin-top: 90px;">
+                <div class="col-md-4 pull-left">
+                    <h2>Users</h2>
+                    <strong>Add New</strong>
+                </div>
+                <div class="col-md-8">
+                    <select></select>
+                    <select></select>
+                    <form class="form-inline">
+
+                    <input type="text" placeholder="Filter users" value=""/>
+                    <div>
+                        1-50 of 348
+                    </div>
+                    <div class="">
+                        Arrows
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Group</th>
+                        <th>Type</th>
+                        <th>Added</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in object_list %}
+                        <tr>
+                            <td><a href="{% url 'admin-users-update' user.pk %}">Edit</a></td>
+                            <td>{{ user.username }}</td>
+                            <td></td>
+                            <td>{{ user.groups.first.name }}</td>
+                            <td>{{ user.is_staff }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
