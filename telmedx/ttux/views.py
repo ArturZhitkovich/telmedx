@@ -8,12 +8,8 @@ import time
 import gevent
 import gevent.queue
 from django.conf import settings
-from django.contrib.auth import logout, login
-from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
-from django.views.generic import ListView, UpdateView
+from django.contrib.auth import logout, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse_lazy
 from rest_framework.exceptions import MethodNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -24,6 +20,8 @@ from .models import mobileCam  # get our database model
 from .serializers import InitializeSerializer
 from .session import Session
 from .settings import API_KEYS
+
+User = get_user_model()
 
 stream_running = False
 # commandQ = gevent.queue.Queue(1)
@@ -688,31 +686,4 @@ def image_download(request):
     return response
 
 
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect('/login/?next=%s' % request.path)
-
-
-class TelmedxLoginView(LoginView):
-    def get_context_data(self, **kwargs):
-        context = super(TelmedxLoginView, self).get_context_data(**kwargs)
-        # Add branding context
-        context.update({'brand': settings.INSTANCE_BRAND})
-        return context
-
-    def get_redirect_url(self):
-        # Check if user is an admin, go to the admin version
-        return reverse_lazy('admin-users-list')
-
-
-class TelmedxAdminUsersListView(ListView):
-    template_name = 'admin/users_list.html'
-    model = User
-
-
-class TelmedxAdminUsersUpdateView(UpdateView):
-    template_name = 'admin/users_update.html'
-    model = User
-    # TODO fields and form_class
 

@@ -1,0 +1,20 @@
+
+<form class="form" method="POST">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="form-group">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+    </div>
+    {% endfor %}
+
+    {% if editing %}
+    <div class="form-group">
+        <button class="btn btn-danger">Delete User</button>
+    </div>
+    {% endif %}
+
+    <button class="btn btn-primary" type="submit">Save</button>
+</form>

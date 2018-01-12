@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
 
-{% block metatitle %}telmedx | Devices{% endblock %}
+{% block metatitle %}telmedx | Create Group{% endblock %}
 {% block metadescription %}Find all the registered device right here.{% endblock %}
 
 {% block nav %}
@@ -32,11 +32,11 @@
         <div class="col-md-12">
             <div class="row" style="margin-top: 90px;">
                 <div class="col-md-4 pull-left">
-                    <h2>Users</h2>
-                    <strong>Add New</strong>
+                    <h2>Groups</h2>
+                    <a href="{% url 'admin-groups-create' %}" class="btn btn-primary">Add new</a>
                 </div>
                 <div class="col-md-8">
-                    {% include 'admin/users_update_form.html' %}
+                    {% include 'admin/groups_form.html' %}
                 </div>
             </div>
         </div>

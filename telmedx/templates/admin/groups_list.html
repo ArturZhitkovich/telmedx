@@ -32,8 +32,8 @@
         <div class="col-md-12">
             <div class="row" style="margin-top: 90px;">
                 <div class="col-md-4 pull-left">
-                    <h2>Users</h2>
-                    <strong>Add New</strong>
+                    <h2>Groups</h2>
+                    <a href="{% url 'admin-groups-create' %}" class="btn btn-primary">Add new</a>
                 </div>
                 <div class="col-md-8">
                     <select></select>
@@ -54,29 +54,26 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>{# edit #}</th>
+                        <th></th>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Group</th>
-                        <th>Type</th>
                         <th>Added</th>
-                        <th>{# start conference #}</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for user in object_list %}
+                    {% for group in object_list %}
                         <tr>
-                            <td>
-                                <a class="" href="{% url 'admin-users-update' user.pk %}">
-                                    <span class="glyphicon glyphicon-edit"></span>
-                                </a>
-                            </td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{{ user.groups.all|join:', ' }}</td>
-                            <td>{{ user.is_staff }}</td>
-                            <td>{{ user.date_created|date:'Y-m-d' }}</td>
+                            <td><a href="{% url 'admin-groups-update' group.pk %}">Edit</a></td>
+                            <td>{{ group.name }}</td>
+                            <td>{{ user.created }}</td>
                             <td></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                        <td>None</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         </tr>
                     {% endfor %}
                     </tbody>

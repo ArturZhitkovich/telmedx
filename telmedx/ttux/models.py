@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, AbstractUser
 from django.db import models
 
 
@@ -48,4 +48,3 @@ class sessionLog(models.Model):
     @property
     def begin(self):
         return self.begin_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-

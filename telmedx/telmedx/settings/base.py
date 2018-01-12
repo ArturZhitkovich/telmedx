@@ -42,7 +42,8 @@ THIRD_PARTY_APPS = (
 
 TELX_APPS = (
     'ttux',
-    'usage'
+    'usage',
+    'users',
 )
 
 CORE_APPS = (
@@ -143,6 +144,9 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static/'
 
+# Default User model
+AUTH_USER_MODEL = 'users.TelmedxUser'
+
 
 # DRF stuff
 REST_FRAMEWORK = {
@@ -156,8 +160,6 @@ REST_FRAMEWORK = {
 # Session stuff
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
-
-import os
 
 LOGGING = {
     'version': 1,

@@ -1,0 +1,17 @@
+{% block content %}
+    <form accept-charset="UTF-8" method="POST" action="" role="form">
+        <fieldset>
+            {% csrf_token %}
+            <div class="form-group {% if form.errors %} has-error {% endif %}">
+                <input class="form-control error" placeholder="Username" name="username"
+                       type="text">
+            </div>
+            <div class="form-group {% if form.errors %} has-error {% endif %}">
+                <input class="form-control error" placeholder="Password" name="password"
+                       type="password" value="">
+            </div>
+            <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+            <input type="hidden" name="next" value="/devices"/>
+        </fieldset>
+    </form>
+{% endblock content %}

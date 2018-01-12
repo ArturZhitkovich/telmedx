@@ -1,5 +1,7 @@
 from django.conf.urls import url
 
+# TODO REMOVE THIS LOGOUT
+from users import views as users_views
 from . import views
 
 urlpatterns = [
@@ -24,6 +26,6 @@ urlpatterns = [
     url(r'^initializeDevice', views.initialize_device),
     url(r'^imageDownload', views.image_download),
     url(r'^viewSessionInfo', views.view_session_info),
-    url(r'^logout$', views.logout_view),
+    url(r'^logout$', users_views.logout_view),
 
 ]

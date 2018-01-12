@@ -16,16 +16,17 @@ Including another URLconf
 
 from django.conf.urls import url, include
 from django.contrib import admin
-from ttux.routers import urlpatterns as ttux_patterns
-from ttux.views import TelmedxLoginView
 
 from ttux import views as ttux_views
+from ttux.routers import urlpatterns as ttux_patterns
+from users.views import TelmedxLoginView, TelmedxAdminUsersListView, TelmedxAdminUsersUpdateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r'^$', TelmedxLoginView.as_view()),
-    url(r'^login/$', TelmedxLoginView.as_view()),
+    url(r'^login/$', TelmedxLoginView.as_view(), name='login'),
+    url(r'^tadmin/', include('users.urls')),
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
