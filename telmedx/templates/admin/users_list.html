@@ -29,27 +29,43 @@
 
 {% block content %}
     <div class="container">
-        <div class="col-md-12">
-            <div class="row" style="margin-top: 90px;">
-                <div class="col-md-4 pull-left">
-                    <h2>Users</h2>
-                    <strong>Add New</strong>
+        <nav class="col-md-12">
+            <nav class="navbar" style="margin-top: 90px;">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Users</a>
+                </div>
+                <div class="">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button">
+                                Users <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'admin-users-list' %}">Users</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="{% url 'admin-groups-list' %}">Groups</a>
+                        </li>
+                    </ul>
                 </div>
                 <div class="col-md-8">
                     <select></select>
                     <select></select>
                     <form class="form-inline">
 
-                    <input type="text" placeholder="Filter users" value=""/>
-                    <div>
-                        1-50 of 348
-                    </div>
-                    <div class="">
-                        Arrows
-                    </div>
+                        <input type="text" placeholder="Filter users" value=""/>
+                        <div>
+                            1-50 of 348
+                        </div>
+                        <div class="">
+                            Arrows
+                        </div>
                     </form>
                 </div>
-            </div>
+            </nav>
             <div class="row">
                 <table class="table table-striped">
                     <thead>
@@ -76,14 +92,14 @@
                             <td>{{ user.groups.all|join:', ' }}</td>
                             <td>{{ user.is_staff }}</td>
                             <td>{{ user.date_created|date:'Y-m-d' }}</td>
-                            <td></td>
+                            <td><a href="#">Start Conference</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
 
                 </table>
             </div>
-        </div>
+    </div>
     </div>
 
 {% endblock %}

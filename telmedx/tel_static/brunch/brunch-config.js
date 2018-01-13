@@ -1,7 +1,7 @@
 // See http://brunch.io for documentation.
 exports.modules = {
   autoRequire: {
-    'app.js': ['initialize']
+    'app.js': ['initialize'],
   }
 };
 
@@ -26,13 +26,14 @@ exports.npm = {
   // Required for jquery plugins like jquery-ui
   globals: {
     $: 'jquery',
-    jQuery: 'jquery'
+    jQuery: 'jquery',
+    bootstrap: 'bootstrap-sass'
   },
 
   // Required for jquery-ui
   styles: {
-    'jquery-ui-bundle': ['jquery-ui.css']
-  }
+    'jquery-ui-bundle': ['jquery-ui.css'],
+  },
 };
 
 exports.plugins = {
