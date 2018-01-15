@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, UpdateView, CreateView)
@@ -66,6 +67,16 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
         context['sort'] = self.get_ordering()
         context['nsort'] = True if context['sort'] and context['sort'][0] == '-' else False
         return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            username_filter = Q(username__icontains=search)
+            email_filter = Q(email__icontains=search)
+            qs = qs.filter(username_filter | email_filter)
+
+        return qs
 
 
 class TelmedxAdminUsersUpdateView(UpdateView):

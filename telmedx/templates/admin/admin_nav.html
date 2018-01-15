@@ -22,15 +22,21 @@
         </div>
     </div>
     <div class="col-md-8">
-        <form class="form-inline search-form pull-right">
-            <input class="form-control" type="text" placeholder="Filter users" value=""/>
+        <form class="form-inline search-form pull-right" method="GET">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Filter users"
+                    value="{{ request.GET.search }}" name="search"/>
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-success">Search</button>
+                </span>
+            </div>
             <span class="page-status">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             <span class="btn-group btn-group-sm" role="group">
                 {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.number|add:-1 }}&sort={{ request.GET.sort }}" class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
+                    <a href="?page={{ page_obj.number|add:-1 }}&sort={{ request.GET.sort }}&search={{ request.GET.search }}" class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.number|add:1 }}&sort={{ request.GET.sort }}" class="btn btn-default"><span
+                    <a href="?page={{ page_obj.number|add:1 }}&sort={{ request.GET.sort }}&search={{ request.GET.search }}" class="btn btn-default"><span
                         class="glyphicon glyphicon-menu-right"></span></a>
                 {% endif %}
             </span>

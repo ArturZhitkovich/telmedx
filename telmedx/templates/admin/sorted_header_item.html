@@ -1,9 +1,9 @@
 {% if sort == field %}
-    <a href="?sort={{ field }}_desc">{{ label|default:field|capfirst }} <span
+    <a href="?sort={{ field }}_desc&search={{ request.GET.search }}">{{ label|default:field|capfirst }} <span
         class="glyphicon glyphicon-chevron-up"></span></a>
 {% elif sort == nfield %}
-    <a href="?sort={{ field }}_asc">{{ label|default:field|capfirst }} <span
+    <a href="?sort={{ field }}_asc&search={{ request.GET.search }}">{{ label|default:field|capfirst }} <span
         class="glyphicon glyphicon-chevron-down"></span></a>
 {% else %}
-    <a href="?sort={{ field }}_desc">{{ label|default:field|capfirst }}</a>
+    <a href="?sort={{ field }}_desc&search={{ request.GET.search }}">{{ label|default:field|capfirst }}</a>
 {% endif %}
