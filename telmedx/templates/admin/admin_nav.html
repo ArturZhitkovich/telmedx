@@ -27,10 +27,10 @@
             <span class="page-status">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             <span class="btn-group btn-group-sm" role="group">
                 {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.number|add:-1 }}" class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
+                    <a href="?page={{ page_obj.number|add:-1 }}&sort={{ request.GET.sort }}" class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
                 {% endif %}
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.number|add:1 }}" class="btn btn-default"><span
+                    <a href="?page={{ page_obj.number|add:1 }}&sort={{ request.GET.sort }}" class="btn btn-default"><span
                         class="glyphicon glyphicon-menu-right"></span></a>
                 {% endif %}
             </span>
