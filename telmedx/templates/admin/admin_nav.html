@@ -1,0 +1,39 @@
+<nav class="navbar admin-navbar row">
+    <div class="col-md-4">
+        <div class="navbar-header">
+            <a class="navbar-brand">{{ current_page }}</a>
+        </div>
+        <div class="">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button">
+                        Users <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'admin-users-list' %}">Users</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{% url 'admin-groups-list' %}">Groups</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <form class="form-inline search-form pull-right">
+            <input class="form-control" type="text" placeholder="Filter users" value=""/>
+            <span class="page-status">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <span class="btn-group btn-group-sm" role="group">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.number|add:-1 }}" class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.number|add:1 }}" class="btn btn-default"><span
+                        class="glyphicon glyphicon-menu-right"></span></a>
+                {% endif %}
+            </span>
+        </form>
+    </div>
+</nav>

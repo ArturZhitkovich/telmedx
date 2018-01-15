@@ -29,51 +29,32 @@
 
 {% block content %}
     <div class="container">
+        {% include 'admin/admin_nav.html' with current_page='Groups' %}
         <div class="col-md-12">
-            <div class="row" style="margin-top: 90px;">
-                <div class="col-md-4 pull-left">
-                    <h2>Groups</h2>
-                    <a href="{% url 'admin-groups-create' %}" class="btn btn-primary">Add new</a>
-                </div>
-                <div class="col-md-8">
-                    <select></select>
-                    <select></select>
-                    <form class="form-inline">
-
-                    <input type="text" placeholder="Filter users" value=""/>
-                    <div>
-                        1-50 of 348
-                    </div>
-                    <div class="">
-                        Arrows
-                    </div>
-                    </form>
-                </div>
-            </div>
             <div class="row">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th></th>
+                        <th class="actions"></th>
                         <th>Name</th>
-                        <th>Added</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for group in object_list %}
                         <tr>
-                            <td><a href="{% url 'admin-groups-update' group.pk %}">Edit</a></td>
+                            <td>
+                                <a href="{% url 'admin-groups-update' group.pk %}">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </a>
+                            </td>
                             <td>{{ group.name }}</td>
-                            <td>{{ user.created }}</td>
-                            <td></td>
                         </tr>
                     {% empty %}
                         <tr>
-                        <td>None</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                            <td>None</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                     </tbody>

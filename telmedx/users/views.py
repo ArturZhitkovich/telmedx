@@ -37,9 +37,35 @@ class TelmedxLoginView(LoginView):
         return reverse_lazy('admin-users-list')
 
 
-class TelmedxAdminUsersListView(ListView):
+class TelmedxPaginatedListView(ListView):
+    paginate_by = 15
+    paginate_orphans = 5
+    ordering_options = None
+
+
+class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     template_name = 'admin/users_list.html'
     model = User
+    ordering_options = ('username', 'email', 'date_joined')
+
+    def _flatten_options(self, options):
+        return [item for sublist in options for item in sublist]
+
+    def get_ordering(self, **kwargs):
+        ordering = self.request.GET.get('sort', 'email_asc')
+        ordered_options = map(lambda x: ['{}_asc'.format(x), '{}_desc'.format(x)], self.ordering_options)
+        if ordering in self._flatten_options(ordered_options):
+            if '_asc' in ordering:
+                ordering = '{}'.format(ordering.split('_asc')[0])
+            elif '_desc' in ordering:
+                ordering = '-{}'.format(ordering.split('_desc')[0])
+            return ordering
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sort'] = self.get_ordering()
+        context['nsort'] = True if context['sort'] and context['sort'][0] == '-' else False
+        return context
 
 
 class TelmedxAdminUsersUpdateView(UpdateView):
@@ -49,9 +75,10 @@ class TelmedxAdminUsersUpdateView(UpdateView):
     success_url = reverse_lazy('admin-users-list')
 
 
-class TelmedxGroupListView(ListView):
+class TelmedxGroupListView(TelmedxPaginatedListView):
     template_name = 'admin/groups_list.html'
     model = Group
+    ordering_options = ('name',)
 
 
 class TelmedxGroupCreateView(CreateView):
@@ -66,4 +93,3 @@ class TelmedxGroupsUpdateView(UpdateView):
     model = Group
     form_class = AdminGroupForm
     success_url = reverse_lazy('admin-groups-list')
-
