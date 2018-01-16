@@ -13,6 +13,7 @@ __all__ = (
     'TelmedxLoginView',
     'TelmedxAdminUsersUpdateView',
     'TelmedxAdminUsersListView',
+    'TelmedxAdminUsersCreateView',
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
@@ -89,6 +90,13 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
 
 
 class TelmedxAdminUsersUpdateView(BaseTelmedxMixin, UpdateView):
+    template_name = 'admin/users_update.html'
+    model = User
+    form_class = AdminUserForm
+    success_url = reverse_lazy('admin-users-list')
+
+
+class TelmedxAdminUsersCreateView(BaseTelmedxMixin, CreateView):
     template_name = 'admin/users_update.html'
     model = User
     form_class = AdminUserForm

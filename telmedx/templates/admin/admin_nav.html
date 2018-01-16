@@ -1,5 +1,10 @@
 <nav class="navbar admin-navbar row">
     <div class="col-md-12">
+        <div class="pull-left">
+            <a class="btn btn-primary" href="{{ request.path }}/create">
+                <span class="glyphicon glyphicon-plus"></span> Add new
+            </a>
+        </div>
         <form class="form-inline search-form pull-right" method="GET">
             <div class="input-group">
                 <input class="form-control" type="text" placeholder="Filter {{ current_page }}"
