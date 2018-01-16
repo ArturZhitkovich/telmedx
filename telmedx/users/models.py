@@ -1,11 +1,30 @@
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager, Group
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+USER_GLOBAL_ADMIN = 1
+USER_GROUP_ADMIN = 2
+USER_REGULAR_USER = 3
+USER_TYPES_CHOICES = (
+    (USER_GLOBAL_ADMIN, 'Global Admin'),
+    (USER_GROUP_ADMIN, 'Group Admin'),
+    (USER_REGULAR_USER, 'User'),
+)
+
+
+class TelmedxGroupProfile(models.Model):
+    group = models.OneToOneField(Group)
+    contact = models.EmailField()
+
 
 class TelmedxUserManager(UserManager):
-    pass
+
+    def create_group_admin(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('user_type', USER_GROUP_ADMIN)
+        return self._create_user(username, email, password, **extra_fields)
 
 
 class TelmedxProfile(models.Model):
@@ -13,15 +32,20 @@ class TelmedxProfile(models.Model):
     first_name = models.CharField(max_length=120)
     last_name = models.CharField(max_length=120)
     phone = models.CharField(max_length=120)
+    user_type = models.SmallIntegerField(choices=USER_TYPES_CHOICES,
+                                         default=USER_REGULAR_USER)
 
 
 class TelmedxUser(AbstractUser):
-
-    objects = TelmedxUserManager
+    objects = TelmedxUserManager()
 
     @property
     def date_created(self):
         return self.date_joined
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
 
 
 # Uncomment if we want to have email == username

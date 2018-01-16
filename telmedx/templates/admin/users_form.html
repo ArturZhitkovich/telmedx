@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<form class="form" method="POST">
+<form class="form" method="POST" action="{{ action }}">
     {% csrf_token %}
 
     {% for field in form.visible_fields %}

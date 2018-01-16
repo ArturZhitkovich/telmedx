@@ -27,9 +27,15 @@
             {% for user in object_list %}
                 <tr>
                     <td>
+                        <button class="user-update-btn btn btn-default btn-sm" type="button" data-toggle="modal"
+                                data-target="#users-form" data-upk="{{ user.pk }}" data-url="{% url 'admin-get-form' %}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </button>
+                        {% comment %}
                         <a class="" href="{% url 'admin-users-update' user.pk %}">
                             <span class="glyphicon glyphicon-edit"></span>
                         </a>
+                        {% endcomment %}
                     </td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
@@ -49,4 +55,6 @@
 
         </table>
     </div>
+
+    {% include 'admin/users_update_modal.html' %}
 {% endblock %}

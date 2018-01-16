@@ -6,9 +6,13 @@ User = get_user_model()
 
 
 class AdminUserForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=128)
+    last_name = forms.CharField(max_length=128)
+    phone_number = forms.CharField(max_length=32)
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'groups')
+        fields = ('first_name', 'last_name', 'phone_number', 'username', 'email', 'groups')
 
 
 class AdminGroupForm(forms.ModelForm):

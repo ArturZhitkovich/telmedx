@@ -10,4 +10,7 @@ urlpatterns = (
     url(r'^groups$', TelmedxGroupListView.as_view(), name='admin-groups-list'),
     url(r'^groups/create/$', TelmedxGroupCreateView.as_view(), name='admin-groups-create'),
     url(r'^groups/update/(?P<pk>\d+)$', TelmedxGroupsUpdateView.as_view(), name='admin-groups-update'),
+
+    # AJAX
+    url(r'^getForm$', get_admin_form, name='admin-get-form')
 )

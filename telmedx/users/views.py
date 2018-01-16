@@ -4,7 +4,10 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.db.models import Q
 from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template.context_processors import csrf
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic import (ListView, UpdateView, CreateView)
 
 from .forms import AdminUserForm, AdminGroupForm
@@ -17,8 +20,11 @@ __all__ = (
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
+
+    'get_admin_form',
 )
 
+# @type TelmedxUser
 User = get_user_model()
 
 
@@ -147,3 +153,24 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
     form_class = AdminGroupForm
     success_url = reverse_lazy('admin-groups-list')
     back_url = reverse_lazy('admin-groups-list')
+
+
+@csrf_protect
+def get_admin_form(request):
+    context = {}
+    try:
+        uid = request.GET.get('uid')
+        user = User.objects.get(id=uid)
+    except User.DoesNotExist:
+        user = None
+    except Exception as e:
+        print(e)
+
+    if user:
+        form = AdminUserForm(instance=user)
+        context['form'] = form
+        context['mode'] = 'edit'
+        context['action'] = reverse_lazy('admin-users-update', kwargs={'pk': user.pk})
+        context.update(csrf(request))
+
+    return render_to_response('admin/users_form.html', context)
