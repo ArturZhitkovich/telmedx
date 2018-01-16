@@ -40,6 +40,10 @@
                     <td>{{ user.date_created|date:'Y-m-d' }}</td>
                     <td><a href="#">Start Conference</a></td>
                 </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No users found.</td>
+                </tr>
             {% endfor %}
             </tbody>
 
