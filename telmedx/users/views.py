@@ -25,6 +25,15 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/?next=%s' % request.path)
 
+class BaseTelmedxMixin:
+    """
+    Mixin to add branding and other data
+    """
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['brand'] = settings.INSTANCE_BRAND
+        return context
+
 
 class TelmedxLoginView(LoginView):
     def get_context_data(self, **kwargs):
@@ -38,7 +47,7 @@ class TelmedxLoginView(LoginView):
         return reverse_lazy('admin-users-list')
 
 
-class TelmedxPaginatedListView(ListView):
+class TelmedxPaginatedListView(BaseTelmedxMixin, ListView):
     paginate_by = 15
     paginate_orphans = 5
     ordering_options = None
@@ -79,7 +88,7 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
         return qs
 
 
-class TelmedxAdminUsersUpdateView(UpdateView):
+class TelmedxAdminUsersUpdateView(BaseTelmedxMixin, UpdateView):
     template_name = 'admin/users_update.html'
     model = User
     form_class = AdminUserForm
@@ -92,14 +101,14 @@ class TelmedxGroupListView(TelmedxPaginatedListView):
     ordering_options = ('name',)
 
 
-class TelmedxGroupCreateView(CreateView):
+class TelmedxGroupCreateView(BaseTelmedxMixin, CreateView):
     template_name = 'admin/groups_create.html'
     model = Group
     form_class = AdminGroupForm
     success_url = reverse_lazy('admin-groups-list')
 
 
-class TelmedxGroupsUpdateView(UpdateView):
+class TelmedxGroupsUpdateView(BaseTelmedxMixin, UpdateView):
     template_name = 'admin/users_update.html'
     model = Group
     form_class = AdminGroupForm

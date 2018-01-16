@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block metatitle %}telmedx | Devices{% endblock %}
+{% block metadescription %}Find all the registered device right here.{% endblock %}
+
+{% block nav %}
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a href="#">
+                <span class="partition">
+                    {{ brand }} - {{ user }}
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="/usage">
+                <span class="glyphicon glyphicon-cog"></span>
+            </a>
+        </li>
+        <li>
+            <a href="ttux/logout">
+                <span class="glyphicon glyphicon-off"></span>
+            </a>
+        </li>
+    </ul>
+{% endblock nav %}
+
+{% block content %}
+<div class="container">
+    <div class="row" style="margin-top: 90px">
+        <div class="col-md-2">
+            {% include 'admin/admin_side_nav.html' %}
+        </div>
+        <div class="col-md-10">
+            {% block admin_content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<ul class="nav nav-pills nav-stacked">
+    <li class="{% if '/users' in request.path %}active{% endif %}">
+        <a href="{% url 'admin-users-list' %}">Users</a>
+    </li>
+    <li class="{% if '/groups' in request.path %}active{% endif %}">
+        <a href="{% url 'admin-groups-list' %}">Groups</a>
+    </li>
+</ul>

@@ -1,79 +1,48 @@
-{% extends "layout.html" %}
-{% load static %}
+{% extends 'admin/layout.html' %}
 
-{% block metatitle %}telmedx | Devices{% endblock %}
-{% block metadescription %}Find all the registered device right here.{% endblock %}
-
-{% block nav %}
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            <a href="#">
-                <span class="partition">
-                    {{ brand }} - {{ user }}
-                </span>
-            </a>
-        </li>
-        <li>
-            <a href="/usage">
-                <span class="glyphicon glyphicon-cog"></span>
-            </a>
-        </li>
-        <li>
-            <a href="ttux/logout">
-                <span class="glyphicon glyphicon-off"></span>
-            </a>
-        </li>
-    </ul>
-{% endblock nav %}
-
-
-{% block content %}
-    <div class="container">
-        {% include 'admin/admin_nav.html' with current_page='Users' %}
-        <div class="col-md-12">
-            <div class="row">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th class="actions"></th>
-                        <th>
-                            {% include 'admin/sorted_header_item.html' with field='username' nfield='-username' %}
-                        </th>
-                        <th>
-                            {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' %}
-                        </th>
-                        {% comment %}
+{% block admin_content %}
+    {% include 'admin/admin_nav.html' with current_page='Users' %}
+    <div class="row">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="actions"></th>
+                <th>
+                    {% include 'admin/sorted_header_item.html' with field='username' nfield='-username' %}
+                </th>
+                <th>
+                    {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' %}
+                </th>
+                {% comment %}
                         <th>Group</th>
                         <th>Type</th>
                         {% endcomment %}
-                        <th>
-                            {% include 'admin/sorted_header_item.html' with label='added' field='date_joined' nfield='-date_joined' %}
-                        </th>
-                        <th>{# start conference #}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for user in object_list %}
-                        <tr>
-                            <td>
-                                <a class="" href="{% url 'admin-users-update' user.pk %}">
-                                    <span class="glyphicon glyphicon-edit"></span>
-                                </a>
-                            </td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
-                            {% comment %}
+                <th>
+                    {% include 'admin/sorted_header_item.html' with label='added' field='date_joined' nfield='-date_joined' %}
+                </th>
+                <th>{# start conference #}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in object_list %}
+                <tr>
+                    <td>
+                        <a class="" href="{% url 'admin-users-update' user.pk %}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                    </td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    {% comment %}
                             <td>{{ user.groups.all|join:', ' }}</td>
                             <td>{{ user.is_staff }}</td>
                             {% endcomment %}
-                            <td>{{ user.date_created|date:'Y-m-d' }}</td>
-                            <td><a href="#">Start Conference</a></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
+                    <td>{{ user.date_created|date:'Y-m-d' }}</td>
+                    <td><a href="#">Start Conference</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
 
-                </table>
-            </div>
-        </div>
+        </table>
     </div>
 {% endblock %}
