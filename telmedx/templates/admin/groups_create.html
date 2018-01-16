@@ -1,45 +1,8 @@
-{% extends "layout.html" %}
-{% load static %}
+{% extends 'admin/layout.html' %}
 
-{% block metatitle %}telmedx | Create Group{% endblock %}
-{% block metadescription %}Find all the registered device right here.{% endblock %}
-
-{% block nav %}
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            <a href="#">
-                <span class="partition">
-                    {{ brand }} - {{ user }}
-                </span>
-            </a>
-        </li>
-        <li>
-            <a href="/usage">
-                <span class="glyphicon glyphicon-cog"></span>
-            </a>
-        </li>
-        <li>
-            <a href="ttux/logout">
-                <span class="glyphicon glyphicon-off"></span>
-            </a>
-        </li>
-    </ul>
-{% endblock nav %}
-
-
-{% block content %}
-    <div class="container">
-        <div class="col-md-12">
-            <div class="row" style="margin-top: 90px;">
-                <div class="col-md-4 pull-left">
-                    <h2>Groups</h2>
-                    <a href="{% url 'admin-groups-create' %}" class="btn btn-primary">Add new</a>
-                </div>
-                <div class="col-md-8">
-                    {% include 'admin/groups_form.html' %}
-                </div>
-            </div>
-        </div>
+{% block admin_content %}
+    <div class="col-md-10">
+        {% include 'admin/admin_detail_nav.html' %}
+        {% include 'admin/groups_form.html' %}
     </div>
-
 {% endblock %}

@@ -38,6 +38,7 @@ INSTANCE_BRAND = 'kpnw'
 # Application definition
 THIRD_PARTY_APPS = (
     'rest_framework',
+    'widget_tweaks',
 )
 
 TELX_APPS = (

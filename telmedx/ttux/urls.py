@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^initializeDevice', views.initialize_device),
     url(r'^imageDownload', views.image_download),
     url(r'^viewSessionInfo', views.view_session_info),
-    url(r'^logout$', users_views.logout_view),
+    url(r'^logout$', users_views.logout_view, name='user-logout'),
 
 ]
