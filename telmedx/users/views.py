@@ -24,7 +24,7 @@ User = get_user_model()
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect('/login/?next=%s' % request.path)
+    return HttpResponseRedirect('/')
 
 class BaseTelmedxMixin:
     """

@@ -19,7 +19,7 @@
             </a>
         </li>
         <li>
-            <a href="ttux/logout">
+            <a href="{% url 'user-logout' %}">
                 <span class="glyphicon glyphicon-off"></span>
             </a>
         </li>
@@ -27,7 +27,7 @@
 {% endblock nav %}
 
 {% block content %}
-<div class="container">
+<div id="admin" class="container">
     <div class="row" style="margin-top: 90px">
         <div class="col-md-2">
             {% include 'admin/admin_side_nav.html' %}
