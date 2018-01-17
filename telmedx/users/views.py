@@ -85,7 +85,13 @@ class TelmedxCreateView(BaseTelmedxMixin, CreateView):
 class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     template_name = 'admin/users_list.html'
     model = User
-    ordering_options = ('username', 'email', 'date_joined')
+    ordering_options = (
+        'profile__first_name',
+        'profile__last_name',
+        'username',
+        'email',
+        'date_joined'
+    )
 
     def _flatten_options(self, options):
         return [item for sublist in options for item in sublist]
@@ -103,7 +109,6 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sort'] = self.get_ordering()
-        context['nsort'] = True if context['sort'] and context['sort'][0] == '-' else False
         return context
 
     def get_queryset(self):
@@ -111,8 +116,13 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
         search = self.request.GET.get('search')
         if search:
             username_filter = Q(username__icontains=search)
+            first_name_filter = Q(profile__first_name__icontains=search)
+            last_name_filter = Q(profile__last_name__icontains=search)
             email_filter = Q(email__icontains=search)
-            qs = qs.filter(username_filter | email_filter)
+            qs = qs.filter(username_filter |
+                           email_filter |
+                           first_name_filter |
+                           last_name_filter)
 
         return qs
 
