@@ -8,9 +8,9 @@ from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import (ListView, UpdateView, CreateView)
 
 from .forms import AdminUserForm, AdminGroupForm
+from .mixins import *
 
 __all__ = (
     'TelmedxLoginView',
@@ -33,18 +33,9 @@ def logout_view(request):
     return HttpResponseRedirect('/')
 
 
-class BaseTelmedxMixin:
-    """
-    Mixin to add branding and other data
-    """
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['brand'] = settings.INSTANCE_BRAND
-        return context
-
-
 class TelmedxLoginView(LoginView):
+    redirect_authenticated_user = True
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add branding context
@@ -54,32 +45,6 @@ class TelmedxLoginView(LoginView):
     def get_redirect_url(self):
         # Check if user is an admin, go to the admin version
         return reverse_lazy('admin-users-list')
-
-
-class TelmedxPaginatedListView(BaseTelmedxMixin, ListView):
-    paginate_by = 15
-    paginate_orphans = 5
-    ordering_options = None
-
-
-class TelmedxUpdateView(BaseTelmedxMixin, UpdateView):
-    back_url = None
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['mode'] = 'edit'
-        context['back_url'] = self.back_url
-        return context
-
-
-class TelmedxCreateView(BaseTelmedxMixin, CreateView):
-    back_url = None
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['mode'] = 'create'
-        context['back_url'] = self.back_url
-        return context
 
 
 class TelmedxAdminUsersListView(TelmedxPaginatedListView):
