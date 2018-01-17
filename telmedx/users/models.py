@@ -35,6 +35,15 @@ class TelmedxProfile(models.Model):
     user_type = models.SmallIntegerField(choices=USER_TYPES_CHOICES,
                                          default=USER_REGULAR_USER)
 
+    def __str__(self):
+        if self.first_name and self.last_name:
+            ret = 'Profile: {}, {}'.format(
+                self.last_name, self.first_name
+            )
+        else:
+            ret = 'Profile for user: {}'.format(self.user.pk)
+        return ret
+
 
 class TelmedxUser(AbstractUser):
     objects = TelmedxUserManager()
@@ -43,9 +52,16 @@ class TelmedxUser(AbstractUser):
     def date_created(self):
         return self.date_joined
 
+    @property
+    def first_name(self):
+        return self.profile.first_name
+
+    @property
+    def last_name(self):
+        return self.profile.last_name
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
 
 
 # Uncomment if we want to have email == username

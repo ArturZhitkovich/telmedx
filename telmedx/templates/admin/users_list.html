@@ -8,10 +8,16 @@
             <tr>
                 <th class="actions"></th>
                 <th>
-                    {% include 'admin/sorted_header_item.html' with field='username' nfield='-username' %}
+                    {% include 'admin/sorted_header_item.html' with field='last_name' nfield='-last_name' label='Last Name' %}
                 </th>
                 <th>
-                    {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' %}
+                    {% include 'admin/sorted_header_item.html' with field='first_name' nfield='-first_name' label='First Name' %}
+                </th>
+                <th>
+                    {% include 'admin/sorted_header_item.html' with field='username' nfield='-username' label='Username' %}
+                </th>
+                <th>
+                    {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' label='Email' %}
                 </th>
                 {% comment %}
                         <th>Group</th>
@@ -37,6 +43,8 @@
                         </a>
                         {% endcomment %}
                     </td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.first_name }}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.email }}</td>
                     {% comment %}
