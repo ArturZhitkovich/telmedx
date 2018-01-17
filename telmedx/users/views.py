@@ -43,8 +43,10 @@ class TelmedxLoginView(LoginView):
         return context
 
     def get_redirect_url(self):
-        # Check if user is an admin, go to the admin version
-        return reverse_lazy('admin-users-list')
+        ret = reverse_lazy('device-home')
+        if self.request.user.is_staff:
+            ret = reverse_lazy('admin-users-list')
+        return ret
 
 
 class TelmedxAdminUsersListView(TelmedxPaginatedListView):

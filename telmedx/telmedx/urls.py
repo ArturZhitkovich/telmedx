@@ -19,7 +19,7 @@ from django.contrib import admin
 
 from ttux import views as ttux_views
 from ttux.routers import urlpatterns as ttux_patterns
-from users.views import TelmedxLoginView, TelmedxAdminUsersListView, TelmedxAdminUsersUpdateView
+from users.views import TelmedxLoginView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -30,9 +30,9 @@ urlpatterns = [
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
-    url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
-    url(r'^devices/?$', ttux_views.device_view),
+    url(r'^devices/?$', ttux_views.device_view, name='device-home'),
     url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
-    # url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_ROOT}),
-    url(r'^api', include(ttux_patterns))
+
+    url(r'^api', include(ttux_patterns)),
+    url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
 ]

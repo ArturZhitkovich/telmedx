@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import (ListView, UpdateView, CreateView)
 
 __all__ = (
@@ -20,13 +21,18 @@ class BaseTelmedxMixin:
         return context
 
 
-class TelmedxPaginatedListView(BaseTelmedxMixin, ListView):
+class ProtectedTelmedxView(UserPassesTestMixin, BaseTelmedxMixin):
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+
+class TelmedxPaginatedListView(ProtectedTelmedxView, ListView):
     paginate_by = 15
     paginate_orphans = 5
     ordering_options = None
 
 
-class TelmedxUpdateView(BaseTelmedxMixin, UpdateView):
+class TelmedxUpdateView(ProtectedTelmedxView, UpdateView):
     back_url = None
 
     def get_context_data(self, **kwargs):
@@ -36,7 +42,7 @@ class TelmedxUpdateView(BaseTelmedxMixin, UpdateView):
         return context
 
 
-class TelmedxCreateView(BaseTelmedxMixin, CreateView):
+class TelmedxCreateView(ProtectedTelmedxView, CreateView):
     back_url = None
 
     def get_context_data(self, **kwargs):

@@ -144,10 +144,10 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/login/'
 
 # Default User model
 AUTH_USER_MODEL = 'users.TelmedxUser'
-
 
 # DRF stuff
 REST_FRAMEWORK = {
