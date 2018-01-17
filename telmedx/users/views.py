@@ -9,8 +9,9 @@ from django.template.context_processors import csrf
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_protect
 
-from .forms import AdminUserForm, AdminGroupForm
+from .forms import AdminUserForm, AdminGroupForm, AdminUserProfileForm
 from .mixins import *
+from .models import TelmedxUser
 
 __all__ = (
     'TelmedxLoginView',
@@ -22,6 +23,7 @@ __all__ = (
     'TelmedxGroupsUpdateView',
 
     'get_admin_form',
+    'post_admin_form',
 )
 
 # @type TelmedxUser
@@ -98,6 +100,7 @@ class TelmedxAdminUsersUpdateView(TelmedxUpdateView):
     template_name = 'admin/users_update.html'
     model = User
     form_class = AdminUserForm
+    next_form_class = AdminUserProfileForm
     success_url = reverse_lazy('admin-users-list')
     back_url = reverse_lazy('admin-users-list')
 
@@ -132,22 +135,58 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
     back_url = reverse_lazy('admin-groups-list')
 
 
+def post_admin_form(request, pk=None):
+    context = {}
+    context['brand'] = settings.INSTANCE_BRAND
+
+    template_name = 'admin/users_update.html'
+    success_url = reverse_lazy('admin-users-list')
+    back_url = reverse_lazy('admin-users-list')
+
+    if request.method == 'POST':
+        if pk:
+            context['mode'] = 'update'
+            user = User.objects.get(pk=pk)
+            user_form = AdminUserForm(data=request.POST, instance=user)
+            profile_form = AdminUserProfileForm(data=request.POST,
+                                                instance=user.profile)
+        else:
+            context['mode'] = 'create'
+            user_form = AdminUserForm(data=request.POST)
+            profile_form = AdminUserProfileForm(data=request.POST)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            profile_form.save()
+            user_form.save()
+            return HttpResponseRedirect(success_url)
+
+        context['user_form'] = user_form
+        context['profile_form'] = profile_form
+
+        return render_to_response(template_name, context)
+    # return HttpResponseRedirect(back_url)
+
+
 @csrf_protect
 def get_admin_form(request):
     context = {}
+    mode = request.GET.get('mode')
     try:
         uid = request.GET.get('uid')
         user = User.objects.get(id=uid)
     except User.DoesNotExist:
         user = None
-    except Exception as e:
-        print(e)
 
     if user:
-        form = AdminUserForm(instance=user)
-        context['form'] = form
-        context['mode'] = 'edit'
+        context['profile_form'] = AdminUserProfileForm(instance=user.profile)
+        context['user_form'] = AdminUserForm(instance=user)
         context['action'] = reverse_lazy('admin-users-update', kwargs={'pk': user.pk})
-        context.update(csrf(request))
+    else:
+        context['profile_form'] = AdminUserProfileForm()
+        context['user_form'] = AdminUserForm(instance=TelmedxUser())
+        context['action'] = reverse_lazy('admin-users-create')
+
+    context['mode'] = mode
+    context.update(csrf(request))
 
     return render_to_response('admin/users_form.html', context)

@@ -71,7 +71,13 @@ html, body {
     }
   }
 
-  .navbar-right {
+  .navbar-nav {
+    li.active {
+      background: #e7e7e7;
+    }
+  }
+
+  .navbar-right, .navbar-nav {
     li > a {
       padding-top: 20px;
       padding-bottom: 11px;
@@ -81,7 +87,7 @@ html, body {
         color: #000;
       }
 
-      span.partition {
+      span.partition, span.link {
         font-size: 16px;
         line-height: 29px;
         color: #333;

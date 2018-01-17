@@ -54,14 +54,13 @@ class TelmedxUser(AbstractUser):
 
     @property
     def first_name(self):
-        return self.profile.first_name
+        if self.profile:
+            return self.profile.first_name
 
     @property
     def last_name(self):
-        return self.profile.last_name
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+        if self.profile:
+            return self.profile.last_name
 
 
 # Uncomment if we want to have email == username

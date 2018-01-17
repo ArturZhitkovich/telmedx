@@ -4,6 +4,7 @@ from django.views.generic import (ListView, UpdateView, CreateView)
 
 __all__ = (
     'BaseTelmedxMixin',
+    'ProtectedTelmedxView',
     'TelmedxPaginatedListView',
     'TelmedxUpdateView',
     'TelmedxCreateView',

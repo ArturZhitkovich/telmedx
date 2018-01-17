@@ -20,9 +20,9 @@
                     {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' label='Email' %}
                 </th>
                 {% comment %}
-                        <th>Group</th>
-                        <th>Type</th>
-                        {% endcomment %}
+                <th>Group</th>
+                <th>Type</th>
+                {% endcomment %}
                 <th>
                     {% include 'admin/sorted_header_item.html' with label='added' field='date_joined' nfield='-date_joined' %}
                 </th>
@@ -34,7 +34,8 @@
                 <tr>
                     <td>
                         <button class="user-update-btn btn btn-default btn-sm" type="button" data-toggle="modal"
-                                data-target="#users-form" data-upk="{{ user.pk }}" data-url="{% url 'admin-get-form' %}">
+                                data-target="#users-form" data-upk="{{ user.pk }}"
+                                data-url="{% url 'admin-get-form' %}" data-mode="update">
                             <span class="glyphicon glyphicon-edit"></span>
                         </button>
                         {% comment %}

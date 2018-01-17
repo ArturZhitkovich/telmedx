@@ -19,10 +19,23 @@ th.actions {
     margin-right: 5px;
   }
 
-  .search-form {
+  .search-form, .top-title {
     padding-top: 15px;
     padding-bottom: 15px;
     line-height: 20px;
+  }
+
+  .top-title {
+    h2 {
+      float: left;
+      display: inline-block;
+      margin: 0;
+    }
+    .user-update-btn {
+      float: left;
+      display: inline;
+      margin-left: 20px;
+    }
   }
 
 }

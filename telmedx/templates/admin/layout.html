@@ -1,41 +1,40 @@
 {% extends 'layout.html' %}
 {% load static %}
 
-{% block metatitle %}telmedx | Devices{% endblock %}
-{% block metadescription %}Find all the registered device right here.{% endblock %}
+{% block metatitle %}telmedx | Admin Portal{% endblock %}
 
 {% block nav %}
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            <a href="#">
-                <span class="partition">
-                    {{ brand }} - {{ user }}
-                </span>
+    <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+            <li class="{% if '/users' in request.path %}active{% endif %}">
+            <a href="{% url 'admin-users-list' %}">
+                <span class="link">Users</span>
             </a>
-        </li>
-        <li>
-            <a href="/usage">
-                <span class="glyphicon glyphicon-cog"></span>
+            </li>
+            <li class="{% if '/groups' in request.path %}active{% endif %}">
+            <a href="{% url 'admin-groups-list' %}">
+                <span class="link">Groups</span>
             </a>
-        </li>
-        <li>
-            <a href="{% url 'user-logout' %}">
-                <span class="glyphicon glyphicon-off"></span>
-            </a>
-        </li>
-    </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">
+                <span class="link">{{ brand }} - {{ user }}</span>
+            </a></li>
+            <li><a href="{% url 'user-logout' %}">
+                <span class="link">Log Out</span>
+            </a></li>
+        </ul>
+    </div>
 {% endblock nav %}
 
 {% block content %}
-<div id="admin" class="container">
-    <div class="row" style="margin-top: 90px">
-        <div class="col-md-2">
-            {% include 'admin/admin_side_nav.html' %}
-        </div>
-        <div class="col-md-10">
-            {% block admin_content %}
-            {% endblock %}
+    <div id="admin" class="container">
+        <div class="row" style="margin-top: 90px">
+            <div class="col-md-12">
+                {% block admin_content %}
+                {% endblock %}
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -4,8 +4,10 @@ from users.views import *
 
 urlpatterns = (
     url(r'^users$', TelmedxAdminUsersListView.as_view(), name='admin-users-list'),
-    url(r'^users/create$', TelmedxAdminUsersCreateView.as_view(), name='admin-users-create'),
-    url(r'^users/update/(?P<pk>\d+)$', TelmedxAdminUsersUpdateView.as_view(), name='admin-users-update'),
+    # url(r'^users/create$', TelmedxAdminUsersCreateView.as_view(), name='admin-users-create'),
+    url(r'^users/create$', post_admin_form, name='admin-users-create'),
+    # url(r'^users/update/(?P<pk>\d+)$', TelmedxAdminUsersUpdateView.as_view(), name='admin-users-update'),
+    url(r'^users/update/(?P<pk>\d+)$', post_admin_form, name='admin-users-update'),
 
     url(r'^groups$', TelmedxGroupListView.as_view(), name='admin-groups-list'),
     url(r'^groups/create/$', TelmedxGroupCreateView.as_view(), name='admin-groups-create'),

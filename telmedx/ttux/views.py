@@ -8,11 +8,11 @@ import time
 import gevent
 import gevent.queue
 from django.conf import settings
-from django.contrib.auth import logout, login, get_user_model
+from django.contrib.auth import login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from rest_framework.exceptions import MethodNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.parsers import JSONParser
 
 from .helpers import id_generator
@@ -684,6 +684,3 @@ def image_download(request):
     filename = '{}.jpg'.format(int(time()))
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
     return response
-
-
-
