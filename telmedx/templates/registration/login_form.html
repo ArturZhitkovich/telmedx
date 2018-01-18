@@ -1,7 +1,25 @@
+{% load widget_tweaks %}
+
 {% block content %}
     <form accept-charset="UTF-8" method="POST" action="" role="form">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field|add_class:'form-control' }}
+                {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="form-group">
+            <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+        </div>
+
+        {% comment %}
         <fieldset>
-            {% csrf_token %}
             <div class="form-group {% if form.errors %} has-error {% endif %}">
                 <input class="form-control error" placeholder="Username" name="username"
                        type="text">
@@ -13,5 +31,6 @@
             <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
             <input type="hidden" name="next" value="/devices"/>
         </fieldset>
+        {% endcomment %}
     </form>
 {% endblock content %}
