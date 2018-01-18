@@ -61,10 +61,14 @@ module.exports = {
       $el.find('.modal-body').html(response);
       const $usersForm = $el.find('#users-form');
 
+      $el.find('button.close.user-form-close').click((e) => {
+        $el.modal('hide');
+      });
+
       // Bind user save events -- form saves via AJAX
       $usersForm.on('submit', (e) => {
         e.preventDefault();
-        const status = this.postForm(e.target);
+        const status = this.updateUser(e.target);
         if (status === 'OK') $el.modal('hide');
       });
 
@@ -74,21 +78,25 @@ module.exports = {
         const $usersDeleteForm = $('#users-delete-form');
         $usersDeleteForm.modal('show');
 
+        $usersDeleteForm.find('button.confirm-delete-btn').click((e) => {
+          this.deleteUser(uid);
+        });
+
         // Rebind close buttons since this is going to be a nested modal.
         // Without this (and removing data-dismiss from the modal), both the
         // delete and the user form modal will close when the delete modal
         // triggers a close.
-        $usersDeleteForm.find('button.close').click((e) => {
-          $usersDeleteForm.modal('hide');
-        });
-        $usersDeleteForm.find('button.close-btn').click((e) => {
-          $usersDeleteForm.modal('hide');
+        $.map([
+          $usersDeleteForm.find('button.close'),
+          $usersDeleteForm.find('button.close-btn')], (el) => {
+
+          $(el).click((e) => $usersDeleteForm.modal('hide'));
         });
       });
     });
   },
 
-  postForm(form) {
+  updateUser(form) {
     const $form = $(form);
     const formData = new FormData(form);
     const formUrl = $form.attr('action');
@@ -106,8 +114,17 @@ module.exports = {
     return ret;
   },
 
-  deleteUser() {
-
+  deleteUser(uid) {
+    $.ajax(`/admin/users/${uid}/delete`, {
+      method: 'POST',
+      processData: false,
+      contentType: false,
+      headers: {
+        'X-CSRFToken': this._getCsrfCookie(),
+      }
+    }).done((response) => {
+      debugger;
+    });
   },
 
   bindUiActions() {

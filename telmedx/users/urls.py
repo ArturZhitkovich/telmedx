@@ -8,7 +8,7 @@ urlpatterns = (
     url(r'^users/create$', post_admin_user_form, name='admin-users-create'),
     # url(r'^users/update/(?P<pk>\d+)$', TelmedxAdminUsersUpdateView.as_view(), name='admin-users-update'),
     url(r'^users/(?P<pk>\d+)/update$', post_admin_user_form, name='admin-users-update'),
-    url(r'^users/(?P<pk>\d+)/delete$', TelmedxAdminUsersDeleteView, name='admin-users-delete'),
+    url(r'^users/(?P<pk>\d+)/delete$', TelmedxAdminUsersDeleteView.as_view(), name='admin-users-delete'),
 
     url(r'^groups$', TelmedxGroupListView.as_view(), name='admin-groups-list'),
     url(r'^groups/create/$', TelmedxGroupCreateView.as_view(), name='admin-groups-create'),
