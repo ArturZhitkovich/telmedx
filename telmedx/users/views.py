@@ -1,9 +1,10 @@
+from http import HTTPStatus
 from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
 from django.urls import reverse_lazy
@@ -136,12 +137,10 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
 
 
 def post_admin_form(request, pk=None):
-    context = {}
-    context['brand'] = settings.INSTANCE_BRAND
+    context = {'brand': settings.INSTANCE_BRAND}
 
     template_name = 'admin/users_update.html'
     success_url = reverse_lazy('admin-users-list')
-    back_url = reverse_lazy('admin-users-list')
 
     if request.method == 'POST':
         if pk:
@@ -158,12 +157,30 @@ def post_admin_form(request, pk=None):
         if user_form.is_valid() and profile_form.is_valid():
             profile_form.save()
             user_form.save()
-            return HttpResponseRedirect(success_url)
+
+            if request.is_ajax():
+                return JsonResponse({
+                    'status': 'OK',
+                    'data': {}
+                })
+            else:
+                return HttpResponseRedirect(success_url)
 
         context['user_form'] = user_form
         context['profile_form'] = profile_form
+        context['user_form_errors'] = user_form.errors
+        context['profile_form_errors'] = profile_form.errors
 
-        return render_to_response(template_name, context)
+        if request.is_ajax():
+            return JsonResponse({
+                'status': 'ERROR',
+                'data': {
+                    'user_form_errors': user_form.errors,
+                    'profile_form_errors': profile_form.errors,
+                }
+            }, status=HTTPStatus.BAD_REQUEST.value)
+        else:
+            return render_to_response(template_name, context)
     # return HttpResponseRedirect(back_url)
 
 

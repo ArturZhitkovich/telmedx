@@ -34,13 +34,47 @@ module.exports = {
     return cookieValue;
   },
 
+  /**
+   * Shows user update modal and binds AJAX events to injected form.
+   *
+   * @param $el Modal element
+   * @param formUrl URL where we will post to. This is generally provided
+   *        in the action of the form element.
+   * @param uid user id that is getting updated
+   * @param mode either 'edit' or 'create'
+   */
   showUserUpdateModal($el, formUrl, uid, mode) {
     $.get(formUrl, {
       uid: uid,
       mode: mode,
     }, (response) => {
       $el.find('.modal-body').html(response);
+
+      // Bind events to form
+      $el.find('#users-form').on('submit', (e) => {
+        e.preventDefault();
+        const status = this.postForm(e.target);
+        if (status === 'OK') $el.modal('hide');
+      });
     });
+  },
+
+  postForm(form) {
+    const $form = $(form);
+    const formData = new FormData(form);
+    const formUrl = $form.attr('action');
+    let ret = false;
+
+    $.ajax(formUrl, {
+      method: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+    }).done((response) => {
+      ret = response.status;
+    });
+
+    return ret;
   },
 
   bindUiActions() {
