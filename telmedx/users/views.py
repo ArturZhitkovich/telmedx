@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
@@ -19,15 +20,18 @@ __all__ = (
     'TelmedxAdminUsersUpdateView',
     'TelmedxAdminUsersListView',
     'TelmedxAdminUsersCreateView',
+    'TelmedxAdminUsersDeleteView',
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
 
-    'get_admin_form',
-    'post_admin_form',
+    'get_admin_user_form',
+    'post_admin_user_form',
+    'get_admin_group_form',
+    'post_admin_group_form',
 )
 
-# @type TelmedxUser
+# type: TelmedxUser
 User = get_user_model()
 
 
@@ -36,14 +40,8 @@ def logout_view(request):
     return HttpResponseRedirect('/')
 
 
-class TelmedxLoginView(LoginView):
+class TelmedxLoginView(BaseTelmedxMixin, LoginView):
     redirect_authenticated_user = True
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Add branding context
-        context.update({'brand': settings.INSTANCE_BRAND})
-        return context
 
     def get_redirect_url(self):
         ret = reverse_lazy('device-home')
@@ -114,6 +112,12 @@ class TelmedxAdminUsersCreateView(TelmedxCreateView):
     back_url = reverse_lazy('admin-users-list')
 
 
+class TelmedxAdminUsersDeleteView(TelmedxDeleteView):
+    model = User
+    success_url = reverse_lazy('admin-users-list')
+    back_url = reverse_lazy('admin-groups-list')
+
+
 class TelmedxGroupListView(TelmedxPaginatedListView):
     template_name = 'admin/groups_list.html'
     model = Group
@@ -136,7 +140,7 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
     back_url = reverse_lazy('admin-groups-list')
 
 
-def post_admin_form(request, pk=None):
+def post_admin_user_form(request, pk=None):
     context = {'brand': settings.INSTANCE_BRAND}
 
     template_name = 'admin/users_update.html'
@@ -155,8 +159,8 @@ def post_admin_form(request, pk=None):
             profile_form = AdminUserProfileForm(data=request.POST)
 
         if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
             profile_form.save()
-            user_form.save()
 
             if request.is_ajax():
                 return JsonResponse({
@@ -185,7 +189,7 @@ def post_admin_form(request, pk=None):
 
 
 @csrf_protect
-def get_admin_form(request):
+def get_admin_user_form(request):
     context = {}
     mode = request.GET.get('mode')
     try:
@@ -207,3 +211,13 @@ def get_admin_form(request):
     context.update(csrf(request))
 
     return render_to_response('admin/users_form.html', context)
+
+
+@csrf_protect
+def get_admin_group_form(request):
+    pass
+
+
+@csrf_protect
+def post_admin_group_form(request):
+    pass

@@ -5,6 +5,11 @@ th.actions {
 
 #admin {
   background: #fff;
+
+  // Offset for top navigation
+  & > .row:first-of-type {
+    margin-top: 90px;
+  }
 }
 
 #wrap .container {

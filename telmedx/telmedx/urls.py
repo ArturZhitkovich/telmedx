@@ -22,11 +22,9 @@ from ttux.routers import urlpatterns as ttux_patterns
 from users.views import TelmedxLoginView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-
     url(r'^$', TelmedxLoginView.as_view()),
     url(r'^login/$', TelmedxLoginView.as_view(), name='login'),
-    url(r'^tadmin/', include('users.urls')),
+    url(r'^admin/', include('users.urls')),
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),

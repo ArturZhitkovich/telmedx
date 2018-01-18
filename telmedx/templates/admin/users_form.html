@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<form id="users_form" class="form" method="POST" action="{{ action }}">
+<form id="users-form" class="form" method="POST" action="{{ action }}">
     {% csrf_token %}
 
     {% for field in profile_form.visible_fields %}
@@ -27,9 +27,13 @@
         <a href="{{ back_url }}" class="btn btn-default">Cancel</a>
         {% if mode == 'update' %}
             <button class="btn btn-primary" type="submit">Save</button>
-            <button class="pull-right btn btn-danger">Delete User</button>
+            <button class="user-delete-btn btn btn-danger" type="button">
+                <span class="glyphicon glyphicon-trash"></span> Delete User
+            </button>
         {% elif mode == 'create' %}
             <button class="btn btn-primary" type="submit">Create</button>
         {% endif %}
     </div>
 </form>
+
+{% include 'admin/users_delete_modal.html' %}

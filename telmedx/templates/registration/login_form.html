@@ -1,24 +1,42 @@
 {% load widget_tweaks %}
 
-{% block content %}
-    <form accept-charset="UTF-8" method="POST" action="" role="form">
-        {% csrf_token %}
+<form accept-charset="UTF-8" method="POST" action="" role="form">
+    {% csrf_token %}
 
-        {% for field in form %}
-            <div class="form-group">
-                {{ field.label_tag }}
-                {{ field|add_class:'form-control' }}
-                {% for error in field.errors %}
-                    <span class="help-block">{{ error }}</span>
-                {% endfor %}
-            </div>
+    {% if form.errors and not form.non_field_errors %}
+        <p class="errornote">
+            {% if form.errors.items|length == 1 %}
+                "Please correct the error below."
+            {% else %}
+                "Please correct the errors below."
+            {% endif %}
+        </p>
+    {% endif %}
+
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <p class="errornote">
+                {{ error }}
+            </p>
         {% endfor %}
+    {% endif %}
 
+    {% for field in form %}
         <div class="form-group">
-            <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+            {{ field.label_tag }}
+            {{ field|add_class:'form-control' }}
+            {% for error in field.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
         </div>
+    {% endfor %}
 
-        {% comment %}
+    <div class="form-group">
+        <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+    </div>
+
+    {% comment %}
         <fieldset>
             <div class="form-group {% if form.errors %} has-error {% endif %}">
                 <input class="form-control error" placeholder="Username" name="username"
@@ -32,5 +50,4 @@
             <input type="hidden" name="next" value="/devices"/>
         </fieldset>
         {% endcomment %}
-    </form>
-{% endblock content %}
+</form>

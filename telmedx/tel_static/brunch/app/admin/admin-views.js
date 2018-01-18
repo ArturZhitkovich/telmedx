@@ -44,17 +44,46 @@ module.exports = {
    * @param mode either 'edit' or 'create'
    */
   showUserUpdateModal($el, formUrl, uid, mode) {
+    let title;
+
+    if (mode === 'create') {
+      title = 'Create User';
+    } else if (mode === 'update') {
+      title = 'Update User';
+    }
+
+    $el.find('.modal-title').html(title);
+
     $.get(formUrl, {
       uid: uid,
       mode: mode,
     }, (response) => {
       $el.find('.modal-body').html(response);
+      const $usersForm = $el.find('#users-form');
 
-      // Bind events to form
-      $el.find('#users-form').on('submit', (e) => {
+      // Bind user save events -- form saves via AJAX
+      $usersForm.on('submit', (e) => {
         e.preventDefault();
         const status = this.postForm(e.target);
         if (status === 'OK') $el.modal('hide');
+      });
+
+      // Bind user delete event
+      $('.user-delete-btn').click((e) => {
+        // Show confirmation modal, and setup close buttons.
+        const $usersDeleteForm = $('#users-delete-form');
+        $usersDeleteForm.modal('show');
+
+        // Rebind close buttons since this is going to be a nested modal.
+        // Without this (and removing data-dismiss from the modal), both the
+        // delete and the user form modal will close when the delete modal
+        // triggers a close.
+        $usersDeleteForm.find('button.close').click((e) => {
+          $usersDeleteForm.modal('hide');
+        });
+        $usersDeleteForm.find('button.close-btn').click((e) => {
+          $usersDeleteForm.modal('hide');
+        });
       });
     });
   },
@@ -75,6 +104,10 @@ module.exports = {
     });
 
     return ret;
+  },
+
+  deleteUser() {
+
   },
 
   bindUiActions() {

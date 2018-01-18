@@ -9,6 +9,9 @@
                 <tr>
                     <th class="actions"></th>
                     <th>Name</th>
+                    <th>Contact</th>
+                    <th>Mobile Users</th>
+                    <th>Admins</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -20,6 +23,9 @@
                             </a>
                         </td>
                         <td>{{ group.name }}</td>
+                        <td>{{ group.contact }}</td>
+                        <td>{{ group.mobile_users.count }}</td>
+                        <td>{{ group.admins.count }}</td>
                     </tr>
                 {% empty %}
                     <tr>
