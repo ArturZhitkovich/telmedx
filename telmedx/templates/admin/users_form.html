@@ -13,7 +13,7 @@
         </div>
     {% endfor %}
 
-    {% for field in user_form.visible_fields %}
+    {% for field in form.visible_fields %}
         <div class="form-group">
             {{ field.label_tag }}
             {{ field|add_class:'form-control' }}

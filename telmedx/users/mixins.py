@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import JsonResponse
 from django.views.generic import (
     ListView,
     UpdateView,
@@ -25,6 +26,19 @@ class BaseTelmedxMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['brand'] = settings.INSTANCE_BRAND
+        return context
+
+
+class JSONResponseMixin:
+    def render_to_json_response(self, context, **kwargs):
+        return JsonResponse(self.get_data(context), **kwargs)
+
+    def get_data(self, context):
+        """
+        Should be overridden to handle changing data to a serializable format.
+        :param context:
+        :return:
+        """
         return context
 
 

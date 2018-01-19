@@ -1,20 +1,16 @@
 from http import HTTPStatus
 
-from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render_to_response
-from django.template.context_processors import csrf
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_protect
 
 from .forms import AdminUserForm, AdminGroupForm, AdminUserProfileForm
 from .mixins import *
-from .models import TelmedxUser, TelmedxProfile
+from .models import TelmedxUser
 
 __all__ = (
     'TelmedxLoginView',
@@ -25,11 +21,6 @@ __all__ = (
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
-
-    'get_admin_user_form',
-    'post_admin_user_form',
-    'get_admin_group_form',
-    'post_admin_group_form',
 )
 
 # type: TelmedxUser
@@ -159,96 +150,3 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
     form_class = AdminGroupForm
     success_url = reverse_lazy('admin-groups-list')
     back_url = reverse_lazy('admin-groups-list')
-
-
-def post_admin_user_form(request, pk=None):
-    context = {'brand': settings.INSTANCE_BRAND}
-
-    template_name = 'admin/users_update.html'
-    success_url = reverse_lazy('admin-users-list')
-
-    if request.method == 'POST':
-        if pk:
-            context['mode'] = 'update'
-            user = User.objects.get(pk=pk)
-            user_form = AdminUserForm(data=request.POST, instance=user)
-            profile_form = AdminUserProfileForm(data=request.POST,
-                                                instance=user.profile)
-        else:
-            context['mode'] = 'create'
-            user_form = AdminUserForm(data=request.POST)
-            profile_form = AdminUserProfileForm(data=request.POST)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            if not pk:
-                profile_form = AdminUserProfileForm(data=request.POST,
-                                                    instance=user.profile)
-                profile = profile_form.save(commit=False)
-                profile.user_id = user.pk
-            if request.is_ajax():
-                return JsonResponse({
-                    'status': 'OK',
-                    'data': {}
-                })
-            else:
-                return HttpResponseRedirect(success_url)
-
-        context['user_form'] = user_form
-        context['profile_form'] = profile_form
-        context['user_form_errors'] = user_form.errors
-        context['profile_form_errors'] = profile_form.errors
-
-        if request.is_ajax():
-            return JsonResponse({
-                'status': 'ERROR',
-                'data': {
-                    'user_form_errors': user_form.errors,
-                    'profile_form_errors': profile_form.errors,
-                }
-            }, status=HTTPStatus.BAD_REQUEST.value)
-        else:
-            return render_to_response(template_name, context)
-    # return HttpResponseRedirect(back_url)
-
-
-@csrf_protect
-def get_admin_user_form(request):
-    context = {}
-    mode = request.GET.get('mode')
-    try:
-        uid = request.GET.get('uid')
-        user = User.objects.get(id=uid)
-    except User.DoesNotExist:
-        user = None
-
-    if not getattr(user, 'profile', None):
-        profile = TelmedxProfile()
-        profile.user_id = user.pk
-        profile.save()
-        # Re-fetch user. Previous user won't have profile relation
-        user = User.objects.get(id=uid)
-
-    if user:
-        context['profile_form'] = AdminUserProfileForm(instance=user.profile)
-        context['user_form'] = AdminUserForm(instance=user)
-        context['action'] = reverse_lazy('admin-users-update', kwargs={'pk': user.pk})
-    else:
-        context['profile_form'] = AdminUserProfileForm()
-        context['user_form'] = AdminUserForm(instance=TelmedxUser())
-        context['action'] = reverse_lazy('admin-users-create')
-
-    context['mode'] = mode
-    context.update(csrf(request))
-
-    return render_to_response('admin/users_form.html', context)
-
-
-@csrf_protect
-def get_admin_group_form(request):
-    pass
-
-
-@csrf_protect
-def post_admin_group_form(request):
-    pass

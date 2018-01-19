@@ -53,7 +53,6 @@ module.exports = {
     $el.find('.modal-title').html(title);
 
     $.get(formUrl, {
-      uid: uid,
       mode: mode,
     }, (response) => {
       $el.find('.modal-body').html(response);

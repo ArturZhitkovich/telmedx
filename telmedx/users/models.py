@@ -14,8 +14,28 @@ USER_TYPES_CHOICES = (
 
 
 class TelmedxGroupProfile(models.Model):
-    group = models.OneToOneField(Group)
+    group = models.OneToOneField(Group, related_name='profile')
     contact = models.EmailField()
+
+    def get_users(self, user_type):
+        """
+        :param user: User which is requesting the user set.
+                     Used for checking permissions on the queryset.
+        :type user: TelmedxUser
+        :return:
+        """
+        if user_type not in ['admin', 'mobile']:
+            raise ValueError('`user_type` does not exist')
+
+        return self.group.user_set()
+
+    @property
+    def mobile_users(self):
+        return self.get_users('mobile')
+
+    @property
+    def admin_users(self):
+        return self.get_users('admin')
 
 
 class TelmedxUserManager(UserManager):
@@ -79,3 +99,9 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=TelmedxUser)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+@receiver(post_save, sender=Group)
+def create_group_profile(sender, instance, created, **kwargs):
+    if created:
+        TelmedxGroupProfile.objects.create(group=instance)
