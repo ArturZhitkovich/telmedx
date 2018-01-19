@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response
@@ -116,6 +117,16 @@ class TelmedxAdminUsersDeleteView(TelmedxDeleteView):
     model = User
     success_url = reverse_lazy('admin-users-list')
     back_url = reverse_lazy('admin-groups-list')
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        if user.pk == int(kwargs.get('pk')):
+            raise ValidationError(
+                'Cannot delete same user as current user.',
+                code=HTTPStatus.BAD_REQUEST.value
+            )
+
+        return super().post(request, *args, **kwargs)
 
 
 class TelmedxGroupListView(TelmedxPaginatedListView):
