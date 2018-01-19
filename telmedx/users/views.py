@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from .forms import AdminUserForm, AdminGroupForm, AdminUserProfileForm
 from .mixins import *
-from .models import TelmedxUser
+from .models import TelmedxUser, TelmedxProfile
 
 __all__ = (
     'TelmedxLoginView',
@@ -128,6 +128,16 @@ class TelmedxAdminUsersDeleteView(TelmedxDeleteView):
 
         return super().post(request, *args, **kwargs)
 
+    def delete(self, request, *args, **kwargs):
+        if self.request.is_ajax():
+            self.object = self.get_object()
+            self.object.delete()
+            return JsonResponse({
+                'status': 'OK',
+                'data': {}
+            })
+        return super().delete(request, *args, **kwargs)
+
 
 class TelmedxGroupListView(TelmedxPaginatedListView):
     template_name = 'admin/groups_list.html'
@@ -171,8 +181,11 @@ def post_admin_user_form(request, pk=None):
 
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
-            profile_form.save()
-
+            if not pk:
+                profile_form = AdminUserProfileForm(data=request.POST,
+                                                    instance=user.profile)
+                profile = profile_form.save(commit=False)
+                profile.user_id = user.pk
             if request.is_ajax():
                 return JsonResponse({
                     'status': 'OK',
@@ -208,6 +221,13 @@ def get_admin_user_form(request):
         user = User.objects.get(id=uid)
     except User.DoesNotExist:
         user = None
+
+    if not getattr(user, 'profile', None):
+        profile = TelmedxProfile()
+        profile.user_id = user.pk
+        profile.save()
+        # Re-fetch user. Previous user won't have profile relation
+        user = User.objects.get(id=uid)
 
     if user:
         context['profile_form'] = AdminUserProfileForm(instance=user.profile)

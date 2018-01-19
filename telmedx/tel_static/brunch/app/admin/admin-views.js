@@ -1,6 +1,4 @@
 const $ = require('jquery');
-const panzoom = require('jquery.panzoom');
-const jqueryUi = require('jquery-ui-bundle');
 
 module.exports = {
   $el: null,
@@ -75,7 +73,7 @@ module.exports = {
       // Bind user delete event
       $('.users-delete-btn').click((e) => {
         // Show confirmation modal, and setup close buttons.
-        const $usersDeleteForm = $('#users-delete-form');
+        const $usersDeleteForm = $('#users-delete-form-modal');
         $usersDeleteForm.modal('show');
 
         $usersDeleteForm.find('button.confirm-delete-btn').click((e) => {
@@ -90,7 +88,7 @@ module.exports = {
           $usersDeleteForm.find('button.close'),
           $usersDeleteForm.find('button.close-btn')], (el) => {
 
-          $(el).click((e) => $usersDeleteForm.modal('hide'));
+          $(el).click(() => $usersDeleteForm.modal('hide'));
         });
       });
     });
@@ -117,19 +115,22 @@ module.exports = {
   deleteUser(uid) {
     $.ajax(`/admin/users/${uid}/delete`, {
       method: 'POST',
-      processData: false,
-      contentType: false,
       headers: {
         'X-CSRFToken': this._getCsrfCookie(),
       }
     }).done((response) => {
-      debugger;
+      if (response.status === 'OK') {
+        const $usersDeleteModal = $('#users-delete-form-modal');
+        const $usersUpdateModal = $('#users-form-modal');
+        $usersDeleteModal.modal('hide');
+        $usersUpdateModal.modal('hide');
+      }
     });
   },
 
   bindUiActions() {
     // Bind show modal to clicks of the edit button for users list
-    $('.users-update-btn').click((e) => {
+    $('.users-update-btn, .users-create-btn').click((e) => {
       const $currentTarget = $(e.currentTarget);
       const modalId = $currentTarget.data('target');
       const formUrl = $currentTarget.data('url');
