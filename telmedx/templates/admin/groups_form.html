@@ -1,7 +1,17 @@
 {% load widget_tweaks %}
 
-<form class="form" method="POST">
+<form id="groups-form" class="form" method="POST" action="{{ action }}">
     {% csrf_token %}
+
+    {% for field in profile_form.visible_fields %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field|add_class:'form-control' }}
+            {% for error in field.errors %}
+                <span class="help-block">{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% endfor %}
 
     {% for field in form.visible_fields %}
         <div class="form-group">
@@ -15,12 +25,13 @@
 
     <div class="form-group">
         <a href="{{ back_url }}" class="btn btn-default">Cancel</a>
-        {% if mode == 'edit' %}
+        {% if mode == 'update' %}
             <button class="btn btn-primary" type="submit">Save</button>
-            <button class="pull-right btn btn-danger">Delete Group</button>
+            <button class="groups-delete-btn btn btn-danger" type="button">
+                <span class="glyphicon glyphicon-trash"></span> Delete Group
+            </button>
         {% elif mode == 'create' %}
             <button class="btn btn-primary" type="submit">Create</button>
         {% endif %}
     </div>
-
 </form>

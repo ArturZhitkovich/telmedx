@@ -42,6 +42,17 @@ class JSONResponseMixin:
         return context
 
 
+class ObjectAndProfileMixin:
+    object = None
+    object_profile = None
+
+    def get_object(self, **kwargs):
+        pass
+
+    def get_object_profile(self, **kwargs):
+        pass
+
+
 class ProtectedTelmedxMixin(UserPassesTestMixin, BaseTelmedxMixin):
     def test_func(self):
         return self.request.user.is_staff or self.request.user.is_superuser

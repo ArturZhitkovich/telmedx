@@ -3,7 +3,7 @@
         <div class="pull-left top-title">
             <h2>{{ current_page|capfirst }}</h2>
             <button class="{{ current_page }}-create-btn btn btn-default btn-sm" type="button" data-toggle="modal"
-                    data-target="#{{ current_page }}-form-modal" data-url="{% url 'admin-users-form' %}"
+                    data-target="#{{ current_page }}-form-modal" data-url="{% url data_url %}"
                     data-mode="create">
                 <span class="glyphicon glyphicon-plus"></span> Add new
             </button>

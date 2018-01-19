@@ -4,33 +4,29 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from .forms import AdminUserForm, AdminUserProfileForm
-from .mixins import ProtectedTelmedxMixin, JSONResponseMixin
+from .forms import (
+    AdminUserForm,
+    AdminUserProfileForm,
+    AdminGroupForm,
+    AdminGroupProfileForm,
+)
+from .mixins import (
+    ProtectedTelmedxMixin,
+    JSONResponseMixin,
+    ObjectAndProfileMixin
+)
 from .models import TelmedxProfile, TelmedxUser, TelmedxGroupProfile
 
 __all__ = (
     'UserAndProfileFormView',
-    'get_admin_group_form',
-    'post_admin_group_form',
+    'GroupAndProfileFormView',
 )
 
 # type: TelmedxUser
 User = get_user_model()
-
-
-class ObjectAndProfileMixin:
-    object = None
-    object_profile = None
-
-    def get_object(self, **kwargs):
-        pass
-
-    def get_object_profile(self, **kwargs):
-        pass
 
 
 class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
@@ -40,7 +36,6 @@ class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
     profile_model = None
     model_form = None
     profile_form = None
-
     action_url = None
     success_url = None
 
@@ -114,7 +109,7 @@ class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
         return self.form.is_valid()
 
     def profile_form_valid(self, **kwargs):
-        instance = getattr(kwargs.get('instance'), 'profile')
+        instance = getattr(kwargs.get('instance'), 'profile', None)
         self.profile_form = self.get_profile_form(instance=instance)
         return self.profile_form.is_valid()
 
@@ -169,6 +164,11 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
         if self.form_valid(**kwargs):
             obj = self.form.save()
 
+            # Rewrite instance kwarg since the initial cration of the
+            # obj will automatically create a profile instance.
+            if not pk:
+                kwargs['instance'] = obj
+
             if self.profile_form_valid(**kwargs):
                 profile = self.profile_form.save(commit=False)
                 profile.user_id = obj.pk
@@ -186,32 +186,67 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
         return errors
 
 
-@csrf_protect
-def get_admin_group_form(request):
-    context = {}
-    mode = request.GET.get('mode')
-    try:
-        gid = request.GET.get('gid')
-        group = Group.objects.get(pk=gid)
-    except Group.DoesNotExist:
-        group = None
+class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
+    model = Group
+    model_form = AdminGroupForm
+    profile_model = TelmedxGroupProfile
+    profile_form = AdminGroupProfileForm
 
-    if not getattr(group, 'profile', None):
-        profile = TelmedxGroupProfile()
-        profile.group_id = group.pk
-        profile.save()
-        group = Group.objects.get(id=gid)
+    success_url = reverse_lazy('admin-groups-list')
+    template_name = 'admin/groups_form.html'
 
-    if group:
-        context['profile_form'] = AdminUserProfileForm(instance=group.profile)
-        context['user_form'] = AdminUserForm(instance=group)
-        context['action'] = reverse_lazy('admin-groups-update', kwargs={'pk': group.pk})
-    else:
-        context['profile_form'] = AdminUserProfileForm()
-        context['user_form'] = AdminUserForm(instance=TelmedxUser())
-        context['action'] = reverse_lazy('admin-groups-create')
+    def get_data(self, context):
+        pass
 
+    def get_action_url(self):
+        ret = reverse_lazy('admin-groups-form')
+        object = self.get_object()
+        if object:
+            ret = reverse_lazy('admin-groups-update', kwargs={'pk': object.pk})
+        return ret
 
-@csrf_protect
-def post_admin_group_form(request):
-    pass
+    def get(self, request, *args, **kwargs):
+        mode = request.GET.get('mode')
+        user = self.get_object(pk=kwargs.get('pk'))
+
+        if user and not getattr(user, 'profile', None):
+            profile = self.profile_model()
+            profile.user_id = user.pk
+            profile.save()
+            # Re-fetch user. Previous user won't have profile relation
+            # user = self.get_object(pk=user.pk)
+
+        kwargs['mode'] = mode
+        kwargs['csrf'] = True
+
+        return render_to_response(self.template_name,
+                                  context=self.get_context_data(**kwargs))
+
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        kwargs['mode'] = 'update' if pk else 'create'
+        kwargs['instance'] = self.get_object(pk=pk)
+
+        if self.form_valid(**kwargs):
+            obj = self.form.save()
+
+            # Rewrite instance kwarg since the initial cration of the
+            # obj will automatically create a profile instance.
+            if not pk:
+                kwargs['instance'] = obj
+
+            if self.profile_form_valid(**kwargs):
+                profile = self.profile_form.save(commit=False)
+                profile.group_id = obj.pk
+                profile.save()
+
+            if request.is_ajax():
+                return self.render_to_json_response(
+                    context=self.get_context_data(**kwargs)
+                )
+            else:
+                return HttpResponseRedirect(self.success_url)
+
+        errors = self.get_form().errors
+
+        return errors

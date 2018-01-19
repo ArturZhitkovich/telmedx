@@ -1,7 +1,7 @@
 {% extends 'admin/layout.html' %}
 
 {% block admin_content %}
-    {% include 'admin/admin_nav.html' with current_page='groups' %}
+    {% include 'admin/admin_nav.html' with current_page='groups' data_url='admin-groups-form' %}
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped table-hover">
@@ -18,18 +18,20 @@
                 {% for group in object_list %}
                     <tr>
                         <td>
-                            <a href="{% url 'admin-groups-update' group.pk %}">
+                            <a href="#" class="groups-update-btn" data-toggle="modal"
+                               data-target="#groups-form-modal" data-upk="{{ user.pk }}"
+                               data-url="{% url 'admin-groups-form' group.pk %}" data-mode="update">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
                         </td>
                         <td>{{ group.name }}</td>
-                        <td>{{ group.contact }}</td>
-                        <td>{{ group.mobile_users.count }}</td>
+                        <td>{{ group.profile.contact }}</td>
+                        <td>{{ group.user_set.count }}</td>
                         <td>{{ group.admins.count }}</td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="2">None</td>
+                        <td colspan="5">None</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -37,4 +39,6 @@
             </table>
         </div>
     </div>
+
+    {% include 'admin/groups_update_modal.html' %}
 {% endblock %}
