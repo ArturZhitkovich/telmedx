@@ -21,6 +21,7 @@ module.exports = {
       let cookies = document.cookie.split(';');
       for (let i = 0; i < cookies.length; i++) {
         let cookie = jQuery.trim(cookies[i]);
+
         // Does this cookie string begin with the name we want?
         if (cookie.substring(0, name.length + 1) === (name + '=')) {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -30,6 +31,58 @@ module.exports = {
     }
 
     return cookieValue;
+  },
+
+  showGroupUpdateModal($el, formUrl, gid, mode) {
+    let title;
+
+    if (mode === 'create') {
+      title = 'Create Group';
+    } else if (mode === 'update') {
+      title = 'Update Group';
+    }
+
+    $el.find('.modal-title').html(title);
+
+    $.get(formUrl, {
+      mode: mode,
+    }, (response) => {
+      $el.find('.modal-body').html(response);
+      const $groupsForm = $el.find('#groups-form');
+
+      $el.find('button.close.users-form-close').click((e) => {
+        $el.modal('hide');
+      });
+
+      // Bind user save events -- form saves via AJAX
+      $groupsForm.on('submit', (e) => {
+        e.preventDefault();
+        const status = this.updateUser(e.target);
+        if (status === 'OK') $el.modal('hide');
+      });
+
+      // Bind user delete event
+      $('.groups-delete-btn').click((e) => {
+        // Show confirmation modal, and setup close buttons.
+        const $groupsDeleteForm = $('#groups-delete-form-modal');
+        $groupsDeleteForm.modal('show');
+
+        $groupsDeleteForm.find('button.confirm-delete-btn').click((e) => {
+          this.deleteUser(uid);
+        });
+
+        // Rebind close buttons since this is going to be a nested modal.
+        // Without this (and removing data-dismiss from the modal), both the
+        // delete and the user form modal will close when the delete modal
+        // triggers a close.
+        $.map([
+          $groupsDeleteForm.find('button.close'),
+          $groupsDeleteForm.find('button.close-btn')], (el) => {
+
+          $(el).click(() => $groupsDeleteForm.modal('hide'));
+        });
+      });
+    });
   },
 
   /**
@@ -139,6 +192,16 @@ module.exports = {
       const mode = $currentTarget.data('mode');
 
       this.showUserUpdateModal($(modalId), formUrl, uid, mode);
+    });
+
+    $('.groups-update-btn, .groups-create-btn').click((e) => {
+      const $currentTarget = $(e.currentTarget);
+      const modalId = $currentTarget.data('target');
+      const formUrl = $currentTarget.data('url');
+      const uid = $currentTarget.data('upk');
+      const mode = $currentTarget.data('mode');
+
+      this.showGroupUpdateModal($(modalId), formUrl, uid, mode);
     });
   },
 };
