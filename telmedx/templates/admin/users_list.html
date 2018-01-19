@@ -1,7 +1,7 @@
 {% extends 'admin/layout.html' %}
 
 {% block admin_content %}
-    {% include 'admin/admin_nav.html' with current_page='Users' %}
+    {% include 'admin/admin_nav.html' with current_page='users' %}
     <div class="row">
         <table class="table table-striped table-hover">
             <thead>
@@ -33,7 +33,7 @@
             {% for user in object_list %}
                 <tr>
                     <td>
-                        <button class="user-update-btn btn btn-default btn-sm" type="button" data-toggle="modal"
+                        <button class="users-update-btn btn btn-default btn-sm" type="button" data-toggle="modal"
                                 data-target="#users-form-modal" data-upk="{{ user.pk }}"
                                 data-url="{% url 'admin-get-form' %}" data-mode="update">
                             <span class="glyphicon glyphicon-edit"></span>

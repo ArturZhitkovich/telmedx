@@ -61,7 +61,7 @@ module.exports = {
       $el.find('.modal-body').html(response);
       const $usersForm = $el.find('#users-form');
 
-      $el.find('button.close.user-form-close').click((e) => {
+      $el.find('button.close.users-form-close').click((e) => {
         $el.modal('hide');
       });
 
@@ -73,7 +73,7 @@ module.exports = {
       });
 
       // Bind user delete event
-      $('.user-delete-btn').click((e) => {
+      $('.users-delete-btn').click((e) => {
         // Show confirmation modal, and setup close buttons.
         const $usersDeleteForm = $('#users-delete-form');
         $usersDeleteForm.modal('show');
@@ -129,7 +129,7 @@ module.exports = {
 
   bindUiActions() {
     // Bind show modal to clicks of the edit button for users list
-    $('.user-update-btn').click((e) => {
+    $('.users-update-btn').click((e) => {
       const $currentTarget = $(e.currentTarget);
       const modalId = $currentTarget.data('target');
       const formUrl = $currentTarget.data('url');

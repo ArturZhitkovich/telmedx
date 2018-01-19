@@ -1,9 +1,9 @@
 <nav class="navbar admin-navbar row">
     <div class="col-md-12">
         <div class="pull-left top-title">
-            <h2>Users</h2>
-            <button class="user-update-btn btn btn-default btn-sm" type="button" data-toggle="modal"
-                    data-target="#users-form" data-url="{% url 'admin-get-form' %}" data-mode="create">
+            <h2>{{ current_page|capfirst }}</h2>
+            <button class="{{ current_page }}-create-btn btn btn-default btn-sm" type="button" data-toggle="modal"
+                    data-url="{% url 'admin-get-form' %}" data-mode="create">
                 <span class="glyphicon glyphicon-plus"></span> Add new
             </button>
             {% comment %}
@@ -14,7 +14,7 @@
         </div>
         <form class="form-inline search-form pull-right" method="GET">
             <div class="input-group">
-                <input class="form-control" type="text" placeholder="Filter {{ current_page }}"
+                <input class="form-control" type="text" placeholder="Filter {{ current_page|capfirst }}"
                        value="{{ request.GET.search }}" name="search"/>
                 <span class="input-group-btn">
                     <button type="submit" class="btn btn-success">Search</button>
