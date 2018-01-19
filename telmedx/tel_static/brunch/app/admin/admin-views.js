@@ -124,6 +124,8 @@ module.exports = {
         const $usersUpdateModal = $('#users-form-modal');
         $usersDeleteModal.modal('hide');
         $usersUpdateModal.modal('hide');
+
+        $(`#user-item-${uid}`).remove();
       }
     });
   },
