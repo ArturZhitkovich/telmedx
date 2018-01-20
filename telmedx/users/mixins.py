@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
+from django.views.generic.base import ContextMixin
 from django.views.generic import (
     ListView,
     UpdateView,
@@ -18,7 +19,7 @@ __all__ = (
 )
 
 
-class BaseTelmedxMixin:
+class BaseTelmedxMixin(ContextMixin):
     """
     Mixin to add branding and other data
     """
