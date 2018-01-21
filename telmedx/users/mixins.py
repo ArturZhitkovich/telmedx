@@ -55,6 +55,8 @@ class ObjectAndProfileMixin:
 
 
 class ProtectedTelmedxMixin(UserPassesTestMixin, BaseTelmedxMixin):
+    raise_exception = True
+
     def test_func(self):
         return self.request.user.is_staff or self.request.user.is_superuser
 
