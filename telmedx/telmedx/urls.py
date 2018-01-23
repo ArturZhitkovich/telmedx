@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^devices/?$', ttux_views.device_view, name='device-home'),
     url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
 
-    url(r'^api', include(api_patterns)),
+    url(r'^api/', include(api_patterns)),
     url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
     url(r'^api-token-auth/', obtain_jwt_token),
 ]
