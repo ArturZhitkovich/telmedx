@@ -20,12 +20,13 @@ urlpatterns = [
     url(r'^flipcamera/(?P<device_name>.*?)/?$', views.flip_camera),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
-    url(r'^ping$', views.pingRequest),
-    url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
     url(r'^deviceList$', views.device_view),
     url(r'^initializeDevice', views.initialize_device),
     url(r'^imageDownload', views.image_download),
     url(r'^viewSessionInfo', views.view_session_info),
-    url(r'^logout$', users_views.logout_view, name='user-logout'),
 
+    url(r'^ping$', views.pingRequest),
+    url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
+
+    url(r'^logout$', users_views.logout_view, name='user-logout'),
 ]
