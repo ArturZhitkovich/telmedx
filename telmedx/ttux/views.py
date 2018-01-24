@@ -9,6 +9,7 @@ import gevent
 import gevent.queue
 from django.conf import settings
 from django.contrib.auth import login, get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -451,6 +452,7 @@ def flip_camera(request, device_name):
     return response
 
 
+@login_required
 @csrf_exempt
 def toggle_flash(request, device_name):
     """

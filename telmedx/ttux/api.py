@@ -1,4 +1,6 @@
 import json
+
+from django.http import HttpResponse
 from gevent.queue import Full
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -32,6 +34,7 @@ class PingAPIView(TelmedxAPIView):
     API view that responds with the functionality that's available for the
     app version specified.
     """
+
     def get(self, request, app_version=None, format=None):
         device_name = self.get_device_name(request)
 
@@ -120,6 +123,8 @@ class SnapshotAPIView(TelmedxAPIView):
 
 
 class FlipCameraAPIView(TelmedxAPIView):
+    authentication_classes = []
+    permission_classes = []
     def get(self, request, format=None):
         """
         Receive flip camera response from phone/device
@@ -128,8 +133,8 @@ class FlipCameraAPIView(TelmedxAPIView):
         :param status:
         :return:
         """
-        device_name = self.get_device_name(request)
-        status = None
+        device_name = request.GET.get('device_name')
+        status = request.GET.get('status')
         print("got camera from device" + device_name)
 
         session = Session.get(device_name)
@@ -141,10 +146,56 @@ class FlipCameraAPIView(TelmedxAPIView):
             print("failed to queue up snapshot response from " + device_name)
             session.flipcameraQ.get_nowait()  # empty the queue if full
             session.flipcameraQ.put_nowait(status)
-        # END
 
-        return Response({
-            'data': {
-                'camera': 'flipped'
-            }
-        })
+        return HttpResponse('flipcameraResponse')
+
+
+class ReceivedImageAPIView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request, device_name=None):
+        """
+        Receive image data from mobile apps.
+        This assumes data is sent through in binary mode.
+
+        Example `curl` command:
+        ```bash
+        curl -X POST --data-binary \
+             localhost:8000/ttux/img/user@example.com/img0001.jpg
+        ```
+
+        :param request:
+        :param device_name:
+        :return:
+        :rtype: HttpResponse
+        """
+
+        # session = Session.get(0)
+        # print "got img for device " + device_name
+        if not device_name:
+            session = Session.get(request.user)
+        else:
+            session = Session.get(device_name)
+
+        if not session:
+            return Response({'status': 'Not ready'})
+
+        image = request.read()
+        # distribute this frame to each watcher
+        session.enqueue_frame(image)
+
+        # see if there are any commands to send
+        try:
+            # command_resp = commandQ.get_nowait();
+            command_resp = session.commandQ.get_nowait()
+        except Exception as e:
+            command_resp = ""
+
+        if command_resp != "":
+            # logger.info("sending command to the phone: %s", command_resp)
+            print("sending command " + command_resp + " to the phone: " + device_name)
+
+        # ENDIF
+        ##return HttpResponse(status="200 OK")
+        return HttpResponse(command_resp)

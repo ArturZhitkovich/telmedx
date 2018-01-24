@@ -2,13 +2,14 @@ from django.conf.urls import url
 
 # TODO REMOVE THIS LOGOUT
 from users import views as users_views
-from . import views
+from . import views, api
 
 urlpatterns = [
     url(r'^$', views.device_view),
     url(r'^index/(?P<device_name>.*?)/?$', views.index),
     url(r'^index3/(?P<device_name>.*?)/?$', views.index3),
-    url(r'^img/(?P<device_name>.*?)/img\d+.jpg$', views.rx_image),
+    # url(r'^img/(?P<device_name>.*?)/img\d+.jpg$', views.rx_image),
+    url(r'^img/(?P<device_name>.*?)/img\d+.jpg$', api.ReceivedImageAPIView.as_view()),
     url(r'^snapshotResponse/(?P<device_name>.*?)/snap\d+.jpg', views.snapshot_response),
     url(r'^stream/(?P<device_name>.*?)/?$', views.get_stream_request),
     url(r'^lastFrame/(?P<device_name>.*?)/(?P<fnum>\d+)$', views.get_last_frame_from_stream),
