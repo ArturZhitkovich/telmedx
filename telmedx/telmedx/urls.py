@@ -15,9 +15,9 @@ Including another URLconf
 """
 
 from django.conf.urls import url, include
-from users.jwt_views import obtain_jwt_token
 
 from ttux import views as ttux_views
+from users.jwt_views import obtain_jwt_token
 from users.views import TelmedxLoginView
 from .api_routers import urlpatterns as api_patterns
 
@@ -28,8 +28,8 @@ urlpatterns = [
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
-    url(r'^devices/?$', ttux_views.device_view, name='device-home'),
-    url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
+    url(r'^devices/?$', ttux_views.device_list, name='device-home'),
+    url(r'^device/(?P<device_name>.*?)/?$', ttux_views.device_detail, name='device-detail'),
 
     url(r'^api/', include(api_patterns)),
     url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),

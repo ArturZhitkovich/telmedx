@@ -1,10 +1,15 @@
-from django.contrib.auth.models import Group, AbstractUser
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+User = get_user_model()
 
 
-# TODO: Is group really required for this?
-class mobileCam(models.Model):
-    groups = models.ForeignKey(Group)
+class MobileCam(models.Model):
+    groups = models.ForeignKey(Group, blank=True, null=True)
+    user = models.OneToOneField(User, blank=True, null=True, related_name='mobile_cam')
     name = models.CharField(max_length=100)  # name of this device
     connectedState = models.BooleanField(default=False)  # is the device currently connected
     email = models.EmailField(max_length=255, default='')
@@ -21,7 +26,7 @@ class mobileCam(models.Model):
 
 
 class sessionRecord(models.Model):
-    mobile = models.ForeignKey(mobileCam)  # the mobile device used for this session
+    mobile = models.ForeignKey(MobileCam)  # the mobile device used for this session
     sessn_date = models.DateTimeField('Session Date')  # the date/time of this session
     streamId = models.CharField(
         max_length=50)  # the session id used for this stream, video and snapshots will be stored here
@@ -29,7 +34,7 @@ class sessionRecord(models.Model):
 
 
 class sessionLog(models.Model):
-    device = models.ForeignKey(mobileCam)
+    device = models.ForeignKey(MobileCam)
     begin_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField()
     frames = models.IntegerField()
@@ -48,3 +53,9 @@ class sessionLog(models.Model):
     @property
     def begin(self):
         return self.begin_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+
+
+@receiver(post_save, sender=User)
+def create_mobile_cam(sender, instance, created, **kwargs):
+    if created:
+        MobileCam.objects.create(user=instance)

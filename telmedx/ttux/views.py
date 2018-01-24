@@ -9,15 +9,15 @@ import gevent
 import gevent.queue
 from django.conf import settings
 from django.contrib.auth import login, get_user_model
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.exceptions import MethodNotAllowed
+from django.views.decorators.http import require_http_methods
 from rest_framework.parsers import JSONParser
 
 from .helpers import id_generator
-from .models import mobileCam  # get our database model
+from .models import MobileCam  # get our database model
 from .serializers import InitializeSerializer
 from .session import Session
 from .settings import API_KEYS
@@ -213,60 +213,16 @@ def ping2_request(request, app_version, device_name):
 # UI Handlers
 ##################################################################################
 
-# deprecated
-def index(request, device_name):
-    """
-    Main View Finder Device Control View
-    :param request:
-    :param device_name:
-    :return:
-    """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index.html', context={
-        'dev': d,
-    })
-
-
-# deprecated
-def index2(request, device_name):
-    """
-    Main View Finder Device Control View for texting XHR
-    :deprecated:
-    :param request:
-    :param device_name:
-    :return:
-    """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index2.html', context={
-        'dev': d,
-    })
-
-
-def index3(request, device_name):
+@login_required
+def device_detail(request, device_name):
     """
     Main View Finder Device Control View for testing jquery XHR
     :param request:
     :param device_name:
     :return:
     """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
     # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
+    d = get_object_or_404(MobileCam, name=device_name)
     # HACK: delete the most recent frame, in case one is left over from a previous session
     # this will create a slight artifact for current viewers
     try:
@@ -574,18 +530,16 @@ def view_session_info(request):
     return HttpResponse(body)
 
 
-def device_view(request):
+@require_http_methods(['GET', ])
+@login_required
+def device_list(request):
     """
     Device selection View
     :param request:
     :return:
     """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-
     g = request.user.groups.first()
-    deviceList = mobileCam.objects.filter(groups=g).order_by('name')
+    deviceList = MobileCam.objects.filter(groups=g).order_by('name')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
     # TODO: needs to be done on the admin page when a new device is added to the database
@@ -611,6 +565,7 @@ def sso_login_view(request, device_name):
         return HttpResponse('Not Authorized')
 
 
+@require_http_methods(['POST', ])
 @csrf_exempt
 def initialize_device(request):
     """
@@ -618,48 +573,47 @@ def initialize_device(request):
     :param request:
     :return:
     """
-    if request.method == "POST":
-        data = JSONParser().parse(request)
-        payload = InitializeSerializer(data=data)
+    data = JSONParser().parse(request)
+    payload = InitializeSerializer(data=data)
 
-        if payload.is_valid():
-            api_key = payload.data.get('api_key')
-            if api_key in API_KEYS:
-                username = API_KEYS[api_key]
-                user = get_object_or_404(User, username=username)
+    if payload.is_valid():
+        api_key = payload.data.get('api_key')
+        if api_key in API_KEYS:
+            username = API_KEYS[api_key]
+            user = get_object_or_404(User, username=username)
 
-            # TODO: Find out logic for add user to groups
-            group = user.groups.first()
-            device_name = payload.data.get('email')
+        # TODO: Find out logic for add user to groups
+        group = user.groups.first()
+        device_name = payload.data.get('email')
 
-            cam, created = mobileCam.objects.get_or_create(
-                name=device_name,
-                email=payload.data.get('email'),
-                defaults=dict(
-                    first_name=payload.data.get('firstName'),
-                    last_name=payload.data.get('lastName'),
-                    phone_number=payload.data.get('phoneNumber'),
-                    groups=group,
-                )
+        cam, created = MobileCam.objects.get_or_create(
+            name=device_name,
+            email=payload.data.get('email'),
+            defaults=dict(
+                first_name=payload.data.get('firstName'),
+                last_name=payload.data.get('lastName'),
+                phone_number=payload.data.get('phoneNumber'),
+                groups=group,
             )
+        )
 
-            session = Session.get(device_name)
-            if session is None:
-                Session.put(device_name, Session())
+        session = Session.get(device_name)
+        if session is None:
+            Session.put(device_name, Session())
 
-            return JsonResponse({'status': 'OK', 'device_name': cam.name})
+        return JsonResponse({'status': 'OK', 'device_name': cam.name})
 
 
+@require_http_methods(['GET', ])
+@login_required
 @csrf_exempt
 def image_download(request):
-    if request.method != 'POST':
-        raise MethodNotAllowed(request.method)
-
     from io import BytesIO
     from PIL import Image
     from time import time
     from .utils import annotate_image
     from tempfile import TemporaryFile
+
     # Get POST data and convert into image
     # Image will be base64 encoded, so decode and throw into PIL
     # data will be in format:

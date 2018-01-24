@@ -6,11 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import redirect, render_to_response
 
-from ttux.models import mobileCam, sessionLog
+from ttux.models import MobileCam, sessionLog
 from usage.utils import export_usage_csv
 
 
-@login_required(login_url='/login')
+@login_required
 def home(request):
     logs = sessionLog.objects.filter(device__groups=request.user.groups.all())
     paginator = Paginator(logs, 25)  # Show 25 contacts per page
@@ -19,9 +19,9 @@ def home(request):
 
     if request.GET.get('export_last_week', None) is not None:
         try:
-            device = mobileCam.objects.filter(groups=request.user.groups.all).get(name=request.GET.get('device'))
+            device = MobileCam.objects.filter(groups=request.user.groups.all).get(name=request.GET.get('device'))
             logs.filter(device=device)
-        except mobileCam.DoesNotExist:
+        except MobileCam.DoesNotExist:
             pass
         logs = logs.filter(begin_timestamp__gt=datetime.datetime.now() - datetime.timedelta(days=7))
         return export_usage_csv(logs)
@@ -41,11 +41,11 @@ def home(request):
     })
 
 
-@login_required(login_url='/login')
+@login_required
 def single_device(request, device_name):
     try:
-        device = mobileCam.objects.filter(groups=request.user.groups.all()).get(name=device_name)
-    except mobileCam.DoesNotExist as e:
+        device = MobileCam.objects.filter(groups=request.user.groups.all()).get(name=device_name)
+    except MobileCam.DoesNotExist as e:
         return redirect('/usage')
     except Exception as e:
         print(e)
