@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser, UserManager, Group
 from django.db import models
 from django.db.models.signals import post_save
@@ -67,6 +69,7 @@ class TelmedxProfile(models.Model):
 
 class TelmedxUser(AbstractUser):
     objects = TelmedxUserManager()
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     @property
     def date_created(self):
