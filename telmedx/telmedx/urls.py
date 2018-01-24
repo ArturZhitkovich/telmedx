@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.conf.urls import url, include
-from rest_framework_jwt.views import obtain_jwt_token
+from users.jwt_views import obtain_jwt_token
 
 from ttux import views as ttux_views
 from users.views import TelmedxLoginView
