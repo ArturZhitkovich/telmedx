@@ -19,6 +19,7 @@ from .mixins import (
     ObjectAndProfileMixin
 )
 from .models import TelmedxProfile, TelmedxUser, TelmedxGroupProfile
+from .serializers import TelmedxUserSerializer, TelmedxGroupSerializer
 
 __all__ = (
     'UserAndProfileFormView',
@@ -130,7 +131,11 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
     template_name = 'admin/users_form.html'
 
     def get_data(self, context):
-        pass
+        instance = context.get('instance')
+        serializer = TelmedxUserSerializer(instance)
+        return {
+            'instance': serializer.data
+        }
 
     def get_action_url(self):
         ret = reverse_lazy('admin-users-form')
@@ -196,7 +201,11 @@ class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
     template_name = 'admin/groups_form.html'
 
     def get_data(self, context):
-        pass
+        instance = context.get('instance')
+        serializer = TelmedxGroupSerializer(instance)
+        return {
+            'instance': serializer.data
+        }
 
     def get_action_url(self):
         ret = reverse_lazy('admin-groups-form')
