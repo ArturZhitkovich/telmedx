@@ -159,6 +159,9 @@ class ReceivedImageAPIView(APIView):
         Receive image data from mobile apps.
         This assumes data is sent through in binary mode.
 
+        If there is a command in the queue (from the web app), this command
+        will be sent as a response.
+
         Example `curl` command:
         ```bash
         curl -X POST --data-binary \

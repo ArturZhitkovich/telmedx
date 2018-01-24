@@ -6,7 +6,7 @@ import gevent.queue
 from django.contrib.auth import get_user_model
 
 from util.queue import DiscardingQueue
-from .models import sessionLog, mobileCam
+from .models import sessionLog, MobileCam
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class Session:
 
     def log_session(self):
         if self.last_frame_timestamp - self.begin_timestamp > 2:
-            cam = mobileCam.objects.get(name=self.device_name)
+            cam = MobileCam.objects.get(name=self.device_name)
             log = sessionLog()
             log.device = cam
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
@@ -117,8 +117,8 @@ class Session:
         :param key: Typically a device name, or User
         :return:
         """
-        if isinstance(key, User) and getattr(key, 'username'):
-            key = key.username
+        if isinstance(key, User) and getattr(key, 'uuid'):
+            key = str(key.uuid)
         return Session.REGISTRY.get(key)
 
     @staticmethod
@@ -133,8 +133,8 @@ class Session:
         :type session: Session
         :return:
         """
-        if isinstance(key, User) and getattr(key, 'username'):
-            key = key.username
+        if isinstance(key, User) and getattr(key, 'uuid'):
+            key = str(key.uuid)
 
         logger.info("put key: " + str(key))
         for k in Session.REGISTRY:

@@ -9,4 +9,4 @@ class TtuxConfig(AppConfig):
         from .session import Session
         deviceList = MobileCam.objects.all().order_by('name')
         for d in deviceList:
-            Session.put(d.name, Session())
+            Session.put(d.name)

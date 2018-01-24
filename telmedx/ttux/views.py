@@ -214,7 +214,7 @@ def ping2_request(request, app_version, device_name):
 ##################################################################################
 
 @login_required
-def device_detail(request, device_name):
+def device_detail(request, user_uuid):
     """
     Main View Finder Device Control View for testing jquery XHR
     :param request:
@@ -222,18 +222,18 @@ def device_detail(request, device_name):
     :return:
     """
     # look up this device
-    d = get_object_or_404(MobileCam, name=device_name)
+    user = get_object_or_404(User, uuid=user_uuid)
     # HACK: delete the most recent frame, in case one is left over from a previous session
     # this will create a slight artifact for current viewers
     try:
-        session = Session.get(device_name)
+        session = Session.get(user)
         session.clear_lastFrame()
     except AttributeError:
         # Camera is not active yet, so just ignore?
         pass
 
     return render_to_response('ttux/index3.html', context={
-        'dev': d,
+        'dev': user,
         'user': request.user,
         'brand': settings.INSTANCE_BRAND
     })
@@ -538,16 +538,19 @@ def device_list(request):
     :param request:
     :return:
     """
-    g = request.user.groups.first()
-    deviceList = MobileCam.objects.filter(groups=g).order_by('name')
+
+    # Filter users by the current user's group
+    group = request.user.groups.first()
+
+    users = User.objects.filter(groups=group).order_by('email')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
     # TODO: needs to be done on the admin page when a new device is added to the database
-    for d in deviceList:
-        Session.put(d.name, Session())
+    for user in users:
+        Session.put(user, Session())
 
     return render_to_response('ttux/devices.html', context={
-        'deviceList': deviceList,
+        'deviceList': users,
         'user': request.user,
         'brand': settings.INSTANCE_BRAND
     })
@@ -586,22 +589,12 @@ def initialize_device(request):
         group = user.groups.first()
         device_name = payload.data.get('email')
 
-        cam, created = MobileCam.objects.get_or_create(
-            name=device_name,
-            email=payload.data.get('email'),
-            defaults=dict(
-                first_name=payload.data.get('firstName'),
-                last_name=payload.data.get('lastName'),
-                phone_number=payload.data.get('phoneNumber'),
-                groups=group,
-            )
-        )
-
-        session = Session.get(device_name)
+        cam = get_object_or_404(User, email=device_name)
+        session = Session.get(cam.email)
         if session is None:
             Session.put(device_name, Session())
 
-        return JsonResponse({'status': 'OK', 'device_name': cam.name})
+        return JsonResponse({'status': 'OK', 'device_name': cam.uuid})
 
 
 @require_http_methods(['GET', ])

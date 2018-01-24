@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
     url(r'^devices/?$', ttux_views.device_list, name='device-home'),
-    url(r'^device/(?P<device_name>.*?)/?$', ttux_views.device_detail, name='device-detail'),
+    url(r'^device/(?P<user_uuid>.*?)/?$', ttux_views.device_detail, name='device-detail'),
 
     url(r'^api/', include(api_patterns)),
     url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
