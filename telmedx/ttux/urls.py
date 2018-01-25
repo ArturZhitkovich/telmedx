@@ -21,7 +21,8 @@ urlpatterns = [
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
     url(r'^ping$', views.pingRequest),
-    url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
+    url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/?$', views.ping2_request),
+    # url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
 
     # Web pages
     url(r'^$', views.device_list),

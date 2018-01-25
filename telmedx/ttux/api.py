@@ -36,7 +36,7 @@ class PingAPIView(TelmedxAPIView):
     """
 
     def get(self, request, app_version=None, format=None):
-        device_name = self.get_device_name(request)
+        device_name = str(self.request.user.uuid)
 
         # Has flip camera & flashlight
         if app_version == '1.0.0':
@@ -123,8 +123,6 @@ class SnapshotAPIView(TelmedxAPIView):
 
 
 class FlipCameraAPIView(TelmedxAPIView):
-    authentication_classes = []
-    permission_classes = []
     def get(self, request, format=None):
         """
         Receive flip camera response from phone/device
@@ -151,9 +149,6 @@ class FlipCameraAPIView(TelmedxAPIView):
 
 
 class ReceivedImageAPIView(APIView):
-    authentication_classes = []
-    permission_classes = []
-
     def post(self, request, device_name=None):
         """
         Receive image data from mobile apps.

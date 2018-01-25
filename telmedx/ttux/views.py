@@ -169,7 +169,7 @@ def pingRequest(request):
 
 # END
 @csrf_exempt
-def ping2_request(request, app_version, device_name):
+def ping2_request(request, app_version):
     """
     This is resposible of handling "new" app versions which support camera
     features such as changing camera (front/back facing) and torch control.
@@ -179,6 +179,7 @@ def ping2_request(request, app_version, device_name):
     :param device_name:
     :return:
     """
+    device_name = request.user.uuid
     if all([app_version, device_name]):
         # Has flip camera & flashlight
         if app_version == '1.0.0':
