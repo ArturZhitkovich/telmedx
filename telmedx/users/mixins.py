@@ -76,6 +76,15 @@ class TelmedxUpdateView(ProtectedTelmedxMixin, UpdateView):
         context['back_url'] = self.back_url
         return context
 
+    def post(self, request, *args, **kwargs):
+        # Check if user is allowed to update this user
+        ret = None
+        if request.user.is_superuser:
+            ret = True
+        elif request.user.is_staff:
+            ret = True
+
+        return ret
 
 class TelmedxCreateView(ProtectedTelmedxMixin, CreateView):
     back_url = None

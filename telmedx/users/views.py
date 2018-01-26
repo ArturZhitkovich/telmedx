@@ -71,18 +71,33 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
         context['sort'] = self.get_ordering()
         return context
 
+    def _get_search_filter(self, search):
+        """
+        Generate a search query with `Q` objects with `search` param
+        :param search:
+        :return:
+        """
+        username_filter = Q(username__icontains=search)
+        first_name_filter = Q(profile__first_name__icontains=search)
+        last_name_filter = Q(profile__last_name__icontains=search)
+        email_filter = Q(email__icontains=search)
+        return Q(username_filter |
+                 email_filter |
+                 first_name_filter |
+                 last_name_filter)
+
     def get_queryset(self):
         qs = super().get_queryset()
         search = self.request.GET.get('search')
+        user = self.request.user
+
+        if user.is_staff and not user.is_superuser:
+            # Filter users that belong into the current user's group(s)
+            # Also, do not show any superusers for normal admins.
+            qs = qs.filter(groups__in=user.groups.all(),
+                           is_superuser=False)
         if search:
-            username_filter = Q(username__icontains=search)
-            first_name_filter = Q(profile__first_name__icontains=search)
-            last_name_filter = Q(profile__last_name__icontains=search)
-            email_filter = Q(email__icontains=search)
-            qs = qs.filter(username_filter |
-                           email_filter |
-                           first_name_filter |
-                           last_name_filter)
+            qs = qs.filter(self._get_search_filter(search))
 
         return qs
 

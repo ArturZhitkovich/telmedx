@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
 from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 from django.views.generic import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
@@ -50,7 +51,9 @@ class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
         """
         Returns the keyword arguments for instantiating the form.
         """
-        kwargs = {}
+        kwargs = {
+            'user': self.request.user,
+        }
 
         if self.request.method in ('POST', 'PUT'):
             kwargs.update({
@@ -114,6 +117,26 @@ class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
         self.profile_form = self.get_profile_form(instance=instance)
         return self.profile_form.is_valid()
 
+    def _can_edit_user(self, request, instance):
+        """
+        :param request:
+        :param instance:
+        :type instance: TelmedxUser|Group
+        :return:
+        :rtype: bool
+        """
+        user = self.request.user
+        has_group = False
+        if user.is_superuser:
+            has_group = True
+        elif user.is_staff:
+            instance_groups = instance.groups.all()
+            for g in user.groups.all():
+                if g in instance_groups:
+                    has_group = True
+                    break
+        return has_group
+
     def get(self, request, *args, **kwargs):
         raise NotImplementedError()
 
@@ -163,8 +186,16 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
 
     def post(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
-        kwargs['mode'] = 'update' if pk else 'create'
-        kwargs['instance'] = self.get_object(pk=pk)
+        mode = kwargs['mode'] = 'update' if pk else 'create'
+        instance = kwargs['instance'] = self.get_object(pk=pk)
+
+        if mode == 'update':
+            if not self._can_edit_user(request, kwargs['instance']):
+                raise PermissionDenied('You cannot update this user.')
+        elif mode == 'create':
+            pass
+            # if not self._can_create(request, kwargs['instance']):
+            #     raise PermissionDenied('You cannot create this user.')
 
         if self.form_valid(**kwargs):
             obj = self.form.save()
