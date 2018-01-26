@@ -26,10 +26,16 @@ class TelmedxGroupProfile(models.Model):
         :type user: TelmedxUser
         :return:
         """
-        if user_type not in ['admin', 'mobile']:
+        qs = self.group.user_set.filter(is_superuser=False)
+
+        if user_type == 'admin':
+            qs = qs.filter(is_staff=True)
+        elif user_type == 'mobile':
+            qs = qs.filter(is_staff=False)
+        else:
             raise ValueError('`user_type` does not exist')
 
-        return self.group.user_set()
+        return qs
 
     @property
     def mobile_users(self):

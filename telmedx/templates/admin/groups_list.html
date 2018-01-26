@@ -26,8 +26,8 @@
                         </td>
                         <td>{{ group.name }}</td>
                         <td>{{ group.profile.contact }}</td>
-                        <td>{{ group.user_set.count }}</td>
-                        <td>{{ group.admins.count }}</td>
+                        <td>{{ group.profile.mobile_users.count }}</td>
+                        <td>{{ group.profile.admin_users.count }}</td>
                     </tr>
                 {% empty %}
                     <tr>

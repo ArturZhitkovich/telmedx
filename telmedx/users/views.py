@@ -38,7 +38,7 @@ class TelmedxLoginView(BaseTelmedxMixin, LoginView):
     def get_redirect_url(self):
         ret = reverse_lazy('device-home')
         if self.request.user.is_staff:
-            ret = reverse_lazy('admin-users-list')
+            ret = reverse_lazy('admin-groups-list')
         return ret
 
 
