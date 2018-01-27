@@ -14,6 +14,30 @@
             {% endcomment %}
         </div>
         <form class="form-inline search-form pull-right" method="GET">
+            {% if current_page == 'users' %}
+                <div class="input-group">
+                    <label class="sr-only" for="form_user_type">User Types</label>
+                    <select id="form_user_type" name="user_type">
+                        <option {% if request.GET.user_type == 'all' %}selected=""{% endif %}
+                            value="all">All User Types</option>
+                        <option {% if request.GET.user_type == 'mobile' %}selected=""{% endif %}
+                            value="mobile">Mobile Users</option>
+                        <option {% if request.GET.user_type == 'admin' %}selected=""{% endif %}
+                            value="admin">Admins</option>
+                    </select>
+                </div>
+                {% if request.user.is_superuser %}
+                    <div class="input-group">
+                        <label class="sr-only" for="form_user_type">User Groups</label>
+                        <select id="form_user_type" name="user_group">
+                            <option selected="" value="all">All User Groups</option>
+                            {% for group in groups %}
+                                <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            {% endif %}
             <div class="input-group">
                 <input class="form-control" type="text" placeholder="Filter {{ current_page|capfirst }}"
                        value="{{ request.GET.search }}" name="search"/>

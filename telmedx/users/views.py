@@ -69,6 +69,7 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sort'] = self.get_ordering()
+        context['groups'] = Group.objects.all()
         return context
 
     def _get_search_filter(self, search):
@@ -89,6 +90,8 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     def get_queryset(self):
         qs = super().get_queryset()
         search = self.request.GET.get('search')
+        user_type = self.request.GET.get('user_type')
+        user_group = self.request.GET.get('user_group')
         user = self.request.user
 
         if user.is_staff and not user.is_superuser:
@@ -96,6 +99,18 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
             # Also, do not show any superusers for normal admins.
             qs = qs.filter(groups__in=user.groups.all(),
                            is_superuser=False)
+
+        if user_type:
+            if user_type == 'mobile':
+                qs = qs.filter(is_superuser=False, is_staff=False)
+            elif user_type == 'admin':
+                qs = qs.filter(is_superuser=False, is_staff=True)
+
+        if user_group:
+            # Only superusers should be able to see this
+            if user.is_superuser and user_group != 'all':
+                qs = qs.filter(groups__pk=int(user_group))
+
         if search:
             qs = qs.filter(self._get_search_filter(search))
 
