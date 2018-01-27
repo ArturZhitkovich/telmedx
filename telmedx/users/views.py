@@ -37,8 +37,10 @@ class TelmedxLoginView(BaseTelmedxMixin, LoginView):
 
     def get_redirect_url(self):
         ret = reverse_lazy('device-home')
-        if self.request.user.is_staff:
+        if self.request.user.is_superuser:
             ret = reverse_lazy('admin-groups-list')
+        elif self.request.user.is_staff:
+            ret = reverse_lazy('admin-users-list')
         return ret
 
 
@@ -165,6 +167,9 @@ class TelmedxGroupListView(TelmedxPaginatedListView):
     model = Group
     ordering_options = ('name',)
 
+    def test_func(self):
+        return self.request.user.is_superuser
+
 
 class TelmedxGroupCreateView(TelmedxCreateView):
     template_name = 'admin/groups_create.html'
@@ -173,6 +178,9 @@ class TelmedxGroupCreateView(TelmedxCreateView):
     success_url = reverse_lazy('admin-groups-list')
     back_url = reverse_lazy('admin-groups-list')
 
+    def test_func(self):
+        return self.request.user.is_superuser
+
 
 class TelmedxGroupsUpdateView(TelmedxUpdateView):
     template_name = 'admin/groups_create.html'
@@ -180,3 +188,6 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
     form_class = AdminGroupForm
     success_url = reverse_lazy('admin-groups-list')
     back_url = reverse_lazy('admin-groups-list')
+
+    def test_func(self):
+        return self.request.user.is_superuser
