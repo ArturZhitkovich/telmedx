@@ -55,7 +55,8 @@
                             <td>{{ user.is_staff }}</td>
                             {% endcomment %}
                         <td>{{ user.date_created|date:'Y-m-d' }}</td>
-                        <td><a href="#">Start Conference</a></td>
+                        <td><a href="{% url 'device-detail' user.uuid %}">
+                            Start Conference</a></td>
                     </tr>
                 {% empty %}
                     <tr>
