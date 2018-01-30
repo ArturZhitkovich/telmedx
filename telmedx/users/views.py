@@ -92,8 +92,8 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     def get_queryset(self):
         qs = super().get_queryset()
         search = self.request.GET.get('search')
-        user_type = self.request.GET.get('user_type')
-        user_group = self.request.GET.get('user_group')
+        user_type = self.request.GET.get('utype')
+        user_group = self.request.GET.get('ugroup')
         user = self.request.user
 
         if user.is_staff and not user.is_superuser:

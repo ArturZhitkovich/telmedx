@@ -17,22 +17,29 @@
             {% if current_page == 'users' %}
                 <div class="input-group">
                     <label class="sr-only" for="form_user_type">User Types</label>
-                    <select id="form_user_type" name="user_type">
-                        <option {% if request.GET.user_type == 'all' %}selected=""{% endif %}
-                            value="all">All User Types</option>
-                        <option {% if request.GET.user_type == 'mobile' %}selected=""{% endif %}
-                            value="mobile">Mobile Users</option>
-                        <option {% if request.GET.user_type == 'admin' %}selected=""{% endif %}
-                            value="admin">Admins</option>
+                    <select id="form_user_type" name="utype">
+                        <option {% if request.GET.utype == 'all' %}selected=""{% endif %}
+                                value="all">All User Types
+                        </option>
+                        <option {% if request.GET.utype == 'mobile' %}selected=""{% endif %}
+                                value="mobile">Mobile Users
+                        </option>
+                        <option {% if request.GET.utype == 'admin' %}selected=""{% endif %}
+                                value="admin">Admins
+                        </option>
                     </select>
                 </div>
                 {% if request.user.is_superuser %}
                     <div class="input-group">
                         <label class="sr-only" for="form_user_type">User Groups</label>
-                        <select id="form_user_type" name="user_group">
-                            <option selected="" value="all">All User Groups</option>
+                        <select id="form_user_type" name="ugroup">
+                            <option {% if request.GET.ugroup == 'all' %}selected=""{% endif %}
+                                    value="all">All User Groups
+                            </option>
                             {% for group in groups %}
-                                <option value="{{ group.id }}">{{ group.name }}</option>
+                                <option {% if request.GET.ugroup == group.pk %}selected=""{% endif %}
+                                        value="{{ group.id }}">{{ group.name }} {{ request.GET.ugroup }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>

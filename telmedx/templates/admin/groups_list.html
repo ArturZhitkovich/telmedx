@@ -26,8 +26,10 @@
                         </td>
                         <td>{{ group.name }}</td>
                         <td>{{ group.profile.contact }}</td>
-                        <td>{{ group.profile.mobile_users.count }}</td>
-                        <td>{{ group.profile.admin_users.count }}</td>
+                        <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=mobile">
+                            {{ group.profile.mobile_users.count }}</a></td>
+                        <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=admin">
+                            {{ group.profile.admin_users.count }}</a></td>
                     </tr>
                 {% empty %}
                     <tr>
