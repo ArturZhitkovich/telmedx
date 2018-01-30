@@ -2,6 +2,8 @@
 
 <form id="users-form" class="form" method="POST" action="{{ action }}">
     {% csrf_token %}
+    <div id="errors" class="form-group">
+    </div>
 
     {% for field in profile_form.visible_fields %}
         <div class="form-group">

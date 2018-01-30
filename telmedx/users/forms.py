@@ -38,13 +38,13 @@ class AdminUserProfileForm(UserInjectionMixin, forms.ModelForm):
         fields = ('first_name', 'last_name', 'phone')
 
 
-class AdminGroupForm(forms.ModelForm):
+class AdminGroupForm(UserInjectionMixin, forms.ModelForm):
     class Meta:
         model = Group
         fields = ('name',)
 
 
-class AdminGroupProfileForm(forms.ModelForm):
+class AdminGroupProfileForm(UserInjectionMixin, forms.ModelForm):
     class Meta:
         model = TelmedxGroupProfile
         fields = ('contact',)

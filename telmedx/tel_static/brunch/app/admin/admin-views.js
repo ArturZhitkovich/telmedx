@@ -118,8 +118,15 @@ module.exports = {
       // Bind user save events -- form saves via AJAX
       $usersForm.on('submit', (e) => {
         e.preventDefault();
-        const status = this.updateUser(e.target);
-        if (status === 'OK') $el.modal('hide');
+        const response = this.updateUser(e.target);
+
+        if (response.status === 'OK') {
+          $el.modal('hide');
+        }
+
+        if (response.errors) {
+          $usersForm.find('#errors').html(response.errors);
+        }
       });
 
       // Bind user delete event
@@ -153,12 +160,13 @@ module.exports = {
     let ret = false;
 
     $.ajax(formUrl, {
+      async: false,
       method: 'POST',
       data: formData,
       processData: false,
       contentType: false,
     }).done((response) => {
-      ret = response.status;
+      ret = response;
     });
 
     return ret;

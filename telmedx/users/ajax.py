@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
 from django.urls import reverse_lazy
-from django.core.exceptions import PermissionDenied
 from django.views.generic import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
@@ -155,10 +155,15 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
 
     def get_data(self, context):
         instance = context.get('instance')
+        form = context.get('form')
+
         serializer = TelmedxUserSerializer(instance)
-        return {
-            'instance': serializer.data
-        }
+        data = {'instance': serializer.data}
+
+        if form and form.errors:
+            data.update({'errors': str(form.errors)})
+
+        return data
 
     def get_action_url(self):
         ret = reverse_lazy('admin-users-form')
@@ -217,9 +222,9 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
             else:
                 return HttpResponseRedirect(self.success_url)
 
-        errors = self.get_form().errors
-
-        return errors
+        return self.render_to_json_response(context={
+            'form': self.form,
+        })
 
 
 class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):

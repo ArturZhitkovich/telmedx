@@ -1,13 +1,15 @@
+from http import HTTPStatus
+
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
-from django.views.generic.base import ContextMixin
 from django.views.generic import (
     ListView,
     UpdateView,
     CreateView,
     DeleteView
 )
+from django.views.generic.base import ContextMixin
 
 __all__ = (
     'BaseTelmedxMixin',
@@ -32,7 +34,13 @@ class BaseTelmedxMixin(ContextMixin):
 
 class JSONResponseMixin:
     def render_to_json_response(self, context, **kwargs):
-        return JsonResponse(self.get_data(context), **kwargs)
+        data = self.get_data(context)
+        if data.get('errors'):
+            data.update({'status_code': HTTPStatus.BAD_REQUEST.value})
+        else:
+            data.update({'status_code': HTTPStatus.OK.value})
+
+        return JsonResponse(data, **kwargs)
 
     def get_data(self, context):
         """
@@ -78,13 +86,14 @@ class TelmedxUpdateView(ProtectedTelmedxMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         # Check if user is allowed to update this user
-        ret = None
+        allowed = False
         if request.user.is_superuser:
-            ret = True
+            allowed = True
         elif request.user.is_staff:
-            ret = True
+            allowed = True
 
-        return ret
+        return allowed
+
 
 class TelmedxCreateView(ProtectedTelmedxMixin, CreateView):
     back_url = None
