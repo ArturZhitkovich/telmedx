@@ -38,8 +38,7 @@
                             </option>
                             {% for group in groups %}
                                 <option {% if request.GET.ugroup == group.pk %}selected=""{% endif %}
-                                        value="{{ group.id }}">{{ group.name }} {{ request.GET.ugroup }}
-                                </option>
+                                        value="{{ group.id }}">{{ group.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
