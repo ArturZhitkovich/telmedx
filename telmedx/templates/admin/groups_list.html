@@ -12,6 +12,8 @@
                     <th>Contact</th>
                     <th>Mobile Users</th>
                     <th>Admins</th>
+                    <th>Added</th>
+                    <th>Usage Logs</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,6 +32,8 @@
                             {{ group.profile.mobile_users.count }}</a></td>
                         <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=admin">
                             {{ group.profile.admin_users.count }}</a></td>
+                        <td>{{ group.profile.date_created|date:'Y-m-d' }}</td>
+                        <td><a href="#">Usage Logs</a></td>
                     </tr>
                 {% empty %}
                     <tr>

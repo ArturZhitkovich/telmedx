@@ -18,6 +18,8 @@ USER_TYPES_CHOICES = (
 class TelmedxGroupProfile(models.Model):
     group = models.OneToOneField(Group, related_name='profile')
     contact = models.EmailField()
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def get_users(self, user_type):
         """
