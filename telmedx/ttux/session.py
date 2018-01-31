@@ -29,6 +29,7 @@ class Session:
     captured_images = 0
     control_greenlet = None
     sequence_number = None
+    device_name = None
     viewers = {}
     LastFrame = ""  # store the most recently received frame here?
     frameNumber = 0  # frame number of the most recent frame
@@ -74,7 +75,7 @@ class Session:
 
     def log_session(self):
         if self.last_frame_timestamp - self.begin_timestamp > 2:
-            cam = MobileCam.objects.get(name=self.device_name)
+            cam = MobileCam.objects.get(user_uuid=self.device_name)
             log = sessionLog()
             log.device = cam
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
