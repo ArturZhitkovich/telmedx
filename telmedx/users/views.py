@@ -165,10 +165,53 @@ class TelmedxAdminUsersDeleteView(TelmedxDeleteView):
 class TelmedxGroupListView(TelmedxPaginatedListView):
     template_name = 'admin/groups_list.html'
     model = Group
-    ordering_options = ('name',)
+    ordering_options = (
+        'name',
+        'profile__contact',
+        'profile__mobile_users',
+        'profile__date_created',
+    )
 
     def test_func(self):
         return self.request.user.is_superuser
+
+    def _flatten_options(self, options):
+        return [item for sublist in options for item in sublist]
+
+    def get_ordering(self, **kwargs):
+        ordering = self.request.GET.get('sort', 'name_asc')
+        ordered_options = map(lambda x: ['{}_asc'.format(x), '{}_desc'.format(x)], self.ordering_options)
+        if ordering in self._flatten_options(ordered_options):
+            if '_asc' in ordering:
+                ordering = '{}'.format(ordering.split('_asc')[0])
+            elif '_desc' in ordering:
+                ordering = '-{}'.format(ordering.split('_desc')[0])
+            return ordering
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sort'] = self.get_ordering()
+        context['groups'] = Group.objects.all()
+        return context
+
+    def _get_search_filter(self, search):
+        """
+        Generate a search query with `Q` objects with `search` param
+        :param search:
+        :return:
+        """
+        name_filter = Q(name__icontains=search)
+        contact_filter = Q(profile__contact__icontains=search)
+        return Q(name_filter | contact_filter)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = self.request.GET.get('search')
+
+        if search:
+            qs = qs.filter(self._get_search_filter(search))
+
+        return qs
 
 
 class TelmedxGroupCreateView(TelmedxCreateView):

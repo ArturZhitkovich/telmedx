@@ -58,16 +58,17 @@
                         {% endif %}
                     </div>
                     <div class="panel-body">
-                        {% if records %}
-                            <table class="table table-hover" id="dev-table" style="margin-bottom: 0px;">
-                                <tbody>
+                            <table class="table table-hover" id="dev-table">
+                                <thead>
                                 <tr>
-                                    <th>Device</th>
+                                    <th>User</th>
                                     <th>Date &amp; Time</th>
                                     <th>Duration</th>
                                     <th>Frames Sent</th>
                                     <th>Images Captured</th>
                                 </tr>
+                                </thead>
+                                <tbody>
                                 {% for d in records %}
                                     <tr data-link="/usage/device/{{ d.device.name }}">
                                         <td><a href="/usage/device/{{ d.device.name }}">{{ d.device.name }}</a></td>
@@ -76,12 +77,13 @@
                                         <td>{{ d.frames }}</td>
                                         <td>{{ d.captured_images }}</td>
                                     </tr>
+                                    {% empty %}
+                                    <tr>
+                                    <td colspan="5">No records found.</td>
+                                    </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
-                        {% else %}
-                            <p>No records are present.</p>
-                        {% endif %}
                     </div>
                 </div>
             </div>

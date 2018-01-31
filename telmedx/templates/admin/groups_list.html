@@ -8,11 +8,17 @@
                 <thead>
                 <tr>
                     <th class="actions"></th>
-                    <th>Name</th>
-                    <th>Contact</th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='name' nfield='-name' label='Group Name' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='profile__contact' nfield='-profile__contact' label='Contact' %}
+                    </th>
                     <th>Mobile Users</th>
                     <th>Admins</th>
-                    <th>Added</th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='profile__date_created' nfield='-profile__date_created' label='Added' %}
+                    </th>
                     <th>Usage Logs</th>
                 </tr>
                 </thead>
