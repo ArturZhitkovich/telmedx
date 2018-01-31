@@ -18,14 +18,19 @@ class UserInjectionMixin:
 class AdminUserForm(UserInjectionMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         if self.user:
+            # Uncomment to change groups widget to a dropdown.
+            # NOTE/TODO: If uncommented, the form needs work to validate single groups
+            # User should currently only be attached to one group (though its a m2m)
+            # self.fields['groups'].widget = forms.Select()
+            # self.fields['groups'].queryset = Group.objects.all()
+            # self.fields['groups'].initial = self.instance.groups.first()
+
             if not self.user.is_superuser and self.user.is_staff:
                 self.fields['groups'].queryset = Group.objects.filter(
                     pk__in=self.user.groups.all().values_list('pk', flat=True)
                 )
-
-    # def clean_groups(self, *args, **kwargs):
-        
 
     class Meta:
         model = User

@@ -120,7 +120,7 @@ module.exports = {
         e.preventDefault();
         const response = this.updateUser(e.target);
 
-        if (response.status === 'OK') {
+        if (response.status_code === 200) {
           $el.modal('hide');
         }
 

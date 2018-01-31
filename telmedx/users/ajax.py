@@ -63,6 +63,8 @@ class ObjectAndProfileFormView(ContextMixin, JSONResponseMixin,
         return kwargs
 
     def get_form(self, **kwargs):
+        # If the form is bound (has existing, submitted data) return it,
+        # otherwise, prepopulate it with the instance in the kwargs
         if getattr(self.model_form, 'is_bound', None):
             return self.model_form
 
@@ -154,6 +156,11 @@ class UserAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
     template_name = 'admin/users_form.html'
 
     def get_data(self, context):
+        """
+        Get data for use in JSONResponse
+        :param context:
+        :return:
+        """
         instance = context.get('instance')
         form = context.get('form')
 
