@@ -57,8 +57,15 @@ module.exports = {
       // Bind user save events -- form saves via AJAX
       $groupsForm.on('submit', (e) => {
         e.preventDefault();
-        const status = this.updateUser(e.target);
-        if (status === 'OK') $el.modal('hide');
+        const response = this.updateUser(e.target);
+
+        if (response.status_code === 200) {
+          $el.modal('hide');
+        }
+
+        if (response.errors) {
+          $groupsForm.find('#errors').html(response.errors);
+        }
       });
 
       // Bind user delete event

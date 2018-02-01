@@ -245,10 +245,15 @@ class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
 
     def get_data(self, context):
         instance = context.get('instance')
+        form = context.get('form')
+
         serializer = TelmedxGroupSerializer(instance)
-        return {
-            'instance': serializer.data
-        }
+        data = {'instance': serializer.data}
+
+        if form and form.errors:
+            data.update({'errors': str(form.errors)})
+
+        return data
 
     def get_action_url(self):
         ret = reverse_lazy('admin-groups-form')
@@ -299,6 +304,6 @@ class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
             else:
                 return HttpResponseRedirect(self.success_url)
 
-        errors = self.get_form().errors
-
-        return errors
+        return self.render_to_json_response(context={
+            'form': self.form,
+        })
