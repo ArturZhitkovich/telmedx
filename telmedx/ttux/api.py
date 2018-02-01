@@ -105,9 +105,7 @@ class SnapshotAPIView(TelmedxAPIView):
         :param device_name:
         :return:
         """
-        device_name = self.device_name
-        status = None
-        print("got snapshot response from device: " + device_name)
+        device_name = self.get_device_name(request)
         image = request.read()
 
         session = Session.get(device_name)
@@ -116,17 +114,17 @@ class SnapshotAPIView(TelmedxAPIView):
             session.add_snapshot_count()
         except:
             # logger.error("failed to queue up snapshot response")
-            print("failed to queue up snapshot response from " + device_name)
+            # print("failed to queue up snapshot response from " + device_name)
             session.snapshotQ.get_nowait()  # empty the queue if full
             session.snapshotQ.put_nowait(image)
             session.add_snapshot_count()
         # END
 
-        return Response("snapshot_response")
+        return Response({'status': 'snapshot_response'})
 
 
 class FlipCameraAPIView(TelmedxAPIView):
-    def post(self, request, format=None):
+    def post(self, request, status=None, format=None):
         """
         Receive flip camera response from phone/device
         :param request:
@@ -134,17 +132,13 @@ class FlipCameraAPIView(TelmedxAPIView):
         :param status:
         :return:
         """
-        device_name = request.GET.get('device_name')
-        status = request.GET.get('status')
-        print("got camera from device" + device_name)
-
-        session = Session.get(device_name)
+        session = Session.get(request.user)
 
         try:
             session.flipcameraQ.put_nowait(status)
         except:
             # logger.error("failed to queue up snapshot response")
-            print("failed to queue up snapshot response from " + device_name)
+            print("failed to queue up snapshot response from " + request.user.uuid)
             session.flipcameraQ.get_nowait()  # empty the queue if full
             session.flipcameraQ.put_nowait(status)
 
@@ -196,3 +190,33 @@ class ReceivedImageAPIView(APIView):
         # ENDIF
         ##return HttpResponse(status="200 OK")
         return HttpResponse(command_resp)
+
+
+class SnapshotResponseAPIView(APIView):
+    def post(self, request, device_name=None):
+        """
+        receive snapshot response from the phone
+        :param request:
+        :param device_name:
+        :return:
+        """
+        # print("got snapshot response from device: " + device_name)
+        if not device_name:
+            session = Session.get(request.user)
+        else:
+            session = Session.get(device_name)
+
+        image = request.read()
+
+        try:
+            session.snapshotQ.put_nowait(image)
+            session.add_snapshot_count()
+        except:
+            # logger.error("failed to queue up snapshot response")
+            # print("failed to queue up snapshot response from " + device_name)
+            session.snapshotQ.get_nowait()  # empty the queue if full
+            session.snapshotQ.put_nowait(image)
+            session.add_snapshot_count()
+        # END
+
+        return HttpResponse({'status': 'snapshot_response'})

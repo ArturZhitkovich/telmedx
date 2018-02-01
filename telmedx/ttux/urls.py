@@ -17,7 +17,7 @@ urlpatterns = [
     # Mobile API/Endpoints
     url(r'^img/(?P<device_name>.*?)/img\d+.jpg$', api.ReceivedImageAPIView.as_view()),
     url(r'^img/img\d+.jpg$', api.ReceivedImageAPIView.as_view()),
-    url(r'^snapshotResponse/(?P<device_name>.*?)/snap\d+.jpg', views.snapshot_response),
+    url(r'^snapshotResponse/snap\d+.jpg', api.SnapshotResponseAPIView.as_view()),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
     url(r'^ping$', views.pingRequest),

@@ -80,32 +80,6 @@ def rx_image(request, device_name):
     return HttpResponse(command_resp)
 
 
-@csrf_exempt
-def snapshot_response(request, device_name):
-    """
-    receive snapshot response from the phone
-    :param request:
-    :param device_name:
-    :return:
-    """
-    print("got snapshot response from device: " + device_name)
-    image = request.read()
-
-    session = Session.get(device_name)
-    try:
-        session.snapshotQ.put_nowait(image)
-        session.add_snapshot_count()
-    except:
-        # logger.error("failed to queue up snapshot response")
-        print("failed to queue up snapshot response from " + device_name)
-        session.snapshotQ.get_nowait()  # empty the queue if full
-        session.snapshotQ.put_nowait(image)
-        session.add_snapshot_count()
-    # END
-
-    return HttpResponse("snapshot_response")
-
-
 # END
 
 @csrf_exempt
