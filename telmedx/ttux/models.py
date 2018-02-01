@@ -8,8 +8,8 @@ User = get_user_model()
 
 
 class MobileCam(models.Model):
-    groups = models.ForeignKey(Group, blank=True, null=True)
-    user = models.OneToOneField(User, blank=True, null=True, related_name='mobile_cam')
+    groups = models.ForeignKey(Group, blank=True, null=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, blank=True, null=True, related_name='mobile_cam', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)  # name of this device
     connectedState = models.BooleanField(default=False)  # is the device currently connected
     email = models.EmailField(max_length=255, default='')
@@ -26,7 +26,7 @@ class MobileCam(models.Model):
 
 
 class sessionRecord(models.Model):
-    mobile = models.ForeignKey(MobileCam)  # the mobile device used for this session
+    mobile = models.ForeignKey(MobileCam, on_delete=models.CASCADE)  # the mobile device used for this session
     sessn_date = models.DateTimeField('Session Date')  # the date/time of this session
     streamId = models.CharField(
         max_length=50)  # the session id used for this stream, video and snapshots will be stored here
@@ -34,7 +34,7 @@ class sessionRecord(models.Model):
 
 
 class sessionLog(models.Model):
-    device = models.ForeignKey(MobileCam)
+    device = models.ForeignKey(MobileCam, on_delete=models.CASCADE)
     begin_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField()
     frames = models.IntegerField()

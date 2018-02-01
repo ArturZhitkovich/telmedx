@@ -1,4 +1,6 @@
 import pytest
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase, RequestFactory
 
 from users import models, ajax
@@ -14,6 +16,19 @@ class TestObjectProfileView(TestCase):
             email='jdoe@example.com',
             password='123123'
         )
+
+    def test_urls_protected(self):
+        view_group = ajax.GroupAndProfileFormView.as_view()
+        view_user = ajax.UserAndProfileFormView.as_view()
+
+        request = self.factory.get('group/form')
+        request.user = AnonymousUser()
+
+        with pytest.raises(PermissionDenied):
+            response_group = view_group(request)
+
+        with pytest.raises(PermissionDenied):
+            response_user = view_user(request)
 
     def test_get_action_url_none(self):
         """
