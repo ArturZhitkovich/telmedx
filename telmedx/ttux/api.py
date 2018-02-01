@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import HttpResponse
 from gevent.queue import Full
@@ -18,6 +19,8 @@ __all__ = (
 
 FLASHLIGHT_STATUS_ON = 'on'
 FLASHLIGHT_STATUS_OFF = 'off'
+
+logger = logging.getLogger(__name__)
 
 
 class TelmedxAPIView(APIView):
@@ -69,7 +72,7 @@ class PingAPIView(TelmedxAPIView):
 
 
 class FlashlightAPIView(TelmedxAPIView):
-    def post(self, request, format=None):
+    def post(self, request, status=None, format=None):
         """
         Receive flashlight response from the phone/mobile device
         :param request:
@@ -78,7 +81,7 @@ class FlashlightAPIView(TelmedxAPIView):
         :return:
         """
         device_name = self.get_device_name(request)
-        status = None
+        # status = None
         print("got flashlight from device: {}, {}".format(device_name, status))
 
         session = Session.get(device_name)
@@ -87,15 +90,15 @@ class FlashlightAPIView(TelmedxAPIView):
             session.flashlightQ.put_nowait(status)
         except:
             # logger.error("failed to queue up snapshot response")
-            print("failed to queue up flashlight response from " + device_name)
+            print("failed to queue up flashlight response from " + device_name.uuid)
             session.flashlightQ.get_nowait()  # empty the queue if full
             session.flashlightQ.put_nowait(status)
 
-        return Response("flashlightResponse")
+        return Response({'status': 'flashlightResponse'})
 
 
 class SnapshotAPIView(TelmedxAPIView):
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         """
         receive snapshot response from the phone
         :param request:
@@ -123,7 +126,7 @@ class SnapshotAPIView(TelmedxAPIView):
 
 
 class FlipCameraAPIView(TelmedxAPIView):
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         """
         Receive flip camera response from phone/device
         :param request:
@@ -168,9 +171,6 @@ class ReceivedImageAPIView(APIView):
         :return:
         :rtype: HttpResponse
         """
-
-        # session = Session.get(0)
-        # print "got img for device " + device_name
         if not device_name:
             session = Session.get(request.user)
         else:
@@ -191,8 +191,7 @@ class ReceivedImageAPIView(APIView):
             command_resp = ""
 
         if command_resp != "":
-            # logger.info("sending command to the phone: %s", command_resp)
-            print("sending command " + command_resp + " to the phone: " + device_name)
+            logger.info("sending command to the phone: %s", command_resp)
 
         # ENDIF
         ##return HttpResponse(status="200 OK")

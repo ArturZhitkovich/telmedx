@@ -442,7 +442,7 @@ def toggle_flash(request, device_name):
     try:
         status = session.flashlightQ.get(block=True, timeout=20)
     except:
-        print("failed to get snapshot from phone " + device_name)
+        print("failed to get flashlight from phone " + device_name)
 
     response = JsonResponse({"status": status})
     print("returning flashlight response now")

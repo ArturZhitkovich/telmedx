@@ -12,7 +12,7 @@ from ttux.api import *
 
 urlpatterns = [
     url(r'^ping/(?P<app_version>\d+\.\d+\.\d+)', PingAPIView.as_view()),
-    url(r'^snapshot', SnapshotAPIView.as_view()),
-    url(r'^flipCamera', FlipCameraAPIView.as_view()),
-    url(r'^flashlight', FlashlightAPIView.as_view()),
+    url(r'^snapshot/snap\d+.jpg', SnapshotAPIView.as_view()),
+    url(r'^flipCamera/(?P<status>\w+)', FlipCameraAPIView.as_view()),
+    url(r'^flashlight/(?P<status>\w+)', FlashlightAPIView.as_view()),
 ]

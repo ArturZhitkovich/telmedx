@@ -75,7 +75,7 @@ class Session:
 
     def log_session(self):
         if self.last_frame_timestamp - self.begin_timestamp > 2:
-            cam = MobileCam.objects.get(user_uuid=self.device_name)
+            cam = MobileCam.objects.get(user__uuid=self.device_name)
             log = sessionLog()
             log.device = cam
             log.begin_timestamp = datetime.datetime.fromtimestamp(self.begin_timestamp)
@@ -136,13 +136,7 @@ class Session:
         if isinstance(key, User) and getattr(key, 'uuid'):
             key = str(key.uuid)
 
-        logger.info("put key: " + str(key))
-        for k in Session.REGISTRY:
-            print("   k: " + k)
-        print("Checking for key in REGISTRY")
-        if key in Session.REGISTRY:
-            print("key found: " + key)
-        else:
+        if key not in Session.REGISTRY:
             Session.REGISTRY[key] = session
             session.commandQ = gevent.queue.Queue(1)
             session.snapshotQ = gevent.queue.Queue(1)
@@ -157,10 +151,11 @@ class Session:
             session.control_greenlet = None
             session.sequence_number = None
             session.viewers = {}
-            session.LastFrame = ""  # store the most recently received frame here?
-            session.frameNumber = 0  # frame number of the most recent frame
-        # END if
+            # store the most recently received frame here?
+            session.LastFrame = ""
+            # frame number of the most recent frame
+            session.frameNumber = 0
 
-        print("REGISTRY after:")
+        logger.debug("REGISTRY after:")
         for k in Session.REGISTRY:
-            print("   k: " + k)
+            logger.debug("   k: " + k)
