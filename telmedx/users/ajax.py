@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
@@ -26,6 +26,24 @@ __all__ = (
 
 # type: TelmedxUser
 User = get_user_model()
+
+
+def user_is_staff(user):
+    """
+    :param user:
+    :type user: TelmedxUser
+    :return:
+    """
+    return user.is_staff
+
+
+def user_is_superuser(user):
+    """
+    :param user:
+    :type user: TelmedxUser
+    :return:
+    """
+    return user.is_superuser
 
 
 def ajax_post_group_form(request, **kwargs):
@@ -114,20 +132,6 @@ def ajax_delete_group_form(request, *args, **kwargs):
         obj.delete()
 
     return JsonResponse({'status': HTTPStatus.OK.value})
-
-
-@require_http_methods(['GET', 'POST', 'DELETE'])
-@login_required
-@csrf_exempt
-def ajax_group_form(request, *args, **kwargs):
-    mode = request.GET.get('mode')
-
-    if request.method == 'GET':
-        return ajax_get_group_form(request, mode=mode, **kwargs)
-    elif request.method == 'POST':
-        return ajax_post_group_form(request, mode=mode, **kwargs)
-    elif request.method == 'DELETE':
-        return ajax_delete_group_form(request, mode=mode, **kwargs)
 
 
 def ajax_get_user_form(request, mode=None, **kwargs):
@@ -219,6 +223,7 @@ def ajax_delete_user_form(request, *args, **kwargs):
 @require_http_methods(['GET', 'POST', 'DELETE'])
 @login_required
 @csrf_exempt
+@user_passes_test(user_is_staff)
 def ajax_user_form(request, *args, **kwargs):
     mode = request.GET.get('mode')
 
@@ -228,3 +233,18 @@ def ajax_user_form(request, *args, **kwargs):
         return ajax_post_user_form(request, mode=mode, **kwargs)
     elif request.method == 'DELETE':
         return ajax_delete_user_form(request, mode=mode, **kwargs)
+
+
+@user_passes_test(user_is_superuser)
+@require_http_methods(['GET', 'POST', 'DELETE'])
+@login_required
+@csrf_exempt
+def ajax_group_form(request, *args, **kwargs):
+    mode = request.GET.get('mode')
+
+    if request.method == 'GET':
+        return ajax_get_group_form(request, mode=mode, **kwargs)
+    elif request.method == 'POST':
+        return ajax_post_group_form(request, mode=mode, **kwargs)
+    elif request.method == 'DELETE':
+        return ajax_delete_group_form(request, mode=mode, **kwargs)

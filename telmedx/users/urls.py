@@ -5,7 +5,6 @@ from users.views import *
 
 urlpatterns = (
     url(r'^users$', TelmedxAdminUsersListView.as_view(), name='admin-users-list'),
-    url(r'^users/(?P<pk>\d+)/delete$', TelmedxAdminUsersDeleteView.as_view(), name='admin-users-delete'),
     url(r'^groups$', TelmedxGroupListView.as_view(), name='admin-groups-list'),
 
     # Non-AJAX
@@ -16,10 +15,9 @@ urlpatterns = (
     # url(r'^users/(?P<pk>\d+)/update$', post_admin_user_form, name='admin-users-update'),
 
     # AJAX
-    # url(r'^users/form/(?P<pk>\d+)?$', UserAndProfileFormView.as_view(), name='admin-users-form'),
-    # url(r'^users/(?P<pk>\d+)/update$', UserAndProfileFormView.as_view(), name='admin-users-update'),
     url(r'^users/form/(?P<pk>\d+)?$', ajax_user_form, name='admin-users-form'),
     url(r'^users/form/(?P<pk>\d+)?$', ajax_user_form, name='admin-users-update'),
+    url(r'^users/(?P<pk>\d+)$', ajax_user_form, name='admin-users-delete'),
     url(r'^groups/form/(?P<pk>\d+)?$', ajax_group_form, name='admin-groups-form'),
     url(r'^groups/form/(?P<pk>\d+)?$', ajax_group_form, name='admin-groups-update'),
     url(r'^groups/(?P<pk>\d+)$', ajax_group_form, name='admin-groups-delete'),
