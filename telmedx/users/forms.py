@@ -1,8 +1,7 @@
 from django import forms
-from django.utils.safestring import mark_safe
-from string import Template
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.utils.safestring import mark_safe
 
 from .models import TelmedxProfile, TelmedxGroupProfile
 
@@ -57,11 +56,21 @@ class AdminGroupProfileForm(UserInjectionMixin, forms.ModelForm):
         fields = ('contact_name', 'contact_email', 'contact_phone')
 
 
-
-class LogoWidget(forms.Widget):
+class LogoWidget(forms.FileInput):
     def render(self, name, value, attrs=None, renderer=None):
-        html = """<img src="/{}" />""".format(value)
-        return mark_safe(html)
+        output = []
+        if value and hasattr(value, 'url'):
+            output.append("""
+                <br/>
+                Currently: 
+                <a target="_blank" href="{url}">
+                    <img src={url} style="height:30px" />
+                </a>
+            """.format(url=value.url))
+
+        output.append(super().render(name, value, attrs, renderer))
+        return mark_safe(''.join(output))
+
 
 class GroupAndProfileForm(UserInjectionMixin, forms.Form):
     name = forms.CharField(max_length=80)

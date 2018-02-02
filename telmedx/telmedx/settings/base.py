@@ -39,6 +39,7 @@ INSTANCE_BRAND = 'kpnw'
 THIRD_PARTY_APPS = (
     'rest_framework',
     'widget_tweaks',
+    'easy_thumbnails',
 )
 
 TELX_APPS = (
@@ -144,9 +145,11 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
 STATIC_URL = '/static/'
 LOGIN_URL = '/login/'
+MEDIA_URL = '/media/'
 
 # Default User model
 AUTH_USER_MODEL = 'users.TelmedxUser'
@@ -169,6 +172,15 @@ REST_FRAMEWORK = {
 # Session stuff
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {
+            'size': (50, 50),
+            'crop': True,
+        }
+    }
+}
 
 LOGGING = {
     'version': 1,

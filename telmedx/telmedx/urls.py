@@ -14,7 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
+from django.conf import settings
 from django.conf.urls import url, include
+from django.views.static import serve
 
 from ttux import views as ttux_views
 from users.jwt_views import obtain_jwt_token
@@ -35,3 +37,8 @@ urlpatterns = [
     url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
     url(r'^api-token-auth/', obtain_jwt_token),
 ]
+
+if settings.DEBUG:
+    # static files (images, css, javascript, etc.)
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),]
