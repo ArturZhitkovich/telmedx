@@ -1,4 +1,6 @@
 from django import forms
+from django.utils.safestring import mark_safe
+from string import Template
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
@@ -55,11 +57,18 @@ class AdminGroupProfileForm(UserInjectionMixin, forms.ModelForm):
         fields = ('contact_name', 'contact_email', 'contact_phone')
 
 
+
+class LogoWidget(forms.Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        html = """<img src="/{}" />""".format(value)
+        return mark_safe(html)
+
 class GroupAndProfileForm(UserInjectionMixin, forms.Form):
     name = forms.CharField(max_length=80)
     contact_name = forms.CharField(label='Contact Name')
     contact_email = forms.EmailField(label='Contact Email')
     contact_phone = forms.CharField(label='Contact Phone', max_length=64)
+    logo = forms.ImageField(label='Upload Logo', widget=LogoWidget)
 
     class Meta:
-        fields = ('name', 'contact_name', 'contact_email', 'contact_phone')
+        fields = ('name', 'contact_name', 'contact_email', 'contact_phone', 'logo')

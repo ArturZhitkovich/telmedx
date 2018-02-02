@@ -174,6 +174,7 @@ module.exports = {
       // async: false,
       method: 'POST',
       data: formData,
+      enctype: 'multipart/form-data',
       processData: false,
       contentType: false,
       cache: false,

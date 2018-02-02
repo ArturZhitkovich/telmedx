@@ -32,7 +32,7 @@
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
                         </td>
-                        <td>{{ group.name }}</td>
+                        <td>{{ group.profile.logo }}{{ group.name }}</td>
                         <td>{{ group.profile.contact_email }}</td>
                         <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=mobile">
                             {{ group.profile.mobile_users.count }}</a></td>

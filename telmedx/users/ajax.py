@@ -321,7 +321,7 @@ class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
 
 
 def ajax_post_group_form(request, **kwargs):
-    form = GroupAndProfileForm(request.POST)
+    form = GroupAndProfileForm(request.POST, request.FILES)
     pk = kwargs.get('pk')
     serializer = TelmedxGroupSerializer
 
@@ -334,6 +334,7 @@ def ajax_post_group_form(request, **kwargs):
             profile.contact_name = form.data['contact_name']
             profile.contact_email = form.data['contact_email']
             profile.contact_phone = form.data['contact_phone']
+            profile.logo = form.files['logo']
             profile.save()
         else:
             group = Group()
@@ -342,6 +343,7 @@ def ajax_post_group_form(request, **kwargs):
             group.profile.contact_name = form.data['contact_name']
             group.profile.contact_email = form.data['contact_email']
             group.profile.contact_phone = form.data['contact_phone']
+            group.profile.logo = form.files['logo']
             group.profile.save()
 
         data = {
@@ -378,6 +380,7 @@ def ajax_get_group_form(request, **kwargs):
             'contact_email': group.profile.contact_email,
             'contact_name': group.profile.contact_name,
             'contact_phone': group.profile.contact_phone,
+            'logo': group.profile.logo,
             'name': group.name
         })
         action = reverse_lazy('admin-groups-update', kwargs={'pk': group.pk})

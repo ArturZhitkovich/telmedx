@@ -22,6 +22,7 @@ class TelmedxGroupProfile(models.Model):
     contact_phone = models.CharField(max_length=64)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+    logo = models.ImageField(upload_to='group_logos', blank=True, null=True)
 
     def get_users(self, user_type):
         """

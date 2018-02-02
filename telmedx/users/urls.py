@@ -24,6 +24,4 @@ urlpatterns = (
     # url(r'^groups/(?P<pk>\d+)/update$', GroupAndProfileFormView.as_view(), name='admin-groups-update'),
     # url(r'^groups/(?P<pk>\d+)/delete$', GroupAndProfileDeleteView.as_view(), name='admin-groups-delete'),
     url(r'^groups/(?P<pk>\d+)$', ajax_group_form, name='admin-groups-delete'),
-
-    url(r'^groups-list', TelmedxGroupsAJAXView.as_view()),
 )
