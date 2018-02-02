@@ -77,7 +77,13 @@ class GroupAndProfileForm(UserInjectionMixin, forms.Form):
     contact_name = forms.CharField(label='Contact Name')
     contact_email = forms.EmailField(label='Contact Email')
     contact_phone = forms.CharField(label='Contact Phone', max_length=64)
-    logo = forms.ImageField(label='Upload Logo', widget=LogoWidget)
+    logo = forms.ImageField(label='Upload Logo', widget=LogoWidget, required=False)
 
-    class Meta:
-        fields = ('name', 'contact_name', 'contact_email', 'contact_phone', 'logo')
+
+class UserAndProfileForm(UserInjectionMixin, forms.Form):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    username = forms.CharField()
+    email = forms.CharField()
+    phone = forms.CharField()
+    group = forms.ModelChoiceField(queryset=Group.objects.all())

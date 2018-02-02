@@ -1,0 +1,17 @@
+<tr id="user-item-{{ user.pk }}" class="group-item">
+    <td>
+        <a href="#" class="users-update-btn" data-toggle="modal"
+           data-target="#users-form-modal" data-gpk="{{ user.pk }}"
+           data-url="{% url 'admin-users-form' user.pk %}" data-mode="update">
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </td>
+    <td>{{ user.name }}</td>
+    <td>{{ user.profile.contact }}</td>
+    <td><a href="{% url 'admin-users-list' %}?uuser={{ user.pk }}&utype=mobile">
+        {{ user.profile.mobile_users.count }}</a></td>
+    <td><a href="{% url 'admin-users-list' %}?uuser={{ user.pk }}&utype=admin">
+        {{ user.profile.admin_users.count }}</a></td>
+    <td>{{ user.profile.date_created|date:'Y-m-d' }}</td>
+    <td><a href="#">Usage Logs</a></td>
+</tr>

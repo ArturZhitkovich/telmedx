@@ -5,6 +5,14 @@
     <div id="errors" class="form-group">
     </div>
 
+    <div class="row">
+        <div class="col-md-12">
+            {% if instance.is_staff %}
+            Group Admin
+            {% endif %}
+        </div>
+    </div>
+
     {% for field in profile_form.visible_fields %}
         <div class="form-group">
             {{ field.label_tag }}
@@ -25,16 +33,24 @@
         </div>
     {% endfor %}
 
-    <div class="form-group">
-        <a href="{{ back_url }}" class="btn btn-default">Cancel</a>
-        {% if mode == 'update' %}
-            <button class="btn btn-primary" type="submit">Save</button>
-            <button class="users-delete-btn btn btn-danger" type="button">
-                <span class="glyphicon glyphicon-trash"></span> Delete User
-            </button>
-        {% elif mode == 'create' %}
-            <button class="btn btn-primary" type="submit">Create</button>
-        {% endif %}
+    <div class="row">
+        <div class="col-md-12 form-group">
+            <div class="pull-left">
+                {% if mode == 'update' %}
+                    <button class="users-delete-btn btn btn-danger" type="button">
+                        <span class="glyphicon glyphicon-trash"></span> Delete User
+                    </button>
+                {% endif %}
+            </div>
+            <div class="pull-right">
+                <a href="{{ back_url }}" class="btn btn-default">Cancel</a>
+                {% if mode == 'update' %}
+                    <button class="btn btn-primary" type="submit">Save</button>
+                {% elif mode == 'create' %}
+                    <button class="btn btn-primary" type="submit">Create</button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </form>
 

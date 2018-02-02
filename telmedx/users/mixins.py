@@ -1,8 +1,5 @@
-from http import HTTPStatus
-
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import JsonResponse
 from django.views.generic import (
     ListView,
     UpdateView,
@@ -30,36 +27,6 @@ class BaseTelmedxMixin(ContextMixin):
         context = super().get_context_data(**kwargs)
         context['brand'] = settings.INSTANCE_BRAND
         return context
-
-
-class JSONResponseMixin:
-    def render_to_json_response(self, context, **kwargs):
-        data = self.get_data(context)
-        if data.get('errors'):
-            data.update({'status_code': HTTPStatus.BAD_REQUEST.value})
-        else:
-            data.update({'status_code': HTTPStatus.OK.value})
-
-        return JsonResponse(data, **kwargs)
-
-    def get_data(self, context):
-        """
-        Should be overridden to handle changing data to a serializable format.
-        :param context:
-        :return:
-        """
-        return context
-
-
-class ObjectAndProfileMixin:
-    object = None
-    object_profile = None
-
-    def get_object(self, **kwargs):
-        pass
-
-    def get_object_profile(self, **kwargs):
-        pass
 
 
 class ProtectedTelmedxMixin(UserPassesTestMixin, BaseTelmedxMixin):

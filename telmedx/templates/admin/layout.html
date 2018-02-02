@@ -34,6 +34,12 @@
     <div id="admin" class="container">
         <div class="row">
             <div class="col-md-12">
+                {% block admin_nav %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="row admin-content">
+            <div class="col-md-12">
                 {% block admin_content %}
                 {% endblock %}
             </div>

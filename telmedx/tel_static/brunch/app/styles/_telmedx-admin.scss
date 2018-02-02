@@ -4,7 +4,11 @@ th.actions {
 }
 
 #admin {
-  background: #fff;
+  background: transparent;
+
+  .admin-content {
+    background: #fff;
+  }
 
   // Offset for top navigation
   & > .row:first-of-type {

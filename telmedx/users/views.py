@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
-from rest_framework.generics import ListAPIView
-from django.contrib.auth import logout, get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -23,7 +21,6 @@ __all__ = (
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
-    'TelmedxGroupsAJAXView',
 )
 
 # type: TelmedxUser
@@ -170,7 +167,7 @@ class TelmedxGroupListView(TelmedxPaginatedListView):
     model = Group
     ordering_options = (
         'name',
-        'profile__contact',
+        'profile__contact_name',
         'profile__mobile_users',
         'profile__date_created',
     )
@@ -237,9 +234,3 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
 
     def test_func(self):
         return self.request.user.is_superuser
-
-
-class TelmedxGroupsAJAXView(ListAPIView):
-    queryset = Group.objects.all()
-    serializer_class = TelmedxGroupSerializer
-    

@@ -17,7 +17,7 @@
             {% if current_page == 'users' %}
                 <div class="input-group">
                     <label class="sr-only" for="form_user_type">User Types</label>
-                    <select id="form_user_type" name="utype">
+                    <select id="form_user_type" class="form-control" name="utype">
                         <option {% if request.GET.utype == 'all' %}selected=""{% endif %}
                                 value="all">All User Types
                         </option>
@@ -32,7 +32,7 @@
                 {% if request.user.is_superuser %}
                     <div class="input-group">
                         <label class="sr-only" for="form_user_type">User Groups</label>
-                        <select id="form_user_type" name="ugroup">
+                        <select id="form_user_type" class="form-control" name="ugroup">
                             <option {% if request.GET.ugroup == 'all' %}selected=""{% endif %}
                                     value="all">All User Groups
                             </option>

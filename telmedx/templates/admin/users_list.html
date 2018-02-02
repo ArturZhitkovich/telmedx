@@ -1,7 +1,10 @@
 {% extends 'admin/layout.html' %}
 
-{% block admin_content %}
+{% block admin_nav %}
     {% include 'admin/admin_nav.html' with current_page='users' data_url='admin-users-form' %}
+{% endblock %}
+
+{% block admin_content %}
     <div class="row">
         <div class="col-md-12">
 

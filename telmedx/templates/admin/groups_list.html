@@ -1,18 +1,24 @@
 {% extends 'admin/layout.html' %}
 
-{% block admin_content %}
+{% load thumbnail %}
+
+{% block admin_nav %}
     {% include 'admin/admin_nav.html' with current_page='groups' data_url='admin-groups-form' %}
+{% endblock %}
+
+{% block admin_content %}
     <div class="row">
         <div class="col-md-12">
             <table id="groups-table" class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th class="actions"></th>
+                    <th></th>
                     <th>
                         {% include 'admin/sorted_header_item.html' with field='name' nfield='-name' label='Group Name' %}
                     </th>
                     <th>
-                        {% include 'admin/sorted_header_item.html' with field='profile__contact' nfield='-profile__contact' label='Contact' %}
+                        {% include 'admin/sorted_header_item.html' with field='profile__contact_name' nfield='-profile__contact_name' label='Contact' %}
                     </th>
                     <th>Mobile Users</th>
                     <th>Admins</th>
@@ -32,8 +38,13 @@
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
                         </td>
-                        <td>{{ group.profile.logo }}{{ group.name }}</td>
-                        <td>{{ group.profile.contact_email }}</td>
+                        <td>
+                            {% if group.profile.logo %}
+                                <img src="{{ group.profile.logo|thumbnail_url:'avatar' }}"/>
+                            {% endif %}
+                        </td>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.profile.contact_name }}</td>
                         <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=mobile">
                             {{ group.profile.mobile_users.count }}</a></td>
                         <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=admin">
