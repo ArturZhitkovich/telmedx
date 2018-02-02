@@ -130,15 +130,15 @@ module.exports = {
       // Bind user save events -- form saves via AJAX
       $usersForm.on('submit', (e) => {
         e.preventDefault();
-        const response = this.updateUser(e.target);
-
-        if (response.status_code === 200) {
-          $el.modal('hide');
-        }
-
-        if (response.errors) {
-          $usersForm.find('#errors').html(response.errors);
-        }
+        const promise = this.updateUser(e.target);
+        promise.then((response) => {
+          if (response.status_code === 200) {
+            $el.modal('hide');
+          }
+          if (response.errors) {
+            $usersForm.find('#errors').html(response.errors);
+          }
+        });
       });
 
       // Bind user delete event

@@ -185,6 +185,9 @@ def ajax_post_user_form(request, **kwargs):
             user = User.objects.get(pk=pk)
             user.email = form.data['email']
             user.username = form.data['username']
+            user.groups.clear()
+            if 'group' in form.data:
+                user.groups.add(form.data['group'])
             user.save()
             profile = user.profile
             profile.first_name = form.data['first_name']
@@ -196,6 +199,8 @@ def ajax_post_user_form(request, **kwargs):
             user.email = form.data['email']
             user.username = form.data['username']
             user.save()
+            if 'group' in form.data:
+                user.groups.add(form.data['group'])
             user.profile.first_name = form.data['first_name']
             user.profile.last_name = form.data['last_name']
             user.profile.phone = form.data['phone']
