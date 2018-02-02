@@ -1,10 +1,17 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template.context_processors import csrf
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.views.generic import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
@@ -13,6 +20,7 @@ from .forms import (
     AdminUserProfileForm,
     AdminGroupForm,
     AdminGroupProfileForm,
+    GroupAndProfileForm,
 )
 from .mixins import (
     ProtectedTelmedxMixin,
@@ -25,6 +33,9 @@ from .serializers import TelmedxUserSerializer, TelmedxGroupSerializer
 __all__ = (
     'UserAndProfileFormView',
     'GroupAndProfileFormView',
+    'ajax_group_form',
+    'ajax_get_group_form',
+    'ajax_post_group_form',
 )
 
 # type: TelmedxUser
@@ -307,3 +318,98 @@ class GroupAndProfileFormView(ProtectedTelmedxMixin, ObjectAndProfileFormView):
         return self.render_to_json_response(context={
             'form': self.form,
         })
+
+
+def ajax_post_group_form(request, **kwargs):
+    form = GroupAndProfileForm(request.POST)
+    pk = kwargs.get('pk')
+    serializer = TelmedxGroupSerializer
+
+    if form.is_valid():
+        if pk:
+            group = Group.objects.get(pk=pk)
+            group.name = form.data['name']
+            group.save()
+            profile = group.profile
+            profile.contact_name = form.data['contact_name']
+            profile.contact_email = form.data['contact_email']
+            profile.contact_phone = form.data['contact_phone']
+            profile.save()
+        else:
+            group = Group()
+            group.name = form.data['name']
+            group.save()
+            group.profile.contact_name = form.data['contact_name']
+            group.profile.contact_email = form.data['contact_email']
+            group.profile.contact_phone = form.data['contact_phone']
+            group.profile.save()
+
+        data = {
+            'status_code': HTTPStatus.OK.value,
+            'instance': serializer(instance=group).data,
+            'html': render_to_string('admin/single_group_item.html',
+                                     context={'group': group})
+        }
+
+        return JsonResponse(data=data)
+
+
+def ajax_get_group_form(request, **kwargs):
+    template_name = 'admin/gp_form.html'
+    form = GroupAndProfileForm
+    mode = kwargs.get('mode')
+    action = reverse_lazy('admin-groups-update')
+    group = None
+
+    if mode == 'update':
+        pk = kwargs.get('pk')
+        if pk:
+            group = Group.objects.get(pk=pk)
+
+        if group and not getattr(group, 'profile', None):
+            # For a profile to be saved
+            profile = TelmedxGroupProfile()
+            profile.group = group.pk
+            profile.save()
+            # Re-fetch user. Previous user won't have profile relation
+            # group = self.get_object(pk=user.pk)
+
+        form = form(initial={
+            'contact_email': group.profile.contact_email,
+            'contact_name': group.profile.contact_name,
+            'contact_phone': group.profile.contact_phone,
+            'name': group.name
+        })
+        action = reverse_lazy('admin-groups-update', kwargs={'pk': group.pk})
+
+    context = {
+        'mode': mode,
+        'status_code': HTTPStatus.OK.value,
+        'form': form,
+        'action': action,
+    }
+
+    return render_to_response(template_name=template_name, context=context)
+
+
+def ajax_delete_group_form(request, *args, **kwargs):
+    pk = kwargs.get('pk')
+    if pk:
+        obj = Group.objects.get(pk=pk)
+        obj.delete()
+
+    return JsonResponse({'status': HTTPStatus.OK.value})
+
+
+@require_http_methods(['GET', 'POST', 'DELETE'])
+@login_required
+@csrf_exempt
+def ajax_group_form(request, *args, **kwargs):
+    mode = request.GET.get('mode')
+
+    if request.method == 'GET':
+        return ajax_get_group_form(request, mode=mode, **kwargs)
+    elif request.method == 'POST':
+        return ajax_post_group_form(request, mode=mode, **kwargs)
+    elif request.method == 'DELETE':
+        return ajax_delete_group_form(request, mode=mode, **kwargs)

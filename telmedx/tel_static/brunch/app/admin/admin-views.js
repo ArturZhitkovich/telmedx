@@ -50,22 +50,27 @@ module.exports = {
       $el.find('.modal-body').html(response);
       const $groupsForm = $el.find('#groups-form');
 
-      $el.find('button.close.users-form-close').click((e) => {
+      $el.find('button.close.groups-form-close').click((e) => {
         $el.modal('hide');
       });
 
       // Bind user save events -- form saves via AJAX
       $groupsForm.on('submit', (e) => {
         e.preventDefault();
-        const response = this.updateUser(e.target);
+        const promise = this.updateUser(e.target);
+        promise.then((response) => {
+          if (response.status_code === 200) {
+            $el.modal('hide');
+          }
 
-        if (response.status_code === 200) {
-          $el.modal('hide');
-        }
+          if (mode === 'create') {
+            $('#groups-table').find('tbody').append(response.html);
+          }
 
-        if (response.errors) {
-          $groupsForm.find('#errors').html(response.errors);
-        }
+          if (response.errors) {
+            $groupsForm.find('#errors').html(response.errors);
+          }
+        });
       });
 
       // Bind user delete event
@@ -75,7 +80,7 @@ module.exports = {
         $groupsDeleteForm.modal('show');
 
         $groupsDeleteForm.find('button.confirm-delete-btn').click((e) => {
-          this.deleteUser(uid);
+          this.deleteGroup(gid);
         });
 
         // Rebind close buttons since this is going to be a nested modal.
@@ -164,28 +169,24 @@ module.exports = {
     const $form = $(form);
     const formData = new FormData(form);
     const formUrl = $form.attr('action');
-    let ret = false;
 
-    $.ajax(formUrl, {
-      async: false,
+    return Promise.resolve($.ajax(formUrl, {
+      // async: false,
       method: 'POST',
       data: formData,
       processData: false,
       contentType: false,
-    }).done((response) => {
-      ret = response;
-    });
-
-    return ret;
+      cache: false,
+    }));
   },
 
   deleteUser(uid) {
-    $.ajax(`/admin/users/${uid}/delete`, {
+    return Promise.resolve($.ajax(`/admin/users/${uid}/delete`, {
       method: 'POST',
       headers: {
         'X-CSRFToken': this._getCsrfCookie(),
       }
-    }).done((response) => {
+    })).then((response) => {
       if (response.status === 'OK') {
         const $usersDeleteModal = $('#users-delete-form-modal');
         const $usersUpdateModal = $('#users-form-modal');
@@ -193,6 +194,24 @@ module.exports = {
         $usersUpdateModal.modal('hide');
 
         $(`#user-item-${uid}`).remove();
+      }
+    });
+  },
+
+  deleteGroup(gid) {
+    $.ajax(`/admin/groups/${gid}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRFToken': this._getCsrfCookie(),
+      }
+    }).done((response) => {
+      if (response.status === 200) {
+        const $groupsDeleteModal = $('#groups-delete-form-modal');
+        const $groupsUpdateModal = $('#groups-form-modal');
+        $groupsDeleteModal.modal('hide');
+        $groupsUpdateModal.modal('hide');
+
+        $(`#group-item-${gid}`).remove();
       }
     });
   },
@@ -213,10 +232,10 @@ module.exports = {
       const $currentTarget = $(e.currentTarget);
       const modalId = $currentTarget.data('target');
       const formUrl = $currentTarget.data('url');
-      const uid = $currentTarget.data('upk');
+      const gid = $currentTarget.data('gpk');
       const mode = $currentTarget.data('mode');
 
-      this.showGroupUpdateModal($(modalId), formUrl, uid, mode);
+      this.showGroupUpdateModal($(modalId), formUrl, gid, mode);
     });
   },
 };

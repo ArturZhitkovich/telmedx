@@ -17,7 +17,9 @@ USER_TYPES_CHOICES = (
 
 class TelmedxGroupProfile(models.Model):
     group = models.OneToOneField(Group, related_name='profile', on_delete=models.CASCADE)
-    contact = models.EmailField()
+    contact_name = models.CharField(max_length=128)
+    contact_email = models.EmailField()
+    contact_phone = models.CharField(max_length=64)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 

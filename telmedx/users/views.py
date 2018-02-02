@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from rest_framework.generics import ListAPIView
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
@@ -11,6 +12,7 @@ from django.urls import reverse_lazy
 from .forms import AdminUserForm, AdminGroupForm, AdminUserProfileForm
 from .mixins import *
 from .models import TelmedxUser
+from .serializers import *
 
 __all__ = (
     'TelmedxLoginView',
@@ -21,6 +23,7 @@ __all__ = (
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
+    'TelmedxGroupsAJAXView',
 )
 
 # type: TelmedxUser
@@ -234,3 +237,9 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
 
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class TelmedxGroupsAJAXView(ListAPIView):
+    queryset = Group.objects.all()
+    serializer_class = TelmedxGroupSerializer
+    

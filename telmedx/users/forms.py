@@ -52,4 +52,14 @@ class AdminGroupForm(UserInjectionMixin, forms.ModelForm):
 class AdminGroupProfileForm(UserInjectionMixin, forms.ModelForm):
     class Meta:
         model = TelmedxGroupProfile
-        fields = ('contact',)
+        fields = ('contact_name', 'contact_email', 'contact_phone')
+
+
+class GroupAndProfileForm(UserInjectionMixin, forms.Form):
+    name = forms.CharField(max_length=80)
+    contact_name = forms.CharField(label='Contact Name')
+    contact_email = forms.EmailField(label='Contact Email')
+    contact_phone = forms.CharField(label='Contact Phone', max_length=64)
+
+    class Meta:
+        fields = ('name', 'contact_name', 'contact_email', 'contact_phone')

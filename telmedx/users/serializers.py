@@ -16,8 +16,10 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
 
 
 class TelmedxGroupSerializer(serializers.ModelSerializer):
-    contact = serializers.EmailField(source='profile.contact')
+    contact_name = serializers.EmailField(source='profile.contact_name')
+    contact_email = serializers.EmailField(source='profile.contact_email')
+    contact_phone = serializers.EmailField(source='profile.contact_phone')
 
     class Meta:
         model = Group
-        fields = ('id', 'name', 'contact')
+        fields = ('id', 'name', 'contact_email', 'contact_name', 'contact_phone')
