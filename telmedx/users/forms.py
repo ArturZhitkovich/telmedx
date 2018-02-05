@@ -73,7 +73,7 @@ class LogoWidget(forms.FileInput):
 
 
 class GroupAndProfileForm(UserInjectionMixin, forms.Form):
-    name = forms.CharField(max_length=80)
+    name = forms.CharField(max_length=80, label='Group Name')
     contact_name = forms.CharField(label='Contact Name')
     contact_email = forms.EmailField(label='Contact Email')
     contact_phone = forms.CharField(label='Contact Phone', max_length=64)

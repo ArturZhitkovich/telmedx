@@ -9,10 +9,23 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='profile.first_name')
     last_name = serializers.CharField(source='profile.last_name')
     phone = serializers.CharField(source='profile.phone')
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone')
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username')
+        instance.email = validated_data.get('email')
+        instance.save()
+        profile_data = validated_data.get('profile')
+        instance.profile.first_name = profile_data.get('first_name')
+        instance.profile.last_name = profile_data.get('last_name')
+        instance.profile.phone = profile_data.get('phone')
+        instance.save()
+
+        return instance
 
 
 class TelmedxGroupSerializer(serializers.ModelSerializer):

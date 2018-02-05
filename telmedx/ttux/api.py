@@ -3,11 +3,10 @@ import logging
 
 from django.http import HttpResponse
 from gevent.queue import Full
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from common.mixins import TelmedxAPIView
 from .session import Session
 
 __all__ = (
@@ -23,13 +22,7 @@ FLASHLIGHT_STATUS_OFF = 'off'
 logger = logging.getLogger(__name__)
 
 
-class TelmedxAPIView(APIView):
-    authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    device_name = None
 
-    def get_device_name(self, request):
-        return request.user
 
 
 class PingAPIView(TelmedxAPIView):
