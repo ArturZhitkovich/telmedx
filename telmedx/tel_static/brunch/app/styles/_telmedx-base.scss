@@ -11,22 +11,7 @@ html, body {
   margin: 0 auto -20px;
   /* Pad bottom by footer height */
   padding: 0 0 20px;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
-
-#wrap.telmedx {
-  background: url('/static/img/telmedx/bg.jpg') no-repeat center center fixed;
-}
-
-#wrap.mahiri {
-  background: url('/static/img/mahiri/bg.jpg') no-repeat center center fixed;
-}
-
-#wrap.kpnw {
-  background: url('/static/img/kpnw/bg.jpg') no-repeat center center fixed;
+  background: rgba(242, 242, 242, 1);
 }
 
 /* Set the fixed height of the footer here */

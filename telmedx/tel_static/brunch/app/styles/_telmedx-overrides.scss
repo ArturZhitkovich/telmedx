@@ -1,0 +1,87 @@
+$telmedx-orange: #FF9933;
+$telmedx-orange-hover: #FF3300;
+$telmedx-orange-hover-lt: #FF6600;
+
+.navbar {
+  ul.nav {
+    li.active {
+      background: transparent;
+      a {
+      }
+      span.link {
+        color: $telmedx-orange;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.navbar-header {
+  .navbar-brand {
+    color: #666;
+    font-size: 1.5em;
+  }
+}
+
+a {
+  color: $telmedx-orange;
+  &:hover, &:active {
+    color: $telmedx-orange-hover;
+  }
+}
+
+#admin nav.navbar {
+  background: transparent;
+
+  button {
+    &.btn-default {
+      color: $telmedx-orange;
+      border: 1px solid $telmedx-orange;
+      background: transparent;
+    }
+
+    &:hover {
+      color: #fff;
+      background: $telmedx-orange-hover;
+    }
+
+    &:hover[disabled="disabled"] {
+      color: $telmedx-orange;
+      background: transparent;
+    }
+  }
+}
+
+#users-form, #groups-form {
+  // Delete button
+  button.btn-link {
+    color: #999;
+  }
+
+  // Cancel button
+  a.btn-default {
+    border: none;
+    background: #d7d7d7;
+    color: #fff;
+
+    &:hover {
+      background: #999;
+    }
+  }
+
+  // Submit button
+  button.btn-primary {
+    color: #fff;
+    background: $telmedx-orange;
+    border: 1px solid $telmedx-orange;
+
+    &:hover {
+      color: #fff;
+      background: $telmedx-orange-hover-lt;
+    }
+
+    &:hover[disabled="disabled"] {
+      background: $telmedx-orange;
+    }
+  }
+}

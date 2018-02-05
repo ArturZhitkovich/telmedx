@@ -37,17 +37,17 @@
         <div class="col-md-12 form-group">
             <div class="pull-left">
                 {% if mode == 'update' %}
-                    <button class="users-delete-btn btn btn-danger" type="button">
+                    <button class="users-delete-btn btn btn-lg btn-link" type="button">
                         <span class="glyphicon glyphicon-trash"></span> Delete User
                     </button>
                 {% endif %}
             </div>
             <div class="pull-right">
-                <a href="{{ back_url }}" class="btn btn-default">Cancel</a>
+                <a href="{{ back_url }}" class="btn btn-lg btn-default">Cancel</a>
                 {% if mode == 'update' %}
-                    <button class="btn btn-primary" type="submit">Save</button>
+                    <button class="btn btn-lg btn-primary" type="submit">Save</button>
                 {% elif mode == 'create' %}
-                    <button class="btn btn-primary" type="submit">Create</button>
+                    <button class="btn btn-lg btn-primary" type="submit">Create</button>
                 {% endif %}
             </div>
         </div>
