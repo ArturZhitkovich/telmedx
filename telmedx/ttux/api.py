@@ -22,9 +22,6 @@ FLASHLIGHT_STATUS_OFF = 'off'
 logger = logging.getLogger(__name__)
 
 
-
-
-
 class PingAPIView(TelmedxAPIView):
     """
     API view that responds with the functionality that's available for the

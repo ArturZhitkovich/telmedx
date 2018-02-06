@@ -19,8 +19,8 @@ class UserUpdateAPIView(UpdateAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
+    def put(self, request, *args, **kwargs):
         # User should only be able to edit themselves
-        if not self.request.user:
+        if not self.request.user.uuid == self.get_object().uuid:
             raise PermissionDenied('Permission denied')
         return self.queryset
