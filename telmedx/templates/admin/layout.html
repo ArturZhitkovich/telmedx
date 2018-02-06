@@ -20,12 +20,11 @@
             {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">
-                <span class="link">{{ brand }} - {{ user }}</span>
-            </a></li>
-            <li><a href="{% url 'user-logout' %}">
-                <span class="link">Log Out</span>
-            </a></li>
+            <li>
+                <a href="{% url 'user-logout' %}">
+                    <span class="link">Log Out</span>
+                </a>
+            </li>
         </ul>
     </div>
 {% endblock nav %}
