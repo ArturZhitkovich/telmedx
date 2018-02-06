@@ -1,0 +1,60 @@
+{% extends 'admin/layout.html' %}
+
+{% block admin_nav %}
+    <a href="{% url 'admin-groups-list' %}">
+        <small><span class="glyphicon glyphicon-chevron-left"></span> Back to groups</small>
+    </a>
+    <nav class="navbar admin-navbar row">
+        <div class="col-md-12">
+            <div class="pull-left top-title">
+                <h2 style="padding-right: 12px;">Usage for: {{ group.name }}</h2>
+                <button class="export-btn btn btn-default btn-sm" type="button" data-toggle="modal" data-mode="create">
+                    <span class="glyphicon glyphicon-plus"></span> Export logs
+                </button>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block admin_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='device__user' nfield='-device__user' label='User' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='begin_timestamp' nfield='-begin_timestamp' label='Date & Time' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='q_duration' nfield='-q_duration' label='Duration' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='frames' nfield='-frames' label='Frames Sent' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='captured_images' nfield='-captured_images' label='Images Captured' %}
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in object_list %}
+                    <tr>
+                        <td>{{ obj.device.user }}</td>
+                        <td>{{ obj.begin_timestamp|date:'Y-m-d H:i:s' }}</td>
+                        <td>{{ obj.duration }}</td>
+                        <td>{{ obj.frames }}</td>
+                        <td>{{ obj.captured_images }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">No usage logs found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
