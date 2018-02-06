@@ -48,7 +48,15 @@ class sessionLog(models.Model):
 
     @property
     def duration(self):
-        return self.end_timestamp - self.begin_timestamp
+        seconds = (self.end_timestamp - self.begin_timestamp).total_seconds()
+        if seconds < 60:
+            ret = '{} seconds'.format(round(seconds, 2))
+        else:
+            minutes = round((seconds // 60.0), 2)
+            plural = 's' if minutes > 1.0 else ''
+            ret = '{} minute{}'.format(minutes, plural)
+
+        return ret
 
     @property
     def begin(self):
