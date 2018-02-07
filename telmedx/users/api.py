@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import UpdateAPIView, RetrieveAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -15,7 +16,7 @@ __all__ = (
 )
 
 
-class UserProfileAPIView(RetrieveAPIView):
+class UserProfileAPIView(UpdateModelMixin, RetrieveAPIView):
     queryset = User.objects.all()
     authentication_classes = (JSONWebTokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -25,6 +26,9 @@ class UserProfileAPIView(RetrieveAPIView):
         # Just return the current user
         queryset = self.filter_queryset(self.get_queryset())
         return get_object_or_404(queryset, pk=self.request.user.pk)
+
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class UserUpdateAPIView(UpdateAPIView):
