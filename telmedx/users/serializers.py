@@ -10,7 +10,7 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='profile.last_name')
     phone = serializers.CharField(source='profile.phone')
     email = serializers.EmailField(required=True)
-    group = serializers.CharField(source='groups.first.name')
+    group = serializers.CharField(source='groups.first.name', required=False, allow_blank=True)
 
     class Meta:
         model = User
