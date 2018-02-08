@@ -85,3 +85,44 @@ a {
     }
   }
 }
+
+.user-login-container {
+  border-radius: 5px;
+
+  background: #fff;
+  height: 400px;
+  padding: 25px 50px;
+
+  .title {
+    text-align: center;
+    font-size: 24px;
+  }
+
+  .user-login-form {
+
+    label {
+      font-weight: normal;
+      font-size: 16px;
+    }
+
+    input {
+      height: 46px;
+      margin-bottom: 30px;
+    }
+
+    button.btn-primary {
+      color: #fff;
+      background: $telmedx-orange;
+      border: 1px solid $telmedx-orange;
+
+      &:hover {
+        color: #fff;
+        opacity: 0.8;
+      }
+
+      &:hover[disabled="disabled"] {
+        background: $telmedx-orange;
+      }
+    }
+  }
+}

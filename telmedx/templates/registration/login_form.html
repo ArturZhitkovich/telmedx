@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<form accept-charset="UTF-8" method="POST" action="" role="form">
+<form class="user-login-form" accept-charset="UTF-8" method="POST" action="" role="form">
     {% csrf_token %}
 
     {% if form.errors and not form.non_field_errors %}
@@ -33,7 +33,7 @@
     {% endfor %}
 
     <div class="form-group">
-        <input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" value="Login">Login</button>
     </div>
 
     {% comment %}
