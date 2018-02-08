@@ -35,9 +35,7 @@ html, body {
   background-color: #fff;
 
   &.shadow {
-    -moz-box-shadow: 0 3px 15px #767575;
-    -webkit-box-shadow: 0 3px 15px #767575;
-    box-shadow: 0 3px 15px #767575;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
   }
 
   .icon-bar {
@@ -120,7 +118,6 @@ img.snapshot {
   pointer-events: none;
   background: none !important;
 }
-
 
 /* SNAPSHOTS */
 #snapText {
