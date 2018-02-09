@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -168,7 +169,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
 
+    'JWT_PAYLOAD_HANDLER': 'users.utils.jwt_payload_handler',
     'JWT_ALLOW_REFRESH': True,
+    # Amount of time for a single JWT token to expire
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    # Amount of time for a user to be able to refresh tokens
+    # before logging in again
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),
 }
 
 # Session stuff
