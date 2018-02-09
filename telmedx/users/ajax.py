@@ -158,10 +158,10 @@ def ajax_get_user_form(request, mode=None, **kwargs):
             'first_name': user.profile.first_name,
             'last_name': user.profile.last_name,
             'email': user.email,
-            'username': user.username,
             'phone': user.profile.phone,
             'group': user.groups.first(),
-        })
+            'is_group_admin': user.is_staff,
+        }, user=request.user)
         action = reverse_lazy('admin-users-update', kwargs={'pk': user.pk})
         context.update({'instance': user})
 
@@ -184,7 +184,6 @@ def ajax_post_user_form(request, **kwargs):
         if pk:
             user = User.objects.get(pk=pk)
             user.email = form.data['email']
-            user.username = form.data['username']
             user.groups.clear()
             if 'group' in form.data:
                 user.groups.add(form.data['group'])
@@ -197,7 +196,6 @@ def ajax_post_user_form(request, **kwargs):
         else:
             user = User()
             user.email = form.data['email']
-            user.username = form.data['username']
             user.save()
             if 'group' in form.data:
                 user.groups.add(form.data['group'])

@@ -30,12 +30,13 @@ urlpatterns = [
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
-    url(r'^devices/?$', ttux_views.device_list, name='device-home'),
+
+    # DEPRECATED
+    # url(r'^devices/?$', ttux_views.device_list, name='device-home'),
+    # url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
+
     url(r'^device/(?P<user_uuid>.*?)/?$', ttux_views.device_detail, name='device-detail'),
-
     url(r'^api/', include(api_patterns)),
-    url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
-
     url(r'^api-token-auth/', obtain_jwt_token),
     url(r'^api-token-refresh/', refresh_jwt_token),
 ]

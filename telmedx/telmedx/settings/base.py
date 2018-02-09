@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'widget_tweaks',
     'easy_thumbnails',
+    'crispy_forms',
 )
 
 TELX_APPS = (
@@ -147,6 +148,8 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 STATIC_URL = '/static/'
 LOGIN_URL = '/login/'

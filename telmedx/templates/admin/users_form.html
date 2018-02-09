@@ -1,37 +1,12 @@
 {% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
 <form id="users-form" class="form" method="POST" action="{{ action }}">
     {% csrf_token %}
     <div id="errors" class="form-group">
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            {% if instance.is_staff %}
-            Group Admin
-            {% endif %}
-        </div>
-    </div>
-
-    {% for field in profile_form.visible_fields %}
-        <div class="form-group">
-            {{ field.label_tag }}
-            {{ field|add_class:'form-control' }}
-            {% for error in field.errors %}
-                <span class="help-block">{{ error }}</span>
-            {% endfor %}
-        </div>
-    {% endfor %}
-
-    {% for field in form.visible_fields %}
-        <div class="form-group">
-            {{ field.label_tag }}
-            {{ field|add_class:'form-control' }}
-            {% for error in field.errors %}
-                <span class="help-block">{{ error }}</span>
-            {% endfor %}
-        </div>
-    {% endfor %}
+    {{ form|crispy }}
 
     <div class="row">
         <div class="col-md-12 form-group">

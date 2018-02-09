@@ -61,11 +61,12 @@ class LogoWidget(forms.FileInput):
         output = []
         if value and hasattr(value, 'url'):
             output.append("""
-                <br/>
+                <div class="logo-display">
                 Currently: 
                 <a target="_blank" href="{url}">
                     <img src={url} style="height:30px" />
                 </a>
+                </div>
             """.format(url=value.url))
 
         output.append(super().render(name, value, attrs, renderer))
@@ -83,7 +84,14 @@ class GroupAndProfileForm(UserInjectionMixin, forms.Form):
 class UserAndProfileForm(UserInjectionMixin, forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
-    username = forms.CharField()
     email = forms.CharField()
     phone = forms.CharField()
     group = forms.ModelChoiceField(queryset=Group.objects.all())
+    is_group_admin = forms.BooleanField(label='Is group admin', required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Only superusers can set if a user is a group admin?
+        if self.user and not self.user.is_superuser:
+            del self.fields['group_admin']
