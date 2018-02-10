@@ -2,26 +2,24 @@
 {% block metatitle %}telmedx | Video Feed:  {{ dev.name }}{% endblock %}
 {% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
 {% block nav %}
-    <ul class="nav collapse navbar-collapse navbar-nav">
-        <li>
-            <a style="padding-bottom: 5px; padding-top: 10px;" href="{% url 'admin-users-list' %}">
-                <img style="height: 30px;" src="/static/img/controls/arrowhead7.png">
-                &nbsp;
-                <img style="height: 45px;" src="/static/img/controls/responsive.png">
+    <ul class="nav navbar-nav">
+        <li class="{% if '/users' in request.path %}active{% endif %}">
+            <a href="{% url 'admin-users-list' %}">
+                <span class="link">Users</span>
             </a>
         </li>
+        {% if request.user.is_superuser %}
+            <li class="{% if '/groups' in request.path %}active{% endif %}">
+                <a href="{% url 'admin-groups-list' %}">
+                    <span class="link">Groups</span>
+                </a>
+            </li>
+        {% endif %}
     </ul>
-    <ul class="nav collapse navbar-collapse navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right">
         <li>
-            <a href="#">
-                <span class="partition">
-                    {{ brand }} - {{ user }}
-                </span>
-            </a>
-        </li>
-        <li>
-            <a style="padding-top: 20px; padding-bottom: 11px;" href="{% url 'user-logout' %}">
-                <span style="font-size: 25px; color: black;" class="glyphicon glyphicon-off"></span>
+            <a href="{% url 'user-logout' %}">
+                <span class="link">Log Out</span>
             </a>
         </li>
     </ul>
@@ -30,108 +28,120 @@
 {% block content %}
     <div id="device-video-page" class="container" style="width: 100%;">
         <div id="first-row" class="row">
-                <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
-                    <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
-                        <h3 class="panel-title" style="">
-                            <div style="float: left">{{ dev.name }} &nbsp;</div>
+            <div class="col-md-12">
+                <a href="{% url 'admin-users-list' %}">
+                    <span class="glyphicon-chevron-left glyphicon"></span> Back to all users
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
+                <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
+                    <h3 class="panel-title" style="">
+                        <div style="float: left">{{ dev.name }} &nbsp;</div>
 
-                            <div style="float: right" id="rotate-buttons">
+                        <div style="float: right" id="rotate-buttons">
 
-                                <button id="rotate-left" class="btn btn-default" style="padding: 3px;">
-                                    <img style="height: 25px;" src="/static/img/controls/rotating1.png">
+                            <button id="rotate-left" class="btn btn-default" style="padding: 3px;">
+                                <img style="height: 25px;" src="/static/img/controls/rotating1.png">
+                            </button>
+                            <button id="rotate-right" class="btn btn-default" style="padding: 3px;">
+                                <img style="height: 25px;" src="/static/img/controls/rotating1-opp.png">
+                            </button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </h3>
+                </div>
+                <div class="stream-container" style="resize: both;">
+                    <div id="stream-container-child" class="panel-body">
+                        <div id="stream">
+                            <div class="canvas-wrapper">
+                                <canvas width="360" height="480" id="video-canvas"></canvas>
+                                '
+                                <div style="margin: 0px;" id="stream_status">{{ OTUK }}: Waiting...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row ui-widget-content" style="resize: both;">
+                        <div class="text-center" style="margin: 0 auto; margin-top: -2%;">
+                            <div class="btn-group">
+                                <button id="camera-toggle" type="button" class="btn btn-default" style="padding: 3px;">
+                                    <div id="camera-toggle-icon">
+                                        <img style="height: 50px;" src="/static/img/controls/switch19.png">
+                                    </div>
                                 </button>
-                                <button id="rotate-right" class="btn btn-default" style="padding: 3px;">
-                                    <img style="height: 25px;" src="/static/img/controls/rotating1-opp.png">
+                                <button type="button" id="capture-button" class="btn btn-default" style="padding: 3px;">
+                                    <img style="height: 50px; cursor:pointer;"
+                                         src="/static/img/controls/Capture_Button.png"/>
+                                </button>
+                                <button id="flash-toggle" type="button" class="btn btn-default"
+                                        style="padding: 3px; width: auto !important;">
+                                    <img style="height: 50px;" src="/static/img/controls/open103.png">
                                 </button>
                             </div>
-                            <div class="clearfix"></div>
-                        </h3>
-                    </div>
-                    <div class="stream-container" style="resize: both;">
-                        <div id="stream-container-child" class="panel-body">
-                            <div id="stream">
-                                <div class="canvas-wrapper">
-                                    <canvas width="360" height="480" id="video-canvas"></canvas>
-                                    '
-                                    <div style="margin: 0px;" id="stream_status">{{ OTUK }}: Waiting...</div>
-                                </div>
-                            </div>
                         </div>
-                        <div class="row ui-widget-content" style="resize: both;">
-                                <div class="text-center" style="margin: 0 auto; margin-top: -2%;">
-                                    <div class="btn-group">
-                                        <button id="camera-toggle" type="button" class="btn btn-default" style="padding: 3px;">
-                                            <div id="camera-toggle-icon">
-                                                <img style="height: 50px;" src="/static/img/controls/switch19.png">
-                                            </div>
-                                        </button>
-                                        <button type="button" id="capture-button" class="btn btn-default" style="padding: 3px;">
-                                            <img style="height: 50px; cursor:pointer;" src="/static/img/controls/Capture_Button.png"/>
-                                        </button>
-                                        <button id="flash-toggle" type="button" class="btn btn-default" style="padding: 3px; width: auto !important;">
-                                            <img style="height: 50px;" src="/static/img/controls/open103.png">
-                                        </button>
-                                    </div>   
-                                </div>
 
-                        </div>
                     </div>
                 </div>
-                <div id="first-middle" class="">
-                    <div id="snapshot-panel" class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><img style="height: 30px;" src="/static/img/controls/images10.png"></h3>
-                        </div>
-                        <div id="pastSnapshots" style="min-height:100px; display: block;" class="panel-body"></div>
+            </div>
+            <div id="first-middle" class="">
+                <div id="snapshot-panel" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><img style="height: 30px;" src="/static/img/controls/images10.png"></h3>
                     </div>
+                    <div id="pastSnapshots" style="min-height:100px; display: block;" class="panel-body"></div>
                 </div>
-                <div id="first-right">
-                    <div id="snap-container" class="panel panel-default resizable-right" style="overflow: hidden;">
-                        <div id="capture-snaper">
-                            <div class="panel-heading" id="cap-head">
-                                <h3 class="panel-title">
-                                    <img style="height: 30px;" src="/static/img/controls/picture11.png">
-                                    <div style="float: right;" id="zoom-controls">
-                                        <div style="clear: both;">
-                                            <div class="btn-group">
-                                                <button class="btn btn-sm btn-default zoom-in">
-                                                    <img style="height: 20px;" src="/static/img/controls/zoom7.png">
-                                                </button>
-                                                <button class="btn btn-sm btn-default zoom-out">
-                                                    <img style="height: 20px;" src="/static/img/controls/minus13.png">
-                                                </button>
-                                            </div>
+            </div>
+            <div id="first-right">
+                <div id="snap-container" class="panel panel-default resizable-right" style="overflow: hidden;">
+                    <div id="capture-snaper">
+                        <div class="panel-heading" id="cap-head">
+                            <h3 class="panel-title">
+                                <img style="height: 30px;" src="/static/img/controls/picture11.png">
+                                <div style="float: right;" id="zoom-controls">
+                                    <div style="clear: both;">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-default zoom-in">
+                                                <img style="height: 20px;" src="/static/img/controls/zoom7.png">
+                                            </button>
+                                            <button class="btn btn-sm btn-default zoom-out">
+                                                <img style="height: 20px;" src="/static/img/controls/minus13.png">
+                                            </button>
                                         </div>
                                     </div>
-                                    <div style="float: right;" id="download-snapshot">
-                                    </div>
-                                </h3>
-                            </div>
-                            <div id="cap-body" class="panel-body">
-                                <div id="snapshots" style="position:relative;">
-                                    <div class="panzoom">
-                                        <img id="activeSnapshot"
-                                            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-                                            alt=""
-                                            data-sid=""/>
-                                    </div>
                                 </div>
-                                <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
-                                    <input type="hidden" name="imageData" value="" />
-                                    <input type="hidden" name="rotation" value="0" />
-                                    <textarea id="snapText" data-sid="" rows="2" name="annotationText" cols="100" maxlength="160" placeholder="Add Notes"></textarea>
-                                    <button id="downloadSnap-2" style="float: right;" form="imageDownloadForm" type="submit" class="btn btn-sm btn-default" disabled>Save Photo + Text</button>
-                                </form>
+                                <div style="float: right;" id="download-snapshot">
+                                </div>
+                            </h3>
+                        </div>
+                        <div id="cap-body" class="panel-body">
+                            <div id="snapshots" style="position:relative;">
+                                <div class="panzoom">
+                                    <img id="activeSnapshot"
+                                         src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         alt=""
+                                         data-sid=""/>
+                                </div>
                             </div>
+                            <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
+                                <input type="hidden" name="imageData" value=""/>
+                                <input type="hidden" name="rotation" value="0"/>
+                                <textarea id="snapText" data-sid="" rows="2" name="annotationText" cols="100"
+                                          maxlength="160" placeholder="Add Notes"></textarea>
+                                <button id="downloadSnap-2" style="float: right;" form="imageDownloadForm" type="submit"
+                                        class="btn btn-sm btn-default" disabled>Save Photo + Text
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
         <div id="second-row" class="row">
             <div id="second-left" class="col-md-6">
                 <div id="powered-logo" style="">
-                        <p style="margin-bottom: 5px; color: #fff;">Powered By</p>
-                        <img src="/static/img/powered-by.png" style="width: 125px;">
+                    <p style="margin-bottom: 5px; color: #fff;">Powered By</p>
+                    <img src="/static/img/powered-by.png" style="width: 125px;">
                 </div>
             </div>
         </div>
