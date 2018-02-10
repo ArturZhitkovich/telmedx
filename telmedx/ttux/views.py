@@ -209,6 +209,7 @@ def device_detail(request, user_uuid):
 
     return render_to_response('ttux/index3.html', context={
         'dev': user,
+        'request': request,
         'user': request.user,
         'brand': settings.INSTANCE_BRAND
     })
