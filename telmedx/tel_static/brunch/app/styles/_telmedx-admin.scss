@@ -53,3 +53,20 @@ form {
     margin-bottom: 12px;
   }
 }
+
+div.nav-line {
+  line-height: 40px;
+  border-right: 1px solid #aaa;
+  float: left;
+  position: relative;
+  top: 10px;
+}
+
+div.nav-title {
+  position: relative;
+  padding: 10px 15px;
+  float: left;
+  padding-top: 20px;
+  padding-bottom: 11px;
+  font-size: 2rem;
+}
