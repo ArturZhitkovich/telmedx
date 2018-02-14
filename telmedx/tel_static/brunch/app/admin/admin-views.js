@@ -123,6 +123,11 @@ module.exports = {
       $el.find('.modal-body').html(response);
       const $usersForm = $el.find('#users-form');
 
+      const isGroupAdmin = $usersForm.find('#hidden-group-admin').val();
+      if (isGroupAdmin) {
+        $el.find('.is-group-admin').css('display', 'inline');
+      }
+
       $el.find('button.close.users-form-close').click((e) => {
         $el.modal('hide');
       });
@@ -135,6 +140,7 @@ module.exports = {
           if (response.status_code === 200) {
             $el.modal('hide');
           }
+
           if (response.errors) {
             $usersForm.find('#errors').html(response.errors);
           }

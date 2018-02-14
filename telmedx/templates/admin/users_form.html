@@ -8,6 +8,8 @@
 
     {{ form|crispy }}
 
+    <input id="hidden-group-admin" type="hidden" value="{% if instance.is_staff %}group_admin{% endif %}"/>
+
     <div class="row">
         <div class="col-md-12 form-group">
             <div class="pull-left">

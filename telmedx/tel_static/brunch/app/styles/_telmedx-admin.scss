@@ -1,3 +1,6 @@
+$telmedx-orange: #FF9933;
+$telmedx-orange-hover: #FF3300;
+$telmedx-orange-hover-lt: #FF6600;
 
 th.actions {
   width: 36px;
@@ -69,4 +72,14 @@ div.nav-title {
   padding-top: 20px;
   padding-bottom: 11px;
   font-size: 2rem;
+}
+
+#users-form-modal {
+  .is-group-admin {
+    display: none;
+    float: right;
+    margin: 0 12px 0 0;
+    color: $telmedx-orange;
+    line-height: 1.43;
+  }
 }
