@@ -224,7 +224,8 @@ def ajax_post_user_form(request, **kwargs):
             'status_code': HTTPStatus.OK.value,
             'instance': serializer(instance=user).data,
             'html': render_to_string('admin/single_user_item.html',
-                                     context={'user': user})
+                                     context={'instance': user,
+                                              'user': request.user}),
         }
 
         return JsonResponse(data=data)

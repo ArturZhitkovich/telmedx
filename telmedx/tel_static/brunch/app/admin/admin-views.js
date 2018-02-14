@@ -141,6 +141,10 @@ module.exports = {
             $el.modal('hide');
           }
 
+          if (mode === 'create') {
+            $('#users-table').find('tbody').append(response.html);
+          }
+
           if (response.errors) {
             $usersForm.find('#errors').html(response.errors);
           }
