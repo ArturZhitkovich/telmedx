@@ -36,7 +36,8 @@ class TelmedxLoginView(BaseTelmedxMixin, LoginView):
     redirect_authenticated_user = True
 
     def get_redirect_url(self):
-        ret = reverse_lazy('device-home')
+        # TODO: Don't allow normal users to login?
+        # ret = reverse_lazy('device-home')
         if self.request.user.is_superuser:
             ret = reverse_lazy('admin-groups-list')
         elif self.request.user.is_staff:

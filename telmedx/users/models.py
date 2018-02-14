@@ -112,6 +112,15 @@ class TelmedxUser(AbstractUser):
         if self.profile:
             return self.profile.last_name
 
+    @property
+    def user_type(self):
+        ret = 'Mobile User'
+        if self.is_superuser and self.is_staff:
+            ret = 'Global Admin'
+        elif self.is_staff:
+            ret = 'Group Admin'
+        return ret
+
 
 # Uncomment if we want to have email == username
 @receiver(pre_save, sender=TelmedxUser)

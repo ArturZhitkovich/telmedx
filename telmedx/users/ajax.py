@@ -160,8 +160,11 @@ def ajax_get_user_form(request, mode=None, **kwargs):
             'email': user.email,
             'phone': user.profile.phone,
             'group': user.groups.first(),
-            'is_group_admin': user.is_staff,
+            # When updating a user, one should not be able to set group admin
+            # only when creating a new user
+            # 'is_group_admin': user.is_staff,
         }, user=request.user)
+
         action = reverse_lazy('admin-users-update', kwargs={'pk': user.pk})
         context.update({'instance': user})
 
