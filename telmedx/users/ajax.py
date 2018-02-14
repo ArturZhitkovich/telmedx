@@ -202,9 +202,16 @@ def ajax_post_user_form(request, **kwargs):
         else:
             user = User()
             user.email = form.data['email']
+            if 'is_group_admin' in form.data:
+                if form.data['is_group_admin'] == 'on':
+                    user.is_staff = True
             user.save()
+            if 'password' in form.data:
+                if form.data['password']:
+                    user.set_password(form.data['password'])
             if 'group' in form.data:
                 user.groups.add(form.data['group'])
+            user.save()
             user.profile.first_name = form.data['first_name']
             user.profile.last_name = form.data['last_name']
             user.profile.phone = form.data['phone']
