@@ -28,7 +28,7 @@
         <div class="container">
             <div class="navbar-header" style="min-height: 60px;">
                 <a class="navbar-brand"
-                   href="{% url 'admin-groups-list' %}">
+                   href="{% if user and user.is_staff %}{% url 'admin-users-list' %}{% endif %}">
                     <img src="/static/img/{{ brand }}/brand-logo.png" alt="telmedx">
                 </a>
             </div>
