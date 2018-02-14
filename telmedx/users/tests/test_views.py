@@ -61,12 +61,12 @@ class TestUserViews(TestCase):
         assert response.status_code == HTTPStatus.FOUND.value
 
     def test_login(self):
-        normal_url = reverse_lazy('device-home')
+        # normal_url = reverse_lazy('device-home')
         super_url = reverse_lazy('admin-groups-list')
         g_admin_url = reverse_lazy('admin-users-list')
 
         user_url_pairs = (
-            (self.normal_user, normal_url),
+            # (self.normal_user, normal_url),
             (self.superuser, super_url),
             (self.g_user, g_admin_url),
         )

@@ -158,3 +158,13 @@ def single_device(request, device_name):
         'single_device': device,
         'brand': settings.INSTANCE_BRAND
     })
+
+
+@login_required
+def export_logs(request, pk=None):
+    group = get_object_or_404(Group, pk=pk)
+    session_logs = sessionLog.objects.filter(device__user__in=group.user_set.all())
+    session_logs = session_logs.filter(
+        begin_timestamp__gt=datetime.datetime.now() - datetime.timedelta(days=7)
+    )
+    return export_usage_csv(session_logs)

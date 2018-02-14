@@ -8,9 +8,9 @@
         <div class="col-md-12">
             <div class="pull-left top-title">
                 <h2 style="padding-right: 12px;">Usage for: {{ group.name }}</h2>
-                <button class="export-btn btn btn-default btn-sm" type="button" data-toggle="modal" data-mode="create">
+                <a class="export-btn btn btn-default btn-sm" type="button" href="{% url 'usage-export' group.pk %}">
                     <span class="glyphicon glyphicon-plus"></span> Export logs
-                </button>
+                </a>
             </div>
         </div>
     </nav>

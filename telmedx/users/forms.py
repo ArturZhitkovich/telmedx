@@ -86,6 +86,7 @@ class UserAndProfileForm(UserInjectionMixin, forms.Form):
     last_name = forms.CharField()
     email = forms.CharField()
     phone = forms.CharField()
+    password = forms.CharField(required=False)
     group = forms.ModelChoiceField(queryset=Group.objects.all())
     is_group_admin = forms.BooleanField(label='Is group admin', required=False)
 
