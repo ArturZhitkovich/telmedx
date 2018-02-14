@@ -185,6 +185,9 @@ def ajax_post_user_form(request, **kwargs):
             user = User.objects.get(pk=pk)
             user.email = form.data['email']
             user.groups.clear()
+            if 'is_group_admin' in form.data:
+                if form.data['is_group_admin'] == 'on':
+                    user.is_staff = True
             if 'group' in form.data:
                 user.groups.add(form.data['group'])
             if 'password' in form.data:
