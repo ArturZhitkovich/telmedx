@@ -51,9 +51,9 @@ class TelmedxAdminUsersListView(TelmedxPaginatedListView):
     ordering_options = (
         'profile__first_name',
         'profile__last_name',
-        'username',
         'email',
-        'date_joined'
+        'date_joined',
+        'groups',
     )
 
     def _flatten_options(self, options):

@@ -19,10 +19,14 @@
                         {% include 'admin/sorted_header_item.html' with field='profile__first_name' nfield='-profile__first_name' label='First Name' %}
                     </th>
                     <th>
-                        {% include 'admin/sorted_header_item.html' with field='username' nfield='-username' label='Username' %}
+                        {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' label='Email' %}
                     </th>
                     <th>
-                        {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' label='Email' %}
+                        {% include 'admin/sorted_header_item.html' with field='groups' nfield='-groups' label='Groups' %}
+                    </th>
+                    <th>
+{#                        {% include 'admin/sorted_header_item.html' with field='utype' nfield='-utype' label='Type' %}#}
+                        User Type
                     </th>
                     {% comment %}
                 <th>Group</th>
@@ -51,8 +55,9 @@
                         </td>
                         <td>{{ user.last_name }}</td>
                         <td>{{ user.first_name }}</td>
-                        <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
+                        <td>{{ user.groups.first }}</td>
+                        <td>{{ user.user_type }}</td>
                         {% comment %}
                             <td>{{ user.groups.all|join:', ' }}</td>
                             <td>{{ user.is_staff }}</td>
