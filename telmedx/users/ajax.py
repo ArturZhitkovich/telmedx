@@ -188,7 +188,8 @@ def ajax_post_user_form(request, **kwargs):
             if 'group' in form.data:
                 user.groups.add(form.data['group'])
             if 'password' in form.data:
-                user.set_password(form.data['password'])
+                if form.data['password']:
+                    user.set_password(form.data['password'])
             user.save()
             profile = user.profile
             profile.first_name = form.data['first_name']
