@@ -6,6 +6,7 @@ from users.views import *
 urlpatterns = (
     url(r'^users$', TelmedxAdminUsersListView.as_view(), name='admin-users-list'),
     url(r'^groups$', TelmedxGroupListView.as_view(), name='admin-groups-list'),
+    url(r'^error$', TelmedxErrorView.as_view(), name='user-denied'),
 
     # Non-AJAX
     # url(r'^groups/create/$', TelmedxGroupCreateView.as_view(), name='admin-groups-create'),

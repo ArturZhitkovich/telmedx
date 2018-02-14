@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
 
 from .forms import AdminUserForm, AdminGroupForm, AdminUserProfileForm
 from .mixins import *
@@ -21,6 +22,7 @@ __all__ = (
     'TelmedxGroupListView',
     'TelmedxGroupCreateView',
     'TelmedxGroupsUpdateView',
+    'TelmedxErrorView',
 )
 
 # type: TelmedxUser
@@ -37,7 +39,7 @@ class TelmedxLoginView(BaseTelmedxMixin, LoginView):
 
     def get_redirect_url(self):
         # TODO: Don't allow normal users to login?
-        # ret = reverse_lazy('device-home')
+        ret = reverse_lazy('user-denied')
         if self.request.user.is_superuser:
             ret = reverse_lazy('admin-groups-list')
         elif self.request.user.is_staff:
@@ -235,3 +237,8 @@ class TelmedxGroupsUpdateView(TelmedxUpdateView):
 
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class TelmedxErrorView(BaseTelmedxMixin, TemplateView):
+    template_name = 'admin/error_denied.html'
+
