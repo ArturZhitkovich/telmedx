@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from gevent.queue import Full
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -179,7 +179,7 @@ class ReceivedImageAPIView(APIView):
 
         # ENDIF
         ##return HttpResponse(status="200 OK")
-        return HttpResponse(command_resp)
+        return JsonResponse({'command': command_resp})
 
 
 class SnapshotResponseAPIView(APIView):
