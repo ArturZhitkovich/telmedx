@@ -182,13 +182,13 @@ module.exports = {
   },
 
   deleteUser(uid) {
-    return Promise.resolve($.ajax(`/admin/users/${uid}/delete`, {
-      method: 'POST',
+    return Promise.resolve($.ajax(`/admin/users/${uid}`, {
+      method: 'DELETE',
       headers: {
         'X-CSRFToken': this._getCsrfCookie(),
       }
     })).then((response) => {
-      if (response.status === 'OK') {
+      if (response.status === 200) {
         const $usersDeleteModal = $('#users-delete-form-modal');
         const $usersUpdateModal = $('#users-form-modal');
         $usersDeleteModal.modal('hide');
