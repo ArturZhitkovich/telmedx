@@ -35,36 +35,40 @@
                     <th>
                         {% include 'admin/sorted_header_item.html' with label='added' field='date_joined' nfield='-date_joined' %}
                     </th>
+                    {% if not user.is_superuser  %}
                     <th>{# start conference #}</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
-                {% for user in object_list %}
-                    <tr id="user-item-{{ user.pk }}" class="user-item">
+                {% for item in object_list %}
+                    <tr id="user-item-{{ item.pk }}" class="user-item">
                         <td>
                             <a href="#" class="users-update-btn" data-toggle="modal"
-                               data-target="#users-form-modal" data-upk="{{ user.pk }}"
-                               data-url="{% url 'admin-users-form' user.pk %}" data-mode="update">
+                               data-target="#users-form-modal" data-upk="{{ item.pk }}"
+                               data-url="{% url 'admin-users-form' item.pk %}" data-mode="update">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </a>
                             {% comment %}
-                        <a class="" href="{% url 'admin-users-update' user.pk %}">
+                        <a class="" href="{% url 'admin-users-update' item.pk %}">
                             <span class="glyphicon glyphicon-edit"></span>
                         </a>
                         {% endcomment %}
                         </td>
-                        <td>{{ user.last_name }}</td>
-                        <td>{{ user.first_name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.groups.first }}</td>
-                        <td>{{ user.user_type }}</td>
+                        <td>{{ item.last_name }}</td>
+                        <td>{{ item.first_name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.groups.first }}</td>
+                        <td>{{ item.user_type }}</td>
                         {% comment %}
-                            <td>{{ user.groups.all|join:', ' }}</td>
-                            <td>{{ user.is_staff }}</td>
+                            <td>{{ item.groups.all|join:', ' }}</td>
+                            <td>{{ item.is_staff }}</td>
                             {% endcomment %}
-                        <td>{{ user.date_created|date:'Y-m-d' }}</td>
-                        <td><a href="{% url 'device-detail' user.uuid %}">
+                        <td>{{ item.date_created|date:'Y-m-d' }}</td>
+                        {% if not user.is_superuser  %}
+                        <td><a href="{% url 'device-detail' item.uuid %}">
                             Start Conference</a></td>
+                        {% endif %}
                     </tr>
                 {% empty %}
                     <tr>
