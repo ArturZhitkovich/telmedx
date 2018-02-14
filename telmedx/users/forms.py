@@ -94,10 +94,9 @@ class UserAndProfileForm(UserInjectionMixin, forms.Form):
         super().__init__(*args, **kwargs)
 
         # Only superusers can set if a user is a group admin?
-        if self.user and not self.user.is_superuser:
-            del self.fields['is_group_admin']
         # Only show group admin checkbox when creating a user
-        # Check if initial dict is populated
-        if len(self.initial):
+        # Check if initial dict is populated.
+        if (self.user and not self.user.is_superuser) or \
+            (len(self.initial)):
             del self.fields['is_group_admin']
 
