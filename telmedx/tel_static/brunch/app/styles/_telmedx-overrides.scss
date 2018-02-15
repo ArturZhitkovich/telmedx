@@ -33,7 +33,7 @@ a {
 #admin nav.navbar {
   background: transparent;
 
-  button {
+  button, a {
     &.btn-default {
       color: $telmedx-orange;
       border: 1px solid $telmedx-orange;
