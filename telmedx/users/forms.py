@@ -100,3 +100,7 @@ class UserAndProfileForm(UserInjectionMixin, forms.Form):
             (len(self.initial)):
             del self.fields['is_group_admin']
 
+        # If it's a new user form, password is required
+        if not self.is_bound and not len(self.initial):
+            self.fields['password'].required = True
+
