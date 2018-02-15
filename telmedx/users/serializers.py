@@ -16,7 +16,6 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id',
-            'username',
             'email',
             'first_name',
             'last_name',
@@ -25,7 +24,6 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('username')
         instance.email = validated_data.get('email')
         instance.save()
         profile_data = validated_data.get('profile')
