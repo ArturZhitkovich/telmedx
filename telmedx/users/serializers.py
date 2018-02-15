@@ -11,6 +11,7 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(source='profile.phone')
     email = serializers.EmailField(required=True)
     group = serializers.CharField(source='groups.first.name', required=False, allow_blank=True)
+    password = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -20,10 +21,14 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'phone',
-            'group'
+            'group',
+            'password',
         )
 
     def update(self, instance, validated_data):
+        password = validated_data.get('password')
+        if password:
+            instance.set_password(password)
         instance.email = validated_data.get('email')
         instance.save()
         profile_data = validated_data.get('profile')
@@ -33,6 +38,12 @@ class TelmedxUserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if 'password' in ret:
+            del ret['password']
+        return ret
 
 
 class TelmedxGroupSerializer(serializers.ModelSerializer):
