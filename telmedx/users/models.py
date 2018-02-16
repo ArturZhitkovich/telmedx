@@ -1,10 +1,10 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser, UserManager, Group
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 
 USER_GLOBAL_ADMIN = 1
 USER_GROUP_ADMIN = 2
@@ -97,6 +97,13 @@ class TelmedxUser(AbstractUser):
     objects = TelmedxUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    @property
+    def group(self):
+        ret = None
+        if self.groups.count():
+            ret = self.groups.first()
+        return ret
 
     @property
     def date_created(self):

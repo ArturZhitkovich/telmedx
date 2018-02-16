@@ -5,20 +5,22 @@
 
 {% block nav %}
     <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-            <li class="{% if '/users' in request.path %}active{% endif %}">
-                <a href="{% url 'admin-users-list' %}">
-                    <span class="link">Users</span>
-                </a>
-            </li>
-            {% if request.user.is_superuser %}
-                <li class="{% if '/groups' in request.path %}active{% endif %}">
-                    <a href="{% url 'admin-groups-list' %}">
-                        <span class="link">Groups</span>
+        {% if user.is_superuser %}
+            <ul class="nav navbar-nav">
+                <li class="{% if '/users' in request.path %}active{% endif %}">
+                    <a href="{% url 'admin-users-list' %}">
+                        <span class="link">Users</span>
                     </a>
                 </li>
-            {% endif %}
-        </ul>
+                {% if request.user.is_superuser %}
+                    <li class="{% if '/groups' in request.path %}active{% endif %}">
+                        <a href="{% url 'admin-groups-list' %}">
+                            <span class="link">Groups</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
         <ul class="nav navbar-nav navbar-right">
             <li>
                 <a href="{% url 'user-logout' %}">
