@@ -220,6 +220,11 @@ def ajax_post_user_form(request, **kwargs):
             user.profile.phone = form.data['phone']
             user.profile.save()
 
+        # Manually refresh session on password change
+        if 'password' in form.data and request.user == user:
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
+
         data = {
             'status_code': HTTPStatus.OK.value,
             'instance': serializer(instance=user).data,
