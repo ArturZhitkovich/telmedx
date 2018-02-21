@@ -34,6 +34,9 @@
                         <img src="{{ user.group.profile.logo|thumbnail_url:'logo' }}" alt="telmedx">
                     {% elif user.is_superuser %}
                         <img src="{% static '/img/' %}/{{ brand }}/brand-logo.png" alt="telmedx">
+                    {% else %}
+                        {# When user is not logged in, use default logo from build command? #}
+                        <img src="{% static '/img/' %}/{{ brand }}/brand-logo.png" alt="telmedx">
                     {% endif %}
                 </a>
             </div>
