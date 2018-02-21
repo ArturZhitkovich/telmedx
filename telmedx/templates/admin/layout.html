@@ -23,6 +23,11 @@
         {% endif %}
         <ul class="nav navbar-nav navbar-right">
             <li>
+                <a href="#">
+                    <span class="link">{{ user.username }}</span>
+                </a>
+            </li>
+            <li>
                 <a href="{% url 'user-logout' %}">
                     <span class="link">Log Out</span>
                 </a>
