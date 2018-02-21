@@ -14,6 +14,30 @@ html, body {
   background: rgba(242, 242, 242, 1);
 }
 
+#wrap.telmedx {
+  background: url('/static/img/telmedx/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
+}
+
+#wrap.mahiri {
+  background: url('/static/img/mahiri/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
+}
+
+#wrap.kpnw {
+  background: url('/static/img/kpnw/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
+}
+
 /* Set the fixed height of the footer here */
 #footer {
   height: 20px;
