@@ -573,7 +573,7 @@ def initialize_device(request):
         return JsonResponse({'status': 'OK', 'device_name': cam.uuid})
 
 
-@require_http_methods(['GET', ])
+@require_http_methods(['GET', 'POST'])
 @login_required
 @csrf_exempt
 def image_download(request):
