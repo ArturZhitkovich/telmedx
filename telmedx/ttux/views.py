@@ -5,24 +5,24 @@ import logging
 import socket
 import time
 
-# from time import sleep
 import gevent
 import gevent.queue
 from django.conf import settings
-from django.contrib.auth import logout, login
-from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
+from django.contrib.auth import login, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from rest_framework.exceptions import MethodNotAllowed
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from rest_framework.parsers import JSONParser
 
 from .helpers import id_generator
-from .models import mobileCam  # get our database model
+from .models import MobileCam  # get our database model
 from .serializers import InitializeSerializer
 from .session import Session
 from .settings import API_KEYS
+
+User = get_user_model()
 
 stream_running = False
 # commandQ = gevent.queue.Queue(1)
@@ -78,32 +78,6 @@ def rx_image(request, device_name):
     # ENDIF
     ##return HttpResponse(status="200 OK")
     return HttpResponse(command_resp)
-
-
-@csrf_exempt
-def snapshot_response(request, device_name):
-    """
-    receive snapshot response from the phone
-    :param request:
-    :param device_name:
-    :return:
-    """
-    print("got snapshot response from device: " + device_name)
-    image = request.read()
-
-    session = Session.get(device_name)
-    try:
-        session.snapshotQ.put_nowait(image)
-        session.add_snapshot_count()
-    except:
-        # logger.error("failed to queue up snapshot response")
-        print("failed to queue up snapshot response from " + device_name)
-        session.snapshotQ.get_nowait()  # empty the queue if full
-        session.snapshotQ.put_nowait(image)
-        session.add_snapshot_count()
-    # END
-
-    return HttpResponse("snapshot_response")
 
 
 # END
@@ -169,7 +143,7 @@ def pingRequest(request):
 
 # END
 @csrf_exempt
-def ping2_request(request, app_version, device_name):
+def ping2_request(request, app_version):
     """
     This is resposible of handling "new" app versions which support camera
     features such as changing camera (front/back facing) and torch control.
@@ -179,6 +153,7 @@ def ping2_request(request, app_version, device_name):
     :param device_name:
     :return:
     """
+    device_name = request.user.uuid
     if all([app_version, device_name]):
         # Has flip camera & flashlight
         if app_version == '1.0.0':
@@ -213,71 +188,28 @@ def ping2_request(request, app_version, device_name):
 # UI Handlers
 ##################################################################################
 
-# deprecated
-def index(request, device_name):
-    """
-    Main View Finder Device Control View
-    :param request:
-    :param device_name:
-    :return:
-    """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index.html', context={
-        'dev': d,
-    })
-
-
-# deprecated
-def index2(request, device_name):
-    """
-    Main View Finder Device Control View for texting XHR
-    :deprecated:
-    :param request:
-    :param device_name:
-    :return:
-    """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
-    # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
-
-    return render_to_response('ttux/index2.html', context={
-        'dev': d,
-    })
-
-
-def index3(request, device_name):
+@login_required
+def device_detail(request, user_uuid):
     """
     Main View Finder Device Control View for testing jquery XHR
     :param request:
     :param device_name:
     :return:
     """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
-    #
     # look up this device
-    d = get_object_or_404(mobileCam, name=device_name)
+    user = get_object_or_404(User, uuid=user_uuid)
     # HACK: delete the most recent frame, in case one is left over from a previous session
     # this will create a slight artifact for current viewers
     try:
-        session = Session.get(device_name)
+        session = Session.get(user)
         session.clear_lastFrame()
     except AttributeError:
         # Camera is not active yet, so just ignore?
         pass
 
     return render_to_response('ttux/index3.html', context={
-        'dev': d,
+        'dev': user,
+        'request': request,
         'user': request.user,
         'brand': settings.INSTANCE_BRAND
     })
@@ -452,6 +384,7 @@ def flip_camera(request, device_name):
     return response
 
 
+@login_required
 @csrf_exempt
 def toggle_flash(request, device_name):
     """
@@ -484,7 +417,7 @@ def toggle_flash(request, device_name):
     try:
         status = session.flashlightQ.get(block=True, timeout=20)
     except:
-        print("failed to get snapshot from phone " + device_name)
+        print("failed to get flashlight from phone " + device_name)
 
     response = JsonResponse({"status": status})
     print("returning flashlight response now")
@@ -573,26 +506,27 @@ def view_session_info(request):
     return HttpResponse(body)
 
 
-def device_view(request):
+@require_http_methods(['GET', ])
+@login_required
+def device_list(request):
     """
     Device selection View
     :param request:
     :return:
     """
-    # make sure user is logged in
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect('/login/?next=%s' % request.path)
 
-    g = request.user.groups.first()
-    deviceList = mobileCam.objects.filter(groups=g).order_by('name')
+    # Filter users by the current user's group
+    group = request.user.groups.first()
+
+    users = User.objects.filter(groups=group).order_by('email')
     # refresh the session list. This will add a new session if there is a new device
     # but will not change any existing sessions.
     # TODO: needs to be done on the admin page when a new device is added to the database
-    for d in deviceList:
-        Session.put(d.name, Session())
+    for user in users:
+        Session.put(user, Session())
 
     return render_to_response('ttux/devices.html', context={
-        'deviceList': deviceList,
+        'deviceList': users,
         'user': request.user,
         'brand': settings.INSTANCE_BRAND
     })
@@ -610,6 +544,7 @@ def sso_login_view(request, device_name):
         return HttpResponse('Not Authorized')
 
 
+@require_http_methods(['POST', ])
 @csrf_exempt
 def initialize_device(request):
     """
@@ -617,48 +552,37 @@ def initialize_device(request):
     :param request:
     :return:
     """
-    if request.method == "POST":
-        data = JSONParser().parse(request)
-        payload = InitializeSerializer(data=data)
+    data = JSONParser().parse(request)
+    payload = InitializeSerializer(data=data)
 
-        if payload.is_valid():
-            api_key = payload.data.get('api_key')
-            if api_key in API_KEYS:
-                username = API_KEYS[api_key]
-                user = get_object_or_404(User, username=username)
+    if payload.is_valid():
+        api_key = payload.data.get('api_key')
+        if api_key in API_KEYS:
+            username = API_KEYS[api_key]
+            user = get_object_or_404(User, username=username)
 
-            # TODO: Find out logic for add user to groups
-            group = user.groups.first()
-            device_name = payload.data.get('email')
+        # TODO: Find out logic for add user to groups
+        group = user.groups.first()
+        device_name = payload.data.get('email')
 
-            cam, created = mobileCam.objects.get_or_create(
-                name=device_name,
-                email=payload.data.get('email'),
-                defaults=dict(
-                    first_name=payload.data.get('firstName'),
-                    last_name=payload.data.get('lastName'),
-                    phone_number=payload.data.get('phoneNumber'),
-                    groups=group,
-                )
-            )
+        cam = get_object_or_404(User, email=device_name)
+        session = Session.get(cam.email)
+        if session is None:
+            Session.put(device_name, Session())
 
-            session = Session.get(device_name)
-            if session is None:
-                Session.put(device_name, Session())
-
-            return JsonResponse({'status': 'OK', 'device_name': cam.name})
+        return JsonResponse({'status': 'OK', 'device_name': cam.uuid})
 
 
+@require_http_methods(['GET', 'POST'])
+@login_required
 @csrf_exempt
 def image_download(request):
-    if request.method != 'POST':
-        raise MethodNotAllowed(request.method)
-
     from io import BytesIO
     from PIL import Image
     from time import time
     from .utils import annotate_image
     from tempfile import TemporaryFile
+
     # Get POST data and convert into image
     # Image will be base64 encoded, so decode and throw into PIL
     # data will be in format:
@@ -685,17 +609,3 @@ def image_download(request):
     filename = '{}.jpg'.format(int(time()))
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
     return response
-
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect('/login/?next=%s' % request.path)
-
-
-class TelmedxLoginView(LoginView):
-    def get_context_data(self, **kwargs):
-        context = super(TelmedxLoginView, self).get_context_data(**kwargs)
-        # Add branding context
-        context.update({'brand': settings.INSTANCE_BRAND})
-        return context

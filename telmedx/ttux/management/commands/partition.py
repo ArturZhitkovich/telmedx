@@ -1,4 +1,5 @@
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandParser, CommandError
 from django.db.utils import IntegrityError
 
@@ -7,6 +8,8 @@ COMMAND_CREATE = 'create'
 COMMAND_SET_PASSWORD = 'set_password'
 COMMAND_CHOICES = (COMMAND_CREATE, COMMAND_LIST, COMMAND_SET_PASSWORD)
 
+
+User = get_user_model()
 
 class Command(BaseCommand):
     help = 'Create\'s a new partition for use within Telmedx'

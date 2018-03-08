@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,15 +39,21 @@ INSTANCE_BRAND = 'kpnw'
 # Application definition
 THIRD_PARTY_APPS = (
     'rest_framework',
+    'widget_tweaks',
+    'easy_thumbnails',
+    'crispy_forms',
 )
 
 TELX_APPS = (
     'ttux',
-    'usage'
+    'usage',
+    'users',
 )
 
 CORE_APPS = (
-    'django.contrib.admin',
+    # NOTE: Admin disabled due to users app having admin-like capabilities
+    # Enable this will also cause migrations errors.
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -140,24 +147,56 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/login/'
+MEDIA_URL = '/media/'
 
+# Default User model
+AUTH_USER_MODEL = 'users.TelmedxUser'
 
 # DRF stuff
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+
+    'JWT_PAYLOAD_HANDLER': 'users.utils.jwt_payload_handler',
+    'JWT_ALLOW_REFRESH': True,
+    # Amount of time for a single JWT token to expire
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    # Amount of time for a user to be able to refresh tokens
+    # before logging in again
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),
 }
 
 # Session stuff
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
-import os
+THUMBNAIL_ALIASES = {
+    '': {
+        'avatar': {
+            'size': (50, 50),
+            'crop': True,
+        },
+        'logo': {
+            'size': (150, 42),
+            'crop': 'smart',
+        }
+    }
+}
 
 LOGGING = {
     'version': 1,

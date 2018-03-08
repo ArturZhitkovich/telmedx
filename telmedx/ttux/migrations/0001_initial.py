@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('end_timestamp', models.DateTimeField()),
                 ('frames', models.IntegerField()),
                 ('captured_images', models.IntegerField()),
-                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ttux.mobileCam')),
+                ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ttux.MobileCam')),
             ],
         ),
         migrations.CreateModel(
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('sessn_date', models.DateTimeField(verbose_name='Session Date')),
                 ('streamId', models.CharField(max_length=50)),
                 ('userId', models.CharField(max_length=100)),
-                ('mobile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ttux.mobileCam')),
+                ('mobile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ttux.MobileCam')),
             ],
         ),
     ]

@@ -1,0 +1,85 @@
+$telmedx-orange: #FF9933;
+$telmedx-orange-hover: #FF3300;
+$telmedx-orange-hover-lt: #FF6600;
+
+th.actions {
+  width: 36px;
+}
+
+#admin {
+  background: transparent;
+
+  .admin-content {
+    background: #fff;
+  }
+
+  // Offset for top navigation
+  & > .row:first-of-type {
+    margin-top: 90px;
+  }
+}
+
+#wrap .container {
+}
+
+.admin-navbar {
+  //margin-top: 90px;
+
+  .page-status {
+    margin-left: 16px;
+    margin-right: 5px;
+  }
+
+  .search-form, .top-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    line-height: 20px;
+  }
+
+  .top-title {
+    h2 {
+      float: left;
+      display: inline-block;
+      margin: 0;
+    }
+    .users-create-btn, .groups-create-btn {
+      float: left;
+      display: inline;
+      margin-left: 20px;
+    }
+  }
+
+}
+
+form {
+  .logo-display {
+    margin-bottom: 12px;
+  }
+}
+
+div.nav-line {
+  line-height: 40px;
+  border-right: 1px solid #aaa;
+  float: left;
+  position: relative;
+  top: 10px;
+}
+
+div.nav-title {
+  position: relative;
+  padding: 10px 15px;
+  float: left;
+  padding-top: 20px;
+  padding-bottom: 11px;
+  font-size: 2rem;
+}
+
+#users-form-modal {
+  .is-group-admin {
+    display: none;
+    float: right;
+    margin: 0 12px 0 0;
+    color: $telmedx-orange;
+    line-height: 1.43;
+  }
+}

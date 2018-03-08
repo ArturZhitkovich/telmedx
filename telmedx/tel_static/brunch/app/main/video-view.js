@@ -308,12 +308,12 @@ module.exports = {
     let $snapText = $('#snapText');
     const snapValue = $snapText.val();
 
-    if($currentSelected == null){
+    if ($currentSelected == null) {
       $snapText.val('');
     } else {
       // Save the text to the currently selected el and reset
       $currentSelected.attr('data-snaptext', snapValue);
-    
+
       // If the $next el has data in it, replace $snapText data
       $snapText.val($next.attr('data-snaptext'));
     }
@@ -471,7 +471,7 @@ module.exports = {
         //$('#snapText').val('')
         //$('#snapText').attr('data-sid', id);
         console.log('snapshot taken');
-        _this.updateTextArea(null,'#' + id);
+        _this.updateTextArea(null, '#' + id);
 
         $('#pastSnapshots').append($container);
 

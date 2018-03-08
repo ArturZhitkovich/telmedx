@@ -1,0 +1,61 @@
+{% extends 'admin/layout.html' %}
+
+{% load thumbnail %}
+
+{% block admin_nav %}
+    {% include 'admin/admin_nav.html' with current_page='groups' data_url='admin-groups-form' %}
+{% endblock %}
+
+{% block admin_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <table id="groups-table" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="actions"></th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='name' nfield='-name' label='Group Name' %}
+                    </th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='profile__contact_name' nfield='-profile__contact_name' label='Contact' %}
+                    </th>
+                    <th>Mobile Users</th>
+                    <th>Admins</th>
+                    <th>
+                        {% include 'admin/sorted_header_item.html' with field='profile__date_created' nfield='-profile__date_created' label='Added' %}
+                    </th>
+                    <th>Usage Logs</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for group in object_list %}
+                    <tr id="group-item-{{ group.pk }}" class="group-item">
+                        <td>
+                            <a href="#" class="groups-update-btn" data-toggle="modal"
+                               data-target="#groups-form-modal" data-gpk="{{ group.pk }}"
+                               data-url="{% url 'admin-groups-form' group.pk %}" data-mode="update">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>
+                        </td>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.profile.contact_name }}</td>
+                        <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=mobile">
+                            {{ group.profile.mobile_users.count }}</a></td>
+                        <td><a href="{% url 'admin-users-list' %}?ugroup={{ group.pk }}&utype=admin">
+                            {{ group.profile.admin_users.count }}</a></td>
+                        <td>{{ group.profile.date_created|date:'Y-m-d' }}</td>
+                        <td><a href="{% url 'usage-group' group.pk %}">Usage Logs</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">None</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    {% include 'admin/groups_update_modal.html' %}
+{% endblock %}

@@ -11,22 +11,31 @@ html, body {
   margin: 0 auto -20px;
   /* Pad bottom by footer height */
   padding: 0 0 20px;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+  background: rgba(242, 242, 242, 1);
 }
 
 #wrap.telmedx {
   background: url('/static/img/telmedx/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
 }
 
 #wrap.mahiri {
   background: url('/static/img/mahiri/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
 }
 
 #wrap.kpnw {
   background: url('/static/img/kpnw/bg.jpg') no-repeat center center fixed;
+
+  .admin-navbar {
+    background: #fff;
+  }
 }
 
 /* Set the fixed height of the footer here */
@@ -50,9 +59,7 @@ html, body {
   background-color: #fff;
 
   &.shadow {
-    -moz-box-shadow: 0 3px 15px #767575;
-    -webkit-box-shadow: 0 3px 15px #767575;
-    box-shadow: 0 3px 15px #767575;
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1);
   }
 
   .icon-bar {
@@ -71,7 +78,13 @@ html, body {
     }
   }
 
-  .navbar-right {
+  .navbar-nav {
+    li.active {
+      background: #e7e7e7;
+    }
+  }
+
+  .navbar-right, .navbar-nav {
     li > a {
       padding-top: 20px;
       padding-bottom: 11px;
@@ -81,7 +94,7 @@ html, body {
         color: #000;
       }
 
-      span.partition {
+      span.partition, span.link {
         font-size: 16px;
         line-height: 29px;
         color: #333;
@@ -129,7 +142,6 @@ img.snapshot {
   pointer-events: none;
   background: none !important;
 }
-
 
 /* SNAPSHOTS */
 #snapText {
