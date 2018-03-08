@@ -1,5 +1,10 @@
-djangorestframework==3.6.3
+djangorestframework==3.7.7
+djangorestframework-jwt==1.11.0
+django-crispy-forms==1.7.0
 Django==1.11.3
 pytz==2017.2
 requests==2.18.1
 gevent==1.2.2
+Pillow==4.3.0
+django-widget-tweaks==1.4.1
+easy-thumbnails==2.5

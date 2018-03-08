@@ -1,0 +1,32 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+<form id="groups-form" class="form" method="POST" action="{{ action }}">
+    {% csrf_token %}
+    <div id="errors" class="form-group">
+    </div>
+
+    {{ form|crispy }}
+
+    <div class="row">
+        <div class="col-md-12 form-group">
+            <div class="pull-left">
+                {% if mode == 'update' %}
+                    <button class="groups-delete-btn btn btn-lg btn-link" type="button">
+                        <span class="glyphicon glyphicon-trash"></span> Delete Group
+                    </button>
+                {% endif %}
+            </div>
+            <div class="pull-right">
+                <a href="{{ back_url }}" class="btn btn-lg btn-default">Cancel</a>
+                {% if mode == 'update' %}
+                    <button class="btn btn-lg btn-primary" type="submit">Save</button>
+                {% elif mode == 'create' %}
+                    <button class="btn btn-lg btn-primary" type="submit">Create</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+{% include 'admin/groups_delete_modal.html' %}

@@ -1,0 +1,74 @@
+<nav class="navbar admin-navbar row">
+    <div class="col-md-12">
+        <div class="pull-left top-title">
+            <h2>{{ current_page|capfirst }}</h2>
+            <button class="{{ current_page }}-create-btn btn btn-default btn-sm" type="button" data-toggle="modal"
+                    data-target="#{{ current_page }}-form-modal" data-url="{% url data_url %}"
+                    data-mode="create">
+                <span class="glyphicon glyphicon-plus"></span> Add new
+            </button>
+            {% comment %}
+            <a class="btn btn-primary" href="{{ request.path }}/create">
+                <span class="glyphicon glyphicon-plus"></span> Add new
+            </a>
+            {% endcomment %}
+        </div>
+        <form class="form-inline search-form pull-right" method="GET">
+            {% if current_page == 'users' %}
+                <div class="input-group">
+                    <label class="sr-only" for="form_user_type">User Types</label>
+                    <select id="form_user_type" class="form-control" name="utype">
+                        <option {% if request.GET.utype == 'all' %}selected=""{% endif %}
+                                value="all">All Users
+                        </option>
+                        <option {% if request.GET.utype == 'mobile' %}selected=""{% endif %}
+                                value="mobile">Mobile Users
+                        </option>
+                        <option {% if request.GET.utype == 'admin' %}selected=""{% endif %}
+                                value="admin">Admins
+                        </option>
+                    </select>
+                </div>
+                {% if request.user.is_superuser %}
+                    <div class="input-group">
+                        <label class="sr-only" for="form_user_type">User Groups</label>
+                        <select id="form_user_type" class="form-control" name="ugroup">
+                            <option {% if request.GET.ugroup == 'all' %}selected=""{% endif %}
+                                    value="all">All Groups
+                            </option>
+                            {% for group in groups %}
+                                <option {% if request.GET.ugroup == group.pk %}selected=""{% endif %}
+                                        value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Filter {{ current_page|capfirst }}"
+                       value="{{ request.GET.search }}" name="search"/>
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> </button>
+                </span>
+            </div>
+            <span class="page-status">Page: {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <span class="btn-group btn-group-sm" role="group">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.number|add:-1 }}&sort={{ request.GET.sort }}&search={{ request.GET.search }}"
+                       class="btn btn-default"><span class="glyphicon glyphicon-menu-left"></span></a>
+                {% else %}
+                    <button class="btn btn-default" disabled="disabled"><span
+                        class="glyphicon glyphicon-menu-left"></span></button>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.number|add:1 }}&sort={{ request.GET.sort }}&search={{ request.GET.search }}"
+                       class="btn btn-default"><span
+                        class="glyphicon glyphicon-menu-right"></span></a>
+                {% else %}
+                    <button class="btn btn-default" disabled="disabled"><span
+                        class="glyphicon glyphicon-menu-right"></span></button>
+                {% endif %}
+            </span>
+        </form>
+    </div>
+</nav>

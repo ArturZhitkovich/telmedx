@@ -14,25 +14,34 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
+from django.conf import settings
 from django.conf.urls import url, include
-from django.contrib import admin
-from ttux.routers import urlpatterns as ttux_patterns
-from ttux.views import TelmedxLoginView
+from django.views.static import serve
 
 from ttux import views as ttux_views
+from users.jwt_views import obtain_jwt_token, refresh_jwt_token
+from users.views import TelmedxLoginView
+from .api_routers import urlpatterns as api_patterns
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-
     url(r'^$', TelmedxLoginView.as_view()),
-    url(r'^login/$', TelmedxLoginView.as_view()),
+    url(r'^login/$', TelmedxLoginView.as_view(), name='login'),
+    url(r'^admin/', include('users.urls')),
 
     url(r'^ttux/', include('ttux.urls')),
     url(r'^usage/', include('usage.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
-    url(r'^devices/?$', ttux_views.device_view),
-    url(r'^device/(?P<device_name>.*?)/?$', ttux_views.index3),
-    # url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_ROOT}),
-    url(r'^api', include(ttux_patterns))
+
+    # DEPRECATED
+    # url(r'^devices/?$', ttux_views.device_list, name='device-home'),
+    # url(r'^login-and-view/(?P<device_name>\w+)/?$', ttux_views.sso_login_view),
+
+    url(r'^device/(?P<user_uuid>.*?)/?$', ttux_views.device_detail, name='device-detail'),
+    url(r'^api/', include(api_patterns)),
+    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
 ]
+
+if settings.DEBUG:
+    # static files (images, css, javascript, etc.)
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}), ]

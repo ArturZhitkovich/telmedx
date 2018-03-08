@@ -10,4 +10,7 @@ API_KEYS = {
     'ae22a5876c0a08bb91b8a97a2d58f3b320fe8c88': 'mahiri3',
 
     'b4e868c71a3b116b863ceb61ee18d977c5c81c16': 'providence',
+
+    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4': 'uk',
+    'ae452dde8e37077365d3fda1dffb93e808db29ff': 'cruzroja',
 }

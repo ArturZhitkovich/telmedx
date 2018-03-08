@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block metatitle %}telmedx | Admin Portal{% endblock %}
+
+{% block nav %}
+    <div class="collapse navbar-collapse">
+        {% if user.is_superuser %}
+            <ul class="nav navbar-nav">
+                <li class="{% if '/users' in request.path %}active{% endif %}">
+                    <a href="{% url 'admin-users-list' %}">
+                        <span class="link">Users</span>
+                    </a>
+                </li>
+                {% if request.user.is_superuser %}
+                    <li class="{% if '/groups' in request.path %}active{% endif %}">
+                        <a href="{% url 'admin-groups-list' %}">
+                            <span class="link">Groups</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="#">
+                    <span class="link">{{ user.username }}</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'user-logout' %}">
+                    <span class="link">Log Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock nav %}
+
+{% block content %}
+    <div id="admin" class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% block admin_nav %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="row admin-content">
+            <div class="col-md-12">
+                {% block admin_content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+<tr id="user-item-{{ user.pk }}" class="group-item">
+    <td>
+        <a href="#" class="users-update-btn" data-toggle="modal"
+           data-target="#users-form-modal" data-gpk="{{ user.pk }}"
+           data-url="{% url 'admin-users-form' user.pk %}" data-mode="update">
+            <span class="glyphicon glyphicon-edit"></span>
+        </a>
+    </td>
+    <td>{{ instance.last_name }}</td>
+    <td>{{ instance.first_name }}</td>
+    <td>{{ instance.email }}</td>
+    <td>{{ instance.groups.first }}</td>
+    <td>{{ instance.user_type }}</td>
+    <td>{{ instance.date_created|date:'Y-m-d' }}</td>
+    {% if not user.is_superuser  %}
+        <td><a href="{% url 'device-detail' instance.uuid %}">
+            Start Conference</a></td>
+    {% endif %}
+</tr>

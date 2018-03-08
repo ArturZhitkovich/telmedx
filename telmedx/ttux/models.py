@@ -1,10 +1,15 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+User = get_user_model()
 
 
-# TODO: Is group really required for this?
-class mobileCam(models.Model):
-    groups = models.ForeignKey(Group)
+class MobileCam(models.Model):
+    groups = models.ForeignKey(Group, blank=True, null=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(User, blank=True, null=True, related_name='mobile_cam', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)  # name of this device
     connectedState = models.BooleanField(default=False)  # is the device currently connected
     email = models.EmailField(max_length=255, default='')
@@ -21,7 +26,7 @@ class mobileCam(models.Model):
 
 
 class sessionRecord(models.Model):
-    mobile = models.ForeignKey(mobileCam)  # the mobile device used for this session
+    mobile = models.ForeignKey(MobileCam, on_delete=models.CASCADE)  # the mobile device used for this session
     sessn_date = models.DateTimeField('Session Date')  # the date/time of this session
     streamId = models.CharField(
         max_length=50)  # the session id used for this stream, video and snapshots will be stored here
@@ -29,7 +34,7 @@ class sessionRecord(models.Model):
 
 
 class sessionLog(models.Model):
-    device = models.ForeignKey(mobileCam)
+    device = models.ForeignKey(MobileCam, on_delete=models.CASCADE)
     begin_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField()
     frames = models.IntegerField()
@@ -43,9 +48,22 @@ class sessionLog(models.Model):
 
     @property
     def duration(self):
-        return self.end_timestamp - self.begin_timestamp
+        seconds = (self.end_timestamp - self.begin_timestamp).total_seconds()
+        if seconds < 60:
+            ret = '{} seconds'.format(round(seconds, 2))
+        else:
+            minutes = round((seconds // 60.0), 2)
+            plural = 's' if minutes > 1.0 else ''
+            ret = '{} minute{}'.format(minutes, plural)
+
+        return ret
 
     @property
     def begin(self):
         return self.begin_timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
+
+@receiver(post_save, sender=User)
+def create_mobile_cam(sender, instance, created, **kwargs):
+    if created:
+        MobileCam.objects.create(user=instance)
