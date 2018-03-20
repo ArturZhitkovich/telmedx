@@ -31,7 +31,11 @@
                 <a class="navbar-brand"
                    href="{% if user and user.is_staff %}{% url 'admin-users-list' %}{% endif %}">
                     {% if user.is_staff and not user.is_superuser %}
-                        <img src="{{ user.group.profile.logo|thumbnail_url:'logo' }}" alt="telmedx">
+                        {% if user.group.profile.logo %}
+                            <img src="{{ user.group.profile.logo|thumbnail_url:'logo' }}" alt="telmedx">
+                        {% else %}
+                            <img src="{% static '/img/' %}/{{ brand }}/brand-logo.png" alt="telmedx">
+                        {% endif %}
                     {% elif user.is_superuser %}
                         <img src="{% static '/img/' %}/{{ brand }}/brand-logo.png" alt="telmedx">
                     {% else %}
