@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'www.barefootdev2.com',
     '127.0.0.1',
     '10.0.0.48',
+    '10.0.0.116',		 #AV Local IP
     'telmedx.local',
     'localhost',
 ]
