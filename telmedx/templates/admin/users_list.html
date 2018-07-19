@@ -12,10 +12,10 @@
                 <tr>
                     <th class="actions"></th>
                     <th>
-                        {% include 'admin/sorted_header_item.html' with field='profile__last_name' nfield='-profile__last_name' label='Last Name' %}
+                        {% include 'admin/sorted_header_item.html' with field='profile__first_name' nfield='-profile__first_name' label='First Name' %}
                     </th>
                     <th>
-                        {% include 'admin/sorted_header_item.html' with field='profile__first_name' nfield='-profile__first_name' label='First Name' %}
+                        {% include 'admin/sorted_header_item.html' with field='profile__last_name' nfield='-profile__last_name' label='Last Name' %}
                     </th>
                     <th>
                         {% include 'admin/sorted_header_item.html' with field='email' nfield='-email' label='Email' %}
@@ -56,8 +56,8 @@
                         </a>
                         {% endcomment %}
                         </td>
-                        <td>{{ item.last_name }}</td>
                         <td>{{ item.first_name }}</td>
+                        <td>{{ item.last_name }}</td>
                         <td>{{ item.email }}</td>
                         {% if user.is_superuser %}
                             <td>{{ item.groups.first }}</td>
