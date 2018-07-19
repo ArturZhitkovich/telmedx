@@ -15,6 +15,7 @@
         </div>
         <form class="form-inline search-form pull-right" method="GET">
             {% if current_page == 'users' %}
+                {% if request.user.is_superuser %}
                 <div class="input-group">
                     <label class="sr-only" for="form_user_type">User Types</label>
                     <select id="form_user_type" class="form-control" name="utype">
@@ -29,7 +30,6 @@
                         </option>
                     </select>
                 </div>
-                {% if request.user.is_superuser %}
                     <div class="input-group">
                         <label class="sr-only" for="form_user_type">User Groups</label>
                         <select id="form_user_type" class="form-control" name="ugroup">
