@@ -14,6 +14,12 @@ html, body {
   background: rgba(242, 242, 242, 1);
 }
 
+.admin-navbar {
+
+  margin-bottom: 0px;
+  border-radius: 5px 5px 0px 0px;
+}
+
 #wrap.telmedx {
   background: url('/static/img/telmedx/bg.jpg') no-repeat center center fixed;
 
