@@ -33,9 +33,11 @@
                 <th>Group</th>
                 <th>Type</th>
                 {% endcomment %}
+                    {% if user.is_superuser %}
                     <th>
                         {% include 'admin/sorted_header_item.html' with label='added' field='date_joined' nfield='-date_joined' %}
                     </th>
+                    {% endif %}
                     {% if not user.is_superuser  %}
                     <th>{# start conference #}</th>
                     {% endif %}
@@ -62,15 +64,16 @@
                         {% if user.is_superuser %}
                             <td>{{ item.groups.first }}</td>
                             <td>{{ item.user_type }}</td>
-                        {% endif %}
+
                         {% comment %}
                             <td>{{ item.groups.all|join:', ' }}</td>
                             <td>{{ item.is_staff }}</td>
                             {% endcomment %}
                         <td>{{ item.date_created|date:'Y-m-d' }}</td>
+                        {% endif %}
                         {% if not user.is_superuser  %}
-                        <td><a href="{% url 'device-detail' item.uuid %}">
-                            Start Conference</a></td>
+                        <td class="last-column"><a href="{% url 'device-detail' item.uuid %}">
+                            Start Video</a></td>
                         {% endif %}
                     </tr>
                 {% empty %}
