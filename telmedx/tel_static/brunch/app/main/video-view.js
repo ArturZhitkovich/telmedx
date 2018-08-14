@@ -96,7 +96,6 @@ module.exports = {
       if (_this.flashToggeling || _this.frontCamera || _this.cameraToggeling) {
         return;
       }
-      _this.recieveMessages();
       _this.toggleFlash();
       if (_this.isFlashOn) {
         _this.flashOff();
@@ -188,9 +187,10 @@ module.exports = {
     var previousVal = "";
     function InputChangeListener() {
         let today = new Date().toLocaleString();
-        console.log('inside listener');
+        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'stuff';
+        console.log(messageUrl);
            $.ajax({
-               url: '/ttux/messaging/'
+               url: messageUrl
            }).done(function(data) {
             if($('#messageboxID').val() != previousVal){
             var messagebox = document.getElementById("messageboxID");

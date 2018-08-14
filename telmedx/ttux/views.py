@@ -132,7 +132,7 @@ def flipcamera_response(request, device_name, status):
     return HttpResponse("flipcameraResponse")
 
 @csrf_exempt
-def messaging(request, device_name):
+def messaging(request, device_name, msg):
     """
     Receive messages from phone/device
     :param request:
@@ -140,7 +140,7 @@ def messaging(request, device_name):
     :return:
     """
     response = request.read().decode('utf-8')
-    print("response: " + response)
+    print("response: " + msg)
     print("recieved message from device: <" + device_name + "> at " + request.META["REMOTE_ADDR"])
     session = Session.get(device_name)
 
@@ -156,7 +156,7 @@ def messaging(request, device_name):
     # print(session.cookies.get_dict())
 
     #display data on webpage
-    return HttpResponse(response)
+    return HttpResponse(msg)
 
 # handle ping request from the phone
 @csrf_exempt
