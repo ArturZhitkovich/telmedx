@@ -84,79 +84,8 @@
                         </div>
 
                     </div>
-                    <div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-
-                                <span class="glyphicon glyphicon-comment"></span> Messages
-
-                            </div>
-                            <div style="min-height:200px;min-width:200px; display: block;" class="panel-body">
-
-                                <div style="overflow-y:scroll; height:200px" >
-                                    <span id="messageboxID"> </span>
-                               </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
-            <script>
-// getMessages();
-//  function  getMessages(){
-//         let today = new Date().toLocaleString();
-
-//        $.ajax({
-//            url: '/ttux/messaging/'
-//        }).done(function(data) {
-//            console.log(data);
-//            console.log('date');
-//            var messagebox = document.getElementById("messagebox");
-//            messagebox.innerHTML += data  + "          "+ today + '<br/>';
-//        });
-//    };
-
-
-$('#messageboxID').change(function(){
-   alert("changed");
-});
-
-previousVal = "";
-function InputChangeListener()
-{
-    let today = new Date().toLocaleString();
-
-
-    console.log('inside listener');
-       $.ajax({
-           url: '/ttux/messaging/'
-       }).done(function(data) {
-        if($('#messageboxID').val() != previousVal){
-            //previousVal = data + today;
-          //  $('messageboxID').change();
-        var messagebox = document.getElementById("messageboxID");
-        previousVal = data  + "          "+ today + '<br/>'
-        messageboxID.innerHTML += previousVal;
-        }
-        console.log('finished');
-       });
-  // if($('#elementId').val()
-  //    != previousVal)
-  // {
-  //  previousVal  = $('#elementId').val();
-  //  $('#elementId').change();    
-  // }
-}
-
-setInterval(InputChangeListener, 5000);
-
-$('#messageboxID').val(3);
-
-</script>
-
-
             <div id="first-middle" class="">
                 <div id="snapshot-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -211,9 +140,19 @@ $('#messageboxID').val(3);
             </div>
         </div>
 
+        <div class="row">
+                <div id="messaging-container" class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-comment"></span> Messages
+                    </div>
+                    <div style="min-height:200px;min-width:200px; display: block;" class="panel-body">
 
+                        <div style="overflow-y:scroll; height:200px" >
+                            <span id="messageboxID"> </span>
+                       </div>
+                    </div>
+                </div>
 
-        <div id="second-row" class="row">
             <div id="second-left" class="col-md-6">
                 <div id="powered-logo" style="">
                     <p style="margin-bottom: 5px; color: #fff;">Powered By</p>

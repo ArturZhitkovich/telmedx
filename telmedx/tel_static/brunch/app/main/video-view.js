@@ -184,6 +184,29 @@ module.exports = {
     });
   },
 
+  _initMessageContainer(_this){
+    var previousVal = "";
+    function InputChangeListener() {
+        let today = new Date().toLocaleString();
+        console.log('inside listener');
+           $.ajax({
+               url: '/ttux/messaging/'
+           }).done(function(data) {
+            if($('#messageboxID').val() != previousVal){
+            var messagebox = document.getElementById("messageboxID");
+            previousVal = data  + "          "+ today + '<br/>'
+            messageboxID.innerHTML += previousVal;
+            }
+            console.log('finished');
+           });
+    }
+
+    setInterval(InputChangeListener, 5000);
+
+    $('#messageboxID').val(3);
+
+  },
+
   _initSnapshotContainers(_this) {
     $('#open-editor').click(function () {
       const $editSnapshot = $('#editSnapshot');
@@ -251,6 +274,9 @@ module.exports = {
 
     // Initialize all elements in the streaming video container
     this._initVideoContainer(_this);
+
+    // Initialize message container
+    this._initMessageContainer(_this);
 
     // Initialize snapshot containers
     this._initSnapshotContainers(_this);
@@ -641,9 +667,6 @@ module.exports = {
       console.log('hollywood exists');
     }
   },
-
-
-
 
   /**
    * Bindings to adjust layout based on window size.

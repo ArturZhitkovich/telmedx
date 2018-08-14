@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^snapshotResponse/(snap\d+.jpg)?', api.SnapshotResponseAPIView.as_view()),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
-    #url(r'^messaging/(?P<device_name>.*?)/(?P<status>\w+)/?',views.messaging),
+    #url(r'^messaging/(?P<device_name>.*?)/(?P<status>\w+)/?', views.messaging),
 
 
     url(r'^ping$', views.pingRequest),
