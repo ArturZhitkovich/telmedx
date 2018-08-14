@@ -1,5 +1,5 @@
 #!/bin/bash
-source ../bin/activate
+source ../venv/bin/activate
 cd ../tel_static/brunch
 sudo brunch build
 cd ../../

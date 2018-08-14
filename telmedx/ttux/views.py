@@ -5,6 +5,7 @@ import logging
 import socket
 import time
 
+
 import gevent
 import gevent.queue
 from django.conf import settings
@@ -130,6 +131,50 @@ def flipcamera_response(request, device_name, status):
 
     return HttpResponse("flipcameraResponse")
 
+@csrf_exempt
+def messaging(request,device_name=''):
+    import pickle # store data
+    import ast # allows for parsing of data
+    """
+    Receive messages from phone/device
+    :param request:
+    :param device_name:
+    :return:
+    """
+
+    data = request.read() # access data from the request
+
+    # TODO
+    # still need to get the session from the device name
+    # still need to create a function that stores the data in session.py
+    # currently storing data in 'pickle'
+
+    session = Session.get(device_name) 
+    # session = requests.Session()
+    # print(session.cookies.get_dict())
+    # response = session.get('http://10.0.0.103:8000/')
+    # print(session.cookies.get_dict())
+
+    # parse the data using utf-8
+    data_dump = data.decode('utf-8')
+
+    # check if data is valid
+    if not data_dump:
+
+        print('messages are empty')
+    else:
+        # dump the message data
+        pickle.dump(data_dump, open('data.dump', 'wb'))
+        print('posted message')
+
+    # load the data from the data.dump file
+    load_data = pickle.load(open('data.dump', 'rb'))
+
+    # parse data
+    display_data = ast.literal_eval(load_data)
+
+    #display data on webpage
+    return HttpResponse(display_data['message'] + device_name)
 
 # handle ping request from the phone
 @csrf_exempt

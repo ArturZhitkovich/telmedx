@@ -112,7 +112,6 @@ class SnapshotAPIView(TelmedxAPIView):
 
         return Response({'status': 'snapshot_response'})
 
-
 class FlipCameraAPIView(TelmedxAPIView):
     def post(self, request, status=None, format=None):
         """
@@ -146,8 +145,7 @@ class ReceivedImageAPIView(APIView):
 
         Example `curl` command:
         ```bash
-        curl -X POST --data-binary \
-             localhost:8000/ttux/img/user@example.com/img0001.jpg
+        curl -X POST --data-binary localhost:8000/ttux/img/user@example.com/img0001.jpg
         ```
 
         :param request:

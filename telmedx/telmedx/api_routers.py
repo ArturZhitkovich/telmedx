@@ -16,7 +16,6 @@ urlpatterns = [
     url(r'^snapshot/snap\d+.jpg', SnapshotAPIView.as_view()),
     url(r'^flipCamera/(?P<status>\w+)', FlipCameraAPIView.as_view()),
     url(r'^flashlight/(?P<status>\w+)', FlashlightAPIView.as_view()),
-
     url(r'^user/(?P<pk>\d+)', UserUpdateAPIView.as_view()),
     url(r'^profile', UserProfileAPIView.as_view()),
 ]

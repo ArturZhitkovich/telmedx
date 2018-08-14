@@ -96,7 +96,7 @@ module.exports = {
       if (_this.flashToggeling || _this.frontCamera || _this.cameraToggeling) {
         return;
       }
-
+      _this.recieveMessages();
       _this.toggleFlash();
       if (_this.isFlashOn) {
         _this.flashOff();
@@ -348,6 +348,7 @@ module.exports = {
       }
     });
   },
+
 
   takeSnapshotClicked() {
     const _this = this;
@@ -641,6 +642,9 @@ module.exports = {
     }
   },
 
+
+
+
   /**
    * Bindings to adjust layout based on window size.
    */
@@ -653,6 +657,7 @@ module.exports = {
     const $snapContainer = $('#snap-container');
 
     this.locateStream();
+
 
     $(window).resize(function () {
       console.log('window resize here');

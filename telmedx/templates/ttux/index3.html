@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block metatitle %}telmedx | Video Feed:  {{ dev.name }}{% endblock %}
-{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
+{% block metadescription %}Looking for the next big thing in healthcare? Checkout telmedx.com{% endblock %}
 {% block nav %}
     <ul class="nav navbar-nav">
         <li class="{% if '/users' in request.path %}active{% endif %}">
@@ -26,6 +26,7 @@
 {% endblock nav %}
 
 {% block content %}
+<br>
     <div id="device-video-page" class="container" style="width: 100%;">
         <div id="first-row" class="row">
             <div class="col-md-12">
@@ -34,6 +35,7 @@
                 </a>
             </div>
         </div>
+
         <div class="row">
             <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
                 <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
@@ -82,8 +84,79 @@
                         </div>
 
                     </div>
+                    <div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+
+                                <span class="glyphicon glyphicon-comment"></span> Messages
+
+                            </div>
+                            <div style="min-height:200px;min-width:200px; display: block;" class="panel-body">
+
+                                <div style="overflow-y:scroll; height:200px" >
+                                    <span id="messageboxID"> </span>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+            <script>
+// getMessages();
+//  function  getMessages(){
+//         let today = new Date().toLocaleString();
+
+//        $.ajax({
+//            url: '/ttux/messaging/'
+//        }).done(function(data) {
+//            console.log(data);
+//            console.log('date');
+//            var messagebox = document.getElementById("messagebox");
+//            messagebox.innerHTML += data  + "          "+ today + '<br/>';
+//        });
+//    };
+
+
+$('#messageboxID').change(function(){
+   alert("changed");
+});
+
+previousVal = "";
+function InputChangeListener()
+{
+    let today = new Date().toLocaleString();
+
+
+    console.log('inside listener');
+       $.ajax({
+           url: '/ttux/messaging/'
+       }).done(function(data) {
+        if($('#messageboxID').val() != previousVal){
+            //previousVal = data + today;
+          //  $('messageboxID').change();
+        var messagebox = document.getElementById("messageboxID");
+        previousVal = data  + "          "+ today + '<br/>'
+        messageboxID.innerHTML += previousVal;
+        }
+        console.log('finished');
+       });
+  // if($('#elementId').val()
+  //    != previousVal)
+  // {
+  //  previousVal  = $('#elementId').val();
+  //  $('#elementId').change();    
+  // }
+}
+
+setInterval(InputChangeListener, 5000);
+
+$('#messageboxID').val(3);
+
+</script>
+
+
             <div id="first-middle" class="">
                 <div id="snapshot-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -137,6 +210,9 @@
                 </div>
             </div>
         </div>
+
+
+
         <div id="second-row" class="row">
             <div id="second-left" class="col-md-6">
                 <div id="powered-logo" style="">
@@ -145,6 +221,7 @@
                 </div>
             </div>
         </div>
+
         <canvas style="display:none;" id="b"></canvas>
     </div>
     <!-- Modal -->
@@ -169,10 +246,11 @@
 
     <div id="deviceName" data-name="{{ dev.uuid }}"></div>
 
-
 {% endblock content %}
 
 {% block afterjquery %}
+
+    {#    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>#}
     {#    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>#}
     {#    <script type="text/javascript" src="/static/js/videofeed-1.js"></script>#}
     {#    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>#}

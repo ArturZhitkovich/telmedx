@@ -17,9 +17,16 @@ urlpatterns = [
     # Mobile API/Endpoints
     url(r'^img/(?P<device_name>.*?)/img\d+.jpg$', api.ReceivedImageAPIView.as_view()),
     url(r'^img/img\d+.jpg$', api.ReceivedImageAPIView.as_view()),
+    # url(r'^messaging/?$', api.MessageAPIView.as_view()),
+    #url(r'^messaging/(?P<device_name>.*?)', api.MessageAPIView.as_view()),
+
+
     url(r'^snapshotResponse/(snap\d+.jpg)?', api.SnapshotResponseAPIView.as_view()),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
+    #url(r'^messaging/(?P<device_name>.*?)/(?P<status>\w+)/?',views.messaging),
+
+
     url(r'^ping$', views.pingRequest),
     url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/?$', views.ping2_request),
     # url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
@@ -37,6 +44,7 @@ urlpatterns = [
     url(r'^lastFrame/(?P<device_name>.*?)/(?P<fnum>\d+)$', views.get_last_frame_from_stream),
     url(r'^snapshot/(?P<device_name>.*?)/?$', views.snapshot_request),
     url(r'^ie-snapshot/(?P<device_name>.*?)/(?P<salt>.*?)$', views.get_ie_snapshot),
+    url(r'^messaging/(?P<device_name>.*?)/?$', views.messaging),
     url(r'^flashlight/(?P<device_name>.*?)/?$', views.toggle_flash),
     url(r'^flipcamera/(?P<device_name>.*?)/?$', views.flip_camera),
 ]

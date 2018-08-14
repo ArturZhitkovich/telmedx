@@ -30,7 +30,9 @@ ALLOWED_HOSTS = [
     'www.barefootdev2.com',
     '127.0.0.1',
     '10.0.0.48',
+    '10.0.0.103',
     '10.0.0.116',		 #AV Local IP
+    '192.168.1.23',
     'telmedx.local',
     'localhost',
 ]
@@ -165,12 +167,16 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+
+
     ),
 
     'JWT_PAYLOAD_HANDLER': 'users.utils.jwt_payload_handler',

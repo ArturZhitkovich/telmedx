@@ -22,6 +22,7 @@ class Session:
     snapshotQ = gevent.queue.Queue(1)
     flashlightQ = gevent.queue.Queue(1)
     flipcameraQ = gevent.queue.Queue(1)
+    messageQ = gevent.queue.Queue(1)
     deviceSpecQ = gevent.queue.Queue(1)
     begin_timestamp = 0
     last_frame_timestamp = 0
@@ -143,6 +144,7 @@ class Session:
             session.flashlightQ = gevent.queue.Queue(1)
             session.flipcameraQ = gevent.queue.Queue(1)
             session.deviceSpecQ = gevent.queue.Queue(1)
+            session.messageQ = gevent.queue.Queue(1)
             session.device_name = str(key)
             session.begin_timestamp = 0
             session.last_frame_timestamp = 0
