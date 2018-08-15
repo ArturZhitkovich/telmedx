@@ -185,19 +185,24 @@ module.exports = {
 
   _initMessageContainer(_this){
     var previousVal = "";
+    var messageContent = "";
     function InputChangeListener() {
         let today = new Date().toLocaleString();
-        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'stuff';
+        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'someText';
         console.log(messageUrl);
            $.ajax({
                url: messageUrl
            }).done(function(data) {
-            if($('#messageboxID').val() != previousVal){
-            var messagebox = document.getElementById("messageboxID");
-            previousVal = data  + "          "+ today + '<br/>'
-            messageboxID.innerHTML += previousVal;
+            if(data == previousVal){
+
+            } else {
+              if($('#messageboxID').val() != previousVal){
+                var messagebox = document.getElementById("messageboxID");
+                previousVal = data;
+                messageContent = data  + " "+ today + '<br/>';
+                messageboxID.innerHTML += messageContent;
+              }
             }
-            console.log('finished');
            });
     }
 
