@@ -296,10 +296,10 @@ def get_last_frame_from_stream(request, device_name, fnum):
     :return:
     """
 
-
     fnum_padded = str(fnum).zfill(8)
     # fnum_padded = fnum
     session = Session.get(device_name)
+    message = ""
 
     if not session:
         return HttpResponse('Not ready')
@@ -318,7 +318,6 @@ def get_last_frame_from_stream(request, device_name, fnum):
         print("last frame message: " + message)
     except:
         message = "NULL_MESSAGE"
-        print("Failed to get message from queue")
 
     # print("Current Message: " + message)
 
@@ -339,16 +338,16 @@ def get_last_frame_from_stream(request, device_name, fnum):
         lastFnumber_str = str(lastFnumber).zfill(8)
 
         try:
-            lastFnumber_str = '!!{}!!{}!!{}'.format(
+            lastFnumber_str = '!!{}!!{}'.format(
                 session.deviceSpecQ.get_nowait(),
-                message,
-                lastFnumber_str
+                lastFnumber_str,
             )
         except Exception as e:
             pass
 
+
         frame_encoded = base64.encodebytes(frame)
-        encodedResp = lastFnumber_str + frame_encoded.decode('ascii')
+        encodedResp = lastFnumber_str + "|" + message + "|" + frame_encoded.decode('ascii')
         # encodedResp = base64.encodebytes(frame)
         response = HttpResponse(encodedResp)
         response['Content-Type'] = "text/html"

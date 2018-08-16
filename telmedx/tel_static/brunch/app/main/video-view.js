@@ -52,7 +52,6 @@ module.exports = {
     if (this.$el.length) {
       this.bindUiActions();
       this.getFrame();
-      //this.getMessage("");
     }
   },
 
@@ -528,7 +527,14 @@ module.exports = {
     }).done(function (msg) {
       let fnumber = msg.substring(0, 8);
       let beginImgData = 8;
-      console.log(msg);
+      var matches = msg.match(/\|(.*?)\|/);
+      msg = msg.replace(/\|(.*?)\|/, "")
+
+      if (matches) {
+          var receivedMessage = matches[1];
+          // console.log("submatch: " + receivedMessage);
+          _this.addMessage(receivedMessage);
+      }
 
       if (msg.substring(0, 2) === '!!') {
         let beginEnd = msg.indexOf('!!', 2);
@@ -616,29 +622,13 @@ module.exports = {
     // });
   },
 
-  getMessage(previousMessage) {
-    const _this = this;
-    var previousMessage = previousMessage;
-    var messageContent = "";
-    var today = new Date().toLocaleString();
-    var messageUrl = '/ttux/message/' + _this.deviceName + '/' + 'someText';
-    console.log(messageUrl);
-
-    $.ajax({
-      url: messageUrl
-    }).done(function (data) {
-//      console.log("Prev: " + previousMessage);
-//      console.log("Data: " + data);
-      if(data == previousMessage){
-
-      } else {
-        // Add Data to messages container
-        previousMessage = data;
-        messageContent = data  + " " + today + '<br/>';
-        $('#messageboxID').append(messageContent);
-      }
-    });
-    setTimeout(function(){_this.getMessage(previousMessage)}, 1000); //Let the function call itself
+  addMessage(message) {
+    if(message != "NULL_MESSAGE"){
+      // Add message to UI
+      var today = new Date().toLocaleString();
+      var messageContent = message  + " " + today + '<br/>';
+      $('#messageboxID').append(messageContent);
+    }
   },
 
   toggleCamera() {
