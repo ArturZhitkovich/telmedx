@@ -320,6 +320,8 @@ def get_last_frame_from_stream(request, device_name, fnum):
         message = "NULL_MESSAGE"
         print("Failed to get message from queue")
 
+    # print("Current Message: " + message)
+
     # do not send a response until the frame changes,
     # cheat and just sleep for now
     if fnum == lastFnumber_str:
@@ -337,8 +339,9 @@ def get_last_frame_from_stream(request, device_name, fnum):
         lastFnumber_str = str(lastFnumber).zfill(8)
 
         try:
-            lastFnumber_str = '!!{}!!{}'.format(
+            lastFnumber_str = '!!{}!!{}!!{}'.format(
                 session.deviceSpecQ.get_nowait(),
+                message,
                 lastFnumber_str
             )
         except Exception as e:

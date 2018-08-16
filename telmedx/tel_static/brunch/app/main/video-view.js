@@ -528,6 +528,7 @@ module.exports = {
     }).done(function (msg) {
       let fnumber = msg.substring(0, 8);
       let beginImgData = 8;
+      console.log(msg);
 
       if (msg.substring(0, 2) === '!!') {
         let beginEnd = msg.indexOf('!!', 2);
