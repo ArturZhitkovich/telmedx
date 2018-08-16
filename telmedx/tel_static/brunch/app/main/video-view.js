@@ -52,6 +52,7 @@ module.exports = {
     if (this.$el.length) {
       this.bindUiActions();
       this.getFrame();
+      //this.getMessage("");
     }
   },
 
@@ -183,32 +184,32 @@ module.exports = {
     });
   },
 
-  _initMessageContainer(_this){
-    var previousVal = "";
-    var messageContent = "";
-    function InputChangeListener() {
-        let today = new Date().toLocaleString();
-        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'someText';
-        console.log(messageUrl);
-           $.ajax({
-               url: messageUrl
-           }).done(function(data) {
-            if(data == previousVal){
-
-            } else {
-              if($('#messageboxID').val() != previousVal){
-                var messagebox = document.getElementById("messageboxID");
-                previousVal = data;
-                messageContent = data  + " "+ today + '<br/>';
-                messageboxID.innerHTML += messageContent;
-              }
-            }
-           });
-    }
-
-    setInterval(InputChangeListener, 5000);
-
-    $('#messageboxID').val(3);
+  _initMessageContainer(_this) {
+//    var previousVal = "";
+//    var messageContent = "";
+//    function InputChangeListener() {
+//        let today = new Date().toLocaleString();
+//        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'someText';
+//        console.log(messageUrl);
+//           $.ajax({
+//               url: messageUrl
+//           }).done(function(data) {
+//            if(data == previousVal){
+//
+//            } else {
+//              if($('#messageboxID').val() != previousVal){
+//                var messagebox = document.getElementById("messageboxID");
+//                previousVal = data;
+//                messageContent = data  + " "+ today + '<br/>';
+//                messageboxID.innerHTML += messageContent;
+//              }
+//            }
+//           });
+//    }
+//
+//    setInterval(InputChangeListener, 5000);
+//
+//    $('#messageboxID').val(3);
 
   },
 
@@ -612,6 +613,31 @@ module.exports = {
     // console.log('got error');
     // setTimeout('frameOne_jq()', 500);
     // });
+  },
+
+  getMessage(previousMessage) {
+    const _this = this;
+    var previousMessage = previousMessage;
+    var messageContent = "";
+    var today = new Date().toLocaleString();
+    var messageUrl = '/ttux/message/' + _this.deviceName + '/' + 'someText';
+    console.log(messageUrl);
+
+    $.ajax({
+      url: messageUrl
+    }).done(function (data) {
+//      console.log("Prev: " + previousMessage);
+//      console.log("Data: " + data);
+      if(data == previousMessage){
+
+      } else {
+        // Add Data to messages container
+        previousMessage = data;
+        messageContent = data  + " " + today + '<br/>';
+        $('#messageboxID').append(messageContent);
+      }
+    });
+    setTimeout(function(){_this.getMessage(previousMessage)}, 1000); //Let the function call itself
   },
 
   toggleCamera() {

@@ -62,6 +62,7 @@ def rx_image(request, device_name):
         return JsonResponse({'status': 'Not ready'})
 
     image = request.read()
+    print("Image: " + image)
     # distribute this frame to each watcher
     session.enqueue_frame(image)
 
@@ -132,31 +133,27 @@ def flipcamera_response(request, device_name, status):
     return HttpResponse("flipcameraResponse")
 
 @csrf_exempt
-def messaging(request, device_name, msg):
+def message_response(request, device_name, status):
     """
     Receive messages from phone/device
     :param request:
     :param device_name:
+    :param status:
     :return:
     """
-    response = request.read().decode('utf-8')
-    print("response: " + msg)
-    print("recieved message from device: <" + device_name + "> at " + request.META["REMOTE_ADDR"])
+    print("got message from device: {}, {}".format(device_name, status))
+
     session = Session.get(device_name)
 
-    # TODO
-    # still need to get the session from the device name
-    # still need to create a function that stores the data in session.py
-    # currently storing data in 'pickle'
+    try:
+        session.messageQ.put_nowait(status)
+    except:
+        # logger.error("failed to queue up snapshot response")
+        print("failed to queue up flashlight response from " + device_name)
+        session.messageQ.get_nowait()  # empty the queue if full
+        session.messageQ.put_nowait(status)
 
-    # session = Session.get(device_name)
-    # session = requests.Session()
-    # print(session.cookies.get_dict())
-    # response = session.get('http://10.0.0.103:8000/')
-    # print(session.cookies.get_dict())
-
-    #display data on webpage
-    return HttpResponse(msg)
+    return HttpResponse("messagingResponse")
 
 # handle ping request from the phone
 @csrf_exempt
@@ -298,6 +295,8 @@ def get_last_frame_from_stream(request, device_name, fnum):
     :param fnum:
     :return:
     """
+
+
     fnum_padded = str(fnum).zfill(8)
     # fnum_padded = fnum
     session = Session.get(device_name)
@@ -313,6 +312,13 @@ def get_last_frame_from_stream(request, device_name, fnum):
     except:
         lastFnumber = ""
         lastFnumber_str = str(lastFnumber).zfill(8)
+
+    try:
+        message = session.messageQ.get(block=True, timeout=2)
+        print("last frame message: " + message)
+    except:
+        message = "NULL_MESSAGE"
+        print("Failed to get message from queue")
 
     # do not send a response until the frame changes,
     # cheat and just sleep for now
@@ -410,6 +416,47 @@ def flip_camera(request, device_name):
 
     return response
 
+
+@csrf_exempt
+def message(request, device_name):
+    """
+    Handle message request. This comes from the web interface.
+    :param request:
+    :param device_name:
+    :return:
+    """
+    print("new Message for device: " + device_name + " from " + request.META["REMOTE_ADDR"])
+
+    message_content = request.POST.get('message')
+    print("Recieved message: " + message_content)
+
+    session = Session.get(device_name)
+
+    if not session.messageQ.empty():
+        print("oops, unable to get message, flushing the queue")
+        snapshot = session.messageQ.get(block=True, timeout=1)
+
+    path = "/message"
+
+    try:
+        session.commandQ.put_nowait(path)
+    except:
+        # remove item if the queue is blocked to keep stale requests from
+        # sitting in the queue
+        session.commandQ.get_nowait()
+
+    status = ""
+    session = Session.get(device_name)
+
+    try:
+        session.messageQ.put_nowait(message_content)
+    except:
+        print("failed to get message from phone " + device_name)
+
+    response = JsonResponse({"status": status})
+    print("returning message response now")
+
+    return response
 
 @login_required
 @csrf_exempt
