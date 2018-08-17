@@ -637,7 +637,7 @@ module.exports = {
       // Add message to UI
       _this.mCounter++
       var today = new Date().toLocaleString();
-      var messageContent = "<p class=\"msg-text msg-content-" +  _this.mCounter + "\">" + message  + " &nbsp<span class=\"msg-date\">" + today + '</span></p>';
+      var messageContent = "<p class=\"msg-text msg-content-" +  _this.mCounter + "\">" + _this.htmlEntities(message)  + " &nbsp<span class=\"msg-date\">" + today + '</span></p>';
       $('#messageboxID').append(messageContent);
     }
 
@@ -700,6 +700,10 @@ module.exports = {
     } else {
       console.log('hollywood exists');
     }
+  },
+
+  htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   },
 
   /**
