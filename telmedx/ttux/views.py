@@ -291,8 +291,7 @@ def get_last_frame_from_stream(request, device_name, fnum):
         lastFnumber_str = str(lastFnumber).zfill(8)
 
     try:
-        message = session.messageQ.get(block=True, timeout=2)
-        print("last frame message: " + message)
+        message = session.messageQ.get(block=True, timeout=0)
     except:
         message = "NULL_MESSAGE"
 
