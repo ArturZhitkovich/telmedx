@@ -242,3 +242,17 @@ img.snapshot {
   }
 }
 
+#messaging-container div div {
+    overflow-y: hidden !important;
+}
+
+.msg-text {
+    padding: 0% 2% 0% 1%;
+    text-align: justify;
+}
+
+.msg-date {
+    /* position: absolute; */
+    /* right: 64%; */
+    color: #808080
+}

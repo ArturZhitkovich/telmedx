@@ -9,6 +9,7 @@ module.exports = {
   ff: 0,
   lastFrame: 0,
   fCounter: 0,
+  mCounter: 0,
   startTime: new Date(),
 
   //video feed rotation
@@ -528,7 +529,7 @@ module.exports = {
       let fnumber = msg.substring(0, 8);
       let beginImgData = 8;
       var matches = msg.match(/\|(.*?)\|/);
-      msg = msg.replace(/\|(.*?)\|/, "")
+      msg = msg.replace(/\|(.*?)\|/, "");
 
       if (matches) {
           var receivedMessage = matches[1];
@@ -623,12 +624,23 @@ module.exports = {
   },
 
   addMessage(message) {
+    const _this = this;
+
     if(message != "NULL_MESSAGE"){
+      if(_this.mCounter >= 2){
+        // Clear oldest message
+        $('.msg-content-1').remove();
+        $(".msg-content-2").addClass('msg-content-1');
+        $(".msg-content-2").removeClass('msg-content-2');
+        _this.mCounter = 1;
+      }
       // Add message to UI
+      _this.mCounter++
       var today = new Date().toLocaleString();
-      var messageContent = message  + " " + today + '<br/>';
+      var messageContent = "<p class=\"msg-text msg-content-" +  _this.mCounter + "\">" + message  + " &nbsp<span class=\"msg-date\">" + today + '</span></p>';
       $('#messageboxID').append(messageContent);
     }
+
   },
 
   toggleCamera() {
