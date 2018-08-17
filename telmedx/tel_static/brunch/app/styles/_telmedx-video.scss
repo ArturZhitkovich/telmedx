@@ -16,9 +16,9 @@
   }
 
   #messaging-container {
-    margin: 1% !important;
+    margin: 1%;
     padding: 0;
-    margin: 0%;
+    margin-left: 1%;
     width: 40%;
   }
 
@@ -56,6 +56,11 @@
       margin: 3%;
       float: left;
       max-width: 94%;
+    }
+
+    #messaging-container {
+      margin: 3% !important;
+      width: 94% !important;
     }
 
     div#first-middle {
