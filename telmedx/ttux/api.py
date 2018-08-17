@@ -122,6 +122,7 @@ class FlipCameraAPIView(TelmedxAPIView):
         :return:
         """
         session = Session.get(request.user)
+        # print("request user: " + request.user)
 
         try:
             session.flipcameraQ.put_nowait(status)
@@ -178,6 +179,51 @@ class ReceivedImageAPIView(APIView):
         # ENDIF
         ##return HttpResponse(status="200 OK")
         return JsonResponse({'command': command_resp})
+
+class ReceivedMessageAPIView(APIView):
+    def post(self, request, device_name=None):
+        """
+        Receive message data from mobile apps.
+
+        :param request:
+        :param device_name:
+        :return:
+        :rtype: HttpResponse
+        """
+        if not device_name:
+            session = Session.get(request.user)
+        else:
+            session = Session.get(device_name)
+
+        if not session:
+            return Response({'status': 'Not ready'})
+
+        message_content = request.POST.get('message')
+        print("Recieved message: " + message_content)
+
+        if not session.messageQ.empty():
+            print("oops, unable to get message, flushing the queue")
+            snapshot = session.messageQ.get(block=True, timeout=1)
+
+        path = "/message"
+
+        try:
+            session.commandQ.put_nowait(path)
+        except:
+            # remove item if the queue is blocked to keep stale requests from
+            # sitting in the queue
+            session.commandQ.get_nowait()
+
+        try:
+            session.messageQ.put_nowait(message_content)
+            status = "success"
+        except:
+            status = "failure"
+
+        response = JsonResponse({"status": status})
+        print("returning message response now")
+
+        return response
 
 
 class SnapshotResponseAPIView(APIView):

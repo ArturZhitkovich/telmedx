@@ -20,7 +20,8 @@ urlpatterns = [
     url(r'^snapshotResponse/(snap\d+.jpg)?', api.SnapshotResponseAPIView.as_view()),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
-    url(r'^messageResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.message_response),
+    #url(r'^messageResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.message_response),
+    url(r'^message', api.ReceivedMessageAPIView.as_view()),
 
 
     url(r'^ping$', views.pingRequest),
@@ -40,7 +41,7 @@ urlpatterns = [
     url(r'^lastFrame/(?P<device_name>.*?)/(?P<fnum>\d+)$', views.get_last_frame_from_stream),
     url(r'^snapshot/(?P<device_name>.*?)/?$', views.snapshot_request),
     url(r'^ie-snapshot/(?P<device_name>.*?)/(?P<salt>.*?)$', views.get_ie_snapshot),
-    url(r'^message/(?P<device_name>.*?)/?$', views.message),
+    # url(r'^message/(?P<device_name>.*?)/?$', views.message),
     url(r'^flashlight/(?P<device_name>.*?)/?$', views.toggle_flash),
     url(r'^flipcamera/(?P<device_name>.*?)/?$', views.flip_camera),
 ]

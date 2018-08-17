@@ -132,29 +132,6 @@ def flipcamera_response(request, device_name, status):
 
     return HttpResponse("flipcameraResponse")
 
-@csrf_exempt
-def message_response(request, device_name, status):
-    """
-    Receive messages from phone/device
-    :param request:
-    :param device_name:
-    :param status:
-    :return:
-    """
-    print("got message from device: {}, {}".format(device_name, status))
-
-    session = Session.get(device_name)
-
-    try:
-        session.messageQ.put_nowait(status)
-    except:
-        # logger.error("failed to queue up snapshot response")
-        print("failed to queue up flashlight response from " + device_name)
-        session.messageQ.get_nowait()  # empty the queue if full
-        session.messageQ.put_nowait(status)
-
-    return HttpResponse("messagingResponse")
-
 # handle ping request from the phone
 @csrf_exempt
 def pingRequest(request):
@@ -415,48 +392,6 @@ def flip_camera(request, device_name):
 
     response = JsonResponse({"status": status})
     print("returning flashlight response now")
-
-    return response
-
-
-@csrf_exempt
-def message(request, device_name):
-    """
-    Handle message request. This comes from the web interface.
-    :param request:
-    :param device_name:
-    :return:
-    """
-    print("new Message for device: " + device_name + " from " + request.META["REMOTE_ADDR"])
-
-    message_content = request.POST.get('message')
-    print("Recieved message: " + message_content)
-
-    session = Session.get(device_name)
-
-    if not session.messageQ.empty():
-        print("oops, unable to get message, flushing the queue")
-        snapshot = session.messageQ.get(block=True, timeout=1)
-
-    path = "/message"
-
-    try:
-        session.commandQ.put_nowait(path)
-    except:
-        # remove item if the queue is blocked to keep stale requests from
-        # sitting in the queue
-        session.commandQ.get_nowait()
-
-    status = ""
-    session = Session.get(device_name)
-
-    try:
-        session.messageQ.put_nowait(message_content)
-    except:
-        print("failed to get message from phone " + device_name)
-
-    response = JsonResponse({"status": status})
-    print("returning message response now")
 
     return response
 
