@@ -5,6 +5,7 @@ import logging
 import socket
 import time
 
+
 import gevent
 import gevent.queue
 from django.conf import settings
@@ -61,6 +62,7 @@ def rx_image(request, device_name):
         return JsonResponse({'status': 'Not ready'})
 
     image = request.read()
+    print("Image: " + image)
     # distribute this frame to each watcher
     session.enqueue_frame(image)
 
@@ -129,7 +131,6 @@ def flipcamera_response(request, device_name, status):
     # END
 
     return HttpResponse("flipcameraResponse")
-
 
 # handle ping request from the phone
 @csrf_exempt
@@ -271,9 +272,11 @@ def get_last_frame_from_stream(request, device_name, fnum):
     :param fnum:
     :return:
     """
+
     fnum_padded = str(fnum).zfill(8)
     # fnum_padded = fnum
     session = Session.get(device_name)
+    message = ""
 
     if not session:
         return HttpResponse('Not ready')
@@ -286,6 +289,13 @@ def get_last_frame_from_stream(request, device_name, fnum):
     except:
         lastFnumber = ""
         lastFnumber_str = str(lastFnumber).zfill(8)
+
+    try:
+        message = session.messageQ.get(block=True, timeout=0)
+    except:
+        message = "NULL_MESSAGE"
+
+    # print("Current Message: " + message)
 
     # do not send a response until the frame changes,
     # cheat and just sleep for now
@@ -306,13 +316,14 @@ def get_last_frame_from_stream(request, device_name, fnum):
         try:
             lastFnumber_str = '!!{}!!{}'.format(
                 session.deviceSpecQ.get_nowait(),
-                lastFnumber_str
+                lastFnumber_str,
             )
         except Exception as e:
             pass
 
+
         frame_encoded = base64.encodebytes(frame)
-        encodedResp = lastFnumber_str + frame_encoded.decode('ascii')
+        encodedResp = lastFnumber_str + "|" + message + "|" + frame_encoded.decode('ascii')
         # encodedResp = base64.encodebytes(frame)
         response = HttpResponse(encodedResp)
         response['Content-Type'] = "text/html"
@@ -382,7 +393,6 @@ def flip_camera(request, device_name):
     print("returning flashlight response now")
 
     return response
-
 
 @login_required
 @csrf_exempt

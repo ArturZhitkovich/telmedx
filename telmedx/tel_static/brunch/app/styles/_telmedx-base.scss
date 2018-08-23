@@ -12,6 +12,7 @@ html, body {
   /* Pad bottom by footer height */
   padding: 0 0 20px;
   background: rgba(242, 242, 242, 1);
+  background-size: 100% !important;
 }
 
 #wrap.telmedx {
@@ -167,7 +168,7 @@ img.snapshot {
 }
 
 #snapshots {
-  padding-bottom: 11%;
+  padding-bottom: 1%;
   width: 90%;
   margin: auto;
 }
@@ -242,3 +243,17 @@ img.snapshot {
   }
 }
 
+#messaging-container div div {
+    overflow-y: hidden !important;
+}
+
+.msg-text {
+    padding: 0% 2% 0% 1%;
+    text-align: justify;
+}
+
+.msg-date {
+    /* position: absolute; */
+    /* right: 64%; */
+    color: #808080
+}

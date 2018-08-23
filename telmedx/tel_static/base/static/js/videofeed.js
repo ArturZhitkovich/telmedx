@@ -310,6 +310,9 @@ function sizePreview(){
     $("#cap-body").css("height","400px");
   }
 }
+
+
+
 $(document).ready(function()
 {
   $section = $('#capture-snaper').first();
@@ -319,6 +322,7 @@ $(document).ready(function()
     $zoomRange: $section.find(".zoom-range"),
     $reset: $section.find(".reset")
   });
+
   deviceName = $("#deviceName").data('name');
   $("#open-editor").click(function(){
     console.log("Clicked");
@@ -418,4 +422,6 @@ $(document).ready(function()
   
   //Ask for the first frame
   frameOne_jq();
+getMessages();
+
 });

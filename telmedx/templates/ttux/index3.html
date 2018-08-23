@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block metatitle %}telmedx | Video Feed:  {{ dev.name }}{% endblock %}
-{% block metadescription %}Looking for the next big thing in healtcare? Checkout telmedx.com{% endblock %}
+{% block metadescription %}Looking for the next big thing in healthcare? Checkout telmedx.com{% endblock %}
 {% block nav %}
     <ul class="nav navbar-nav">
         <li class="{% if '/users' in request.path %}active{% endif %}">
@@ -26,6 +26,7 @@
 {% endblock nav %}
 
 {% block content %}
+<br>
     <div id="device-video-page" class="container" style="width: 100%;">
         <div id="first-row" class="row">
             <div class="col-md-12">
@@ -34,6 +35,7 @@
                 </a>
             </div>
         </div>
+
         <div class="row">
             <div id="video-container" class="video-panel panel panel-default resizable" style="overflow: hidden;">
                 <div class="panel-heading ui-widget-header" style="padding: 9px 8px 8px 8px;">
@@ -137,7 +139,20 @@
                 </div>
             </div>
         </div>
-        <div id="second-row" class="row">
+
+        <div class="row">
+                <div id="messaging-container" class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-comment"></span> Messages
+                    </div>
+                    <div style="min-width:200px; display: block;" class="panel-body">
+
+                        <div style="overflow-y:scroll; height:120px" >
+                            <span id="messageboxID"> </span>
+                       </div>
+                    </div>
+                </div>
+
             <div id="second-left" class="col-md-6">
                 <div id="powered-logo" style="">
                     <p style="margin-bottom: 5px; color: #fff;">Powered By</p>
@@ -145,6 +160,7 @@
                 </div>
             </div>
         </div>
+
         <canvas style="display:none;" id="b"></canvas>
     </div>
     <!-- Modal -->
@@ -169,10 +185,11 @@
 
     <div id="deviceName" data-name="{{ dev.uuid }}"></div>
 
-
 {% endblock content %}
 
 {% block afterjquery %}
+
+    {#    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>#}
     {#    <script type="text/javascript" src="/static/js/jquery.panzoom.min.js"></script>#}
     {#    <script type="text/javascript" src="/static/js/videofeed-1.js"></script>#}
     {#    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>#}

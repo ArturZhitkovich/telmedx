@@ -9,6 +9,7 @@ module.exports = {
   ff: 0,
   lastFrame: 0,
   fCounter: 0,
+  mCounter: 0,
   startTime: new Date(),
 
   //video feed rotation
@@ -96,7 +97,6 @@ module.exports = {
       if (_this.flashToggeling || _this.frontCamera || _this.cameraToggeling) {
         return;
       }
-
       _this.toggleFlash();
       if (_this.isFlashOn) {
         _this.flashOff();
@@ -184,6 +184,35 @@ module.exports = {
     });
   },
 
+  _initMessageContainer(_this) {
+//    var previousVal = "";
+//    var messageContent = "";
+//    function InputChangeListener() {
+//        let today = new Date().toLocaleString();
+//        var messageUrl = '/ttux/messaging/' + _this.deviceName + '/' + 'someText';
+//        console.log(messageUrl);
+//           $.ajax({
+//               url: messageUrl
+//           }).done(function(data) {
+//            if(data == previousVal){
+//
+//            } else {
+//              if($('#messageboxID').val() != previousVal){
+//                var messagebox = document.getElementById("messageboxID");
+//                previousVal = data;
+//                messageContent = data  + " "+ today + '<br/>';
+//                messageboxID.innerHTML += messageContent;
+//              }
+//            }
+//           });
+//    }
+//
+//    setInterval(InputChangeListener, 5000);
+//
+//    $('#messageboxID').val(3);
+
+  },
+
   _initSnapshotContainers(_this) {
     $('#open-editor').click(function () {
       const $editSnapshot = $('#editSnapshot');
@@ -251,6 +280,9 @@ module.exports = {
 
     // Initialize all elements in the streaming video container
     this._initVideoContainer(_this);
+
+    // Initialize message container
+    this._initMessageContainer(_this);
 
     // Initialize snapshot containers
     this._initSnapshotContainers(_this);
@@ -348,6 +380,7 @@ module.exports = {
       }
     });
   },
+
 
   takeSnapshotClicked() {
     const _this = this;
@@ -495,6 +528,14 @@ module.exports = {
     }).done(function (msg) {
       let fnumber = msg.substring(0, 8);
       let beginImgData = 8;
+      var matches = msg.match(/\|(.*?)\|/);
+      msg = msg.replace(/\|(.*?)\|/, "");
+
+      if (matches) {
+          var receivedMessage = matches[1];
+          // console.log("submatch: " + receivedMessage);
+          _this.addMessage(receivedMessage);
+      }
 
       if (msg.substring(0, 2) === '!!') {
         let beginEnd = msg.indexOf('!!', 2);
@@ -582,6 +623,26 @@ module.exports = {
     // });
   },
 
+  addMessage(message) {
+    const _this = this;
+
+    if(message != "NULL_MESSAGE"){
+      if(_this.mCounter >= 2){
+        // Clear oldest message
+        $('.msg-content-1').remove();
+        $(".msg-content-2").addClass('msg-content-1');
+        $(".msg-content-2").removeClass('msg-content-2');
+        _this.mCounter = 1;
+      }
+      // Add message to UI
+      _this.mCounter++
+      var today = new Date().toLocaleString();
+      var messageContent = "<p class=\"msg-text msg-content-" +  _this.mCounter + "\">" + _this.htmlEntities(message)  + " &nbsp<span class=\"msg-date\">" + today + '</span></p>';
+      $('#messageboxID').append(messageContent);
+    }
+
+  },
+
   toggleCamera() {
     const _this = this;
     this.cameraToggeling = true;
@@ -641,6 +702,10 @@ module.exports = {
     }
   },
 
+  htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  },
+
   /**
    * Bindings to adjust layout based on window size.
    */
@@ -653,6 +718,7 @@ module.exports = {
     const $snapContainer = $('#snap-container');
 
     this.locateStream();
+
 
     $(window).resize(function () {
       console.log('window resize here');

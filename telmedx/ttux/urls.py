@@ -20,6 +20,9 @@ urlpatterns = [
     url(r'^snapshotResponse/(snap\d+.jpg)?', api.SnapshotResponseAPIView.as_view()),
     url(r'^flashlightResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flashlight_response),
     url(r'^flipcameraResponse/(?P<device_name>.*?)/(?P<status>\w+)/?', views.flipcamera_response),
+    url(r'^message', api.ReceivedMessageAPIView.as_view()),
+
+
     url(r'^ping$', views.pingRequest),
     url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/?$', views.ping2_request),
     # url(r'^ping2/(?P<app_version>\d+\.\d+\.\d+)/(?P<device_name>.*?)/?$', views.ping2_request),
