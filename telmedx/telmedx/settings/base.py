@@ -183,6 +183,8 @@ REST_FRAMEWORK = {
     'JWT_ALLOW_REFRESH': True,
     # Amount of time for a single JWT token to expire
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
+    #'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # Amount of time for a user to be able to refresh tokens
     # before logging in again
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),
@@ -205,6 +207,7 @@ THUMBNAIL_ALIASES = {
     }
 }
 
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -230,3 +233,4 @@ LOGGING = {
         },
     },
 }
+"""
