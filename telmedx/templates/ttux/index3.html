@@ -100,6 +100,84 @@
                         <div class="panel-heading" id="cap-head">
                             <h3 class="panel-title">
                                 <img style="height: 30px;" src="/static/img/controls/picture11.png">
+                                <style>
+
+                                    #wrapper-canvas{
+                                        position: absolute;
+                                        /*border: 1px solid black;*/
+                                        margin: 10px;
+
+                                    }
+                                    canvas {
+                                        border: 1px solid black;
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                    }
+                                    #source{
+                                        display: none;
+                                    }
+                                    .tools-bar{
+                                        display: flex;
+                                        align-items: center;
+                                        width: 100%;
+                                        flex-wrap: wrap;
+                                        margin: 5px -5px;
+                                        font-size: 16px;
+                                    }
+                                    /*, .tools-bar input[type="checkbox"]*/
+                                    .tools-bar input[type="radio"], .tools-bar input[type="checkbox"]  {
+                                        display: none;
+                                    }
+                                    .tools-bar input[type="radio"]:checked + label, .tools-bar input[type="checkbox"]:checked + label  {
+                                        background: #00b7ff;
+                                    }
+
+                                    .tools-bar > * {
+                                        margin: 0 5px 5px;
+                                    }
+                                    .tools-bar button, .tools-bar input[type="text"] {
+                                        border-radius: 5px;
+                                        border: 1px solid #000000;
+                                        background: transparent;
+                                        font-size: 16px;
+                                        margin: 0 5px;
+                                    }
+                                    .tools-bar button:disabled {
+                                        background: #cbcbcc;
+                                    }
+                                    .tools-bar .wrapper-tools input[type="radio"] + label, .tools-bar .wrapper-tools input[type="checkbox"] + label {
+                                        border-radius: 5px;
+                                        border: 1px solid #000000;
+                                        display: flex;
+                                        align-items: center;
+                                        padding: 5px 10px;
+                                        transition: .3s ease-in;
+                                        cursor: pointer;
+                                        margin: 0 5px;
+                                    }
+                                    .tools-bar #valueRange {
+                                        width: 35px;
+                                        text-align: center;
+                                    }
+                                    .tools-bar #line-width {
+                                        width: 50px;
+                                        text-align: center;
+                                    }
+                                    .tools-bar .wrapper-tools {
+                                        display: flex;
+                                        width: 100%;
+                                        margin: 0 0px 5px;
+                                    }
+                                    .tools-bar input[type="color"] {
+                                        border-radius: 5px;
+                                        border: 1px solid #000000;
+                                        background: transparent;
+                                        font-size: 16px;
+                                        margin: 0 5px;
+                                        height: 32px;
+                                    }
+                                </style>
                                 <div style="float: right;" id="zoom-controls">
                                     <div style="clear: both;">
                                         <div class="btn-group">
@@ -112,18 +190,80 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="tools-bar">
+                                    <div class="wrapper-tools">
+                                        <input type="checkbox" id="startDrawing" disabled>
+                                        <label for="startDrawing">Drawing</label>
+                                        <button id="back">
+                                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                 width="20px"
+                                                 viewBox="0 0 26.676 26.676" style="enable-background:new 0 0 26.676 26.676;" xml:space="preserve">
+                                                <g>
+                                                    <path d="M26.105,21.891c-0.229,0-0.439-0.131-0.529-0.346l0,0c-0.066-0.156-1.716-3.857-7.885-4.59
+                                                        c-1.285-0.156-2.824-0.236-4.693-0.25v4.613c0,0.213-0.115,0.406-0.304,0.508c-0.188,0.098-0.413,0.084-0.588-0.033L0.254,13.815
+                                                        C0.094,13.708,0,13.528,0,13.339c0-0.191,0.094-0.365,0.254-0.477l11.857-7.979c0.175-0.121,0.398-0.129,0.588-0.029
+                                                        c0.19,0.102,0.303,0.295,0.303,0.502v4.293c2.578,0.336,13.674,2.33,13.674,11.674c0,0.271-0.191,0.508-0.459,0.562
+                                                        C26.18,21.891,26.141,21.891,26.105,21.891z"/>
+                                                </g>
+                                            </svg>
+                                        </button>
+                                        <input type="radio" name="tools" id="text"  value="text">
+                                        <label for="text">
+                                            A
+                                        </label>
+                                        <input type="radio" name="tools" id="line" value="line" >
+                                        <label for="line" style="padding: 0 5px">
+                                            <svg width="16px" height="16px">
+                                                <line x1="16" y1="0" x2="0" y2="16" stroke="#212121" stroke-width="2" />
+                                            </svg>
+                                        </label>
+                                        <input type="radio" name="tools" id="rectangle" checked value="rectangle">
+                                        <label for="rectangle" style="padding: 0 5px">
+                                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                 width="20px" height="16px" viewBox="0 0 459 459"
+                                                 style="enable-background:new 0 0 459 459;" xml:space="preserve">
+                                                    <g id="crop-landscape">
+                                                        <path d="M408,51H51C22.95,51,0,73.95,0,102v255c0,28.05,22.95,51,51,51h357c28.05,0,51-22.95,51-51V102
+                                                            C459,73.95,436.05,51,408,51z M408,357H51V102h357V357z"/>
+                                                    </g>
+                                            </svg>
+                                        </label>
+                                        <input type="radio" name="tools" id="circle"   value="circle">
+                                        <label for="circle">
+                                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                 width="20px"  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                                                <g>
+                                                    <g>
+                                                        <path d="M435.204,126.967C387.398,94.1,324.11,76,257,76c-67.206,0-130.824,18.084-179.138,50.922C27.652,161.048,0,206.889,0,256
+                                                            c0,49.111,27.652,94.952,77.862,129.078C126.176,417.916,189.794,436,257,436c67.11,0,130.398-18.1,178.204-50.967
+                                                            C484.727,350.986,512,305.161,512,256S484.727,161.014,435.204,126.967z M418.208,360.312C375.354,389.774,318.103,406,257,406
+                                                            c-61.254,0-118.884-16.242-162.273-45.733C52.986,331.898,30,294.868,30,256s22.986-75.898,64.727-104.267
+                                                            C138.116,122.242,195.746,106,257,106c61.103,0,118.354,16.226,161.208,45.688C459.345,179.97,482,217.015,482,256
+                                                            S459.345,332.03,418.208,360.312z"/>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                        </label>
+                                        <input type="color" id="color"  value="#f6b73c">
+                                        <input type="range" id="line-width" min="4" max="8" value="4">
+                                        <input type="text" id="valueRange" readonly>
+
+                                    </div>
+                                </div>
                                 <div style="float: right;" id="download-snapshot">
                                 </div>
                             </h3>
                         </div>
                         <div id="cap-body" class="panel-body">
                             <div id="snapshots" style="position:relative;">
-                                <div class="panzoom">
+                                <div class="panzoom" id="hide">
                                     <img id="activeSnapshot"
                                          src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
                                          alt=""
                                          data-sid=""/>
                                 </div>
+                                <div id="wrapper-canvas"></div>
                             </div>
                             <form id="imageDownloadForm" action="/ttux/imageDownload/" method="POST">
                                 <input type="hidden" name="imageData" value=""/>
