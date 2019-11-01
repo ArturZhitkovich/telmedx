@@ -107,7 +107,6 @@ module.exports = {
 
     $('#camera-toggle').click(function () {
       if (_this.cameraToggeling) {
-        console.log('I\'m toggleing');
         return;
       }
 
@@ -160,7 +159,6 @@ module.exports = {
 
       // set global rotation value
       _this.currentRotation = angle;
-      console.log('angle: ' + _this.currentRotation);
     });
 
     $('#rotate-left').click(function () {
@@ -170,12 +168,12 @@ module.exports = {
 
       // set global rotation value
       _this.currentRotation = angle;
-      console.log('angle: ' + _this.currentRotation);
     });
 
     $('#capture-button').click(function () {
       $('#downloadSnap-1').prop('disabled', false);
       $('#downloadSnap-2').prop('disabled', false);
+      $('#startDrawing').prop('disabled', false);
       _this.takeSnapshotClicked();
     });
 
@@ -244,7 +242,6 @@ module.exports = {
       $('#' + snapID).remove();
       $('#' + snapDeleteID).remove();
       $('.' + 'container-' + snapID).remove();
-      console.log('item deleted');
     });
 
     // Bind pastSnapshots for future snapshots
@@ -262,10 +259,26 @@ module.exports = {
 
     const $imageDownloadForm = $('#imageDownloadForm');
     $imageDownloadForm.submit(() => {
+      var childElementCount = wrapperCanvas.childElementCount;
+      var resultCanvas = createCanvas();
+      var resultContext = resultCanvas.getContext("2d");
+
+      for (var i = 0; i < childElementCount; i += 1) {
+        var cnv = wrapperCanvas.children[i];
+        resultContext.drawImage(cnv, 0, 0);
+      }
+
+      var image = $('#activeSnapshot').attr('src');
+
+      if (startDrawing.checked) {
+        image = resultCanvas.toDataURL("image/jpeg").replace(/^data:image\/[^;]/,
+          'data:application/octet-stream');
+      }
+
       // Set hidden input to have data of the current screenshot
       let $imageDataInput = $imageDownloadForm.find('input[name="imageData"]');
       let $rotationInput = $imageDownloadForm.find('input[name="rotation"]');
-      $imageDataInput.attr('value', $('#activeSnapshot').attr('src'));
+      $imageDataInput.attr('value', image);
       $rotationInput.attr('value', $('#activeSnapshot').data('rotate'));
     });
   },
@@ -332,7 +345,6 @@ module.exports = {
   },
 
   deleteSnapshot(id) {
-    console.log('Snapshot deleted');
   },
 
   updateTextArea($currentSelected, $next) {
@@ -369,14 +381,12 @@ module.exports = {
     $.ajax({
       url: '/ttux/flashlight/' + this.deviceName
     }).done(function (data) {
-      console.log(data);
       _this.flashToggeling = false;
       if (data.status === 'on') {
         _this.flashOn();
       } else if (data.status === 'off') {
         _this.flashOff();
       } else {
-        console.log('Something went wrong with the flash');
       }
     });
   },
@@ -471,7 +481,6 @@ module.exports = {
         // Canvas should not be called, so this code is executed
         const id = 'snapshot-' + new Date().getTime().toString();
         let currentRotation = _this.currentRotation;
-        console.log('current: ' + currentRotation);
 
         $activeSnapshot.attr('src', dataUri);
         $activeSnapshot.css({ transform: `rotate(${currentRotation}deg)` });
@@ -503,7 +512,6 @@ module.exports = {
         // set annotation textarea sid to this snapShot id
         //$('#snapText').val('')
         //$('#snapText').attr('data-sid', id);
-        console.log('snapshot taken');
         _this.updateTextArea(null, '#' + id);
 
         $('#pastSnapshots').append($container);
@@ -696,9 +704,7 @@ module.exports = {
     // if it does not, disable resizing?
     const $elementExists = $('#hollywood');
     if (!$elementExists) {
-      console.log('Cannot find hollywood');
     } else {
-      console.log('hollywood exists');
     }
   },
 
@@ -721,7 +727,6 @@ module.exports = {
 
 
     $(window).resize(function () {
-      console.log('window resize here');
 
       // sets snapContainer width to percentage of screen
       let calc = ($(window).width() / 100) * 40;
@@ -744,7 +749,6 @@ module.exports = {
 
       if (positionLeft > positionRight) {
         // overlapping = TRUE
-        console.log('overlapping!');
       }
     }
 
@@ -768,7 +772,6 @@ module.exports = {
       resize: function (event, ui) {
         // sets maxWidth based on screen percentage
         let calc;
-        console.log('CALCpercentpixel: ' + calc);
 
         //if column layout, set percentage to 94
         if ($(window).width() < 950) {
@@ -785,4 +788,274 @@ module.exports = {
     });
   },
 };
+
+let startDrawing = document.getElementById('startDrawing');
+const img = document.getElementById('activeSnapshot');
+img.style.maxHeight = "500px";
+let isDrawing = false;
+let x = 0;
+let y = 0;
+let id = 0;
+let startX = 0;
+let startY = 0;
+let tool = document.querySelector('.wrapper-tools input[name="tools"]:checked').value;
+let tools = document.getElementsByName('tools');
+let radioButtonItems = [].slice.call(tools);
+
+radioButtonItems.forEach((item) => {
+  item.addEventListener('change', () => {
+    tool = document.querySelector('.wrapper-tools input[name="tools"]:checked').value;
+    if (tool === 'text') {
+      elementValueRange.value = 11 + +lineWidth + 'px';
+    }
+  });
+});
+
+let canvas = null;
+const wrapperCanvas = document.getElementById('wrapper-canvas');
+startDrawing.addEventListener("click", () => {
+  if (startDrawing.checked) {
+    wrapperCanvas.style.display = "block";
+    wrapperCanvas.style.top = 0;
+    wrapperCanvas.style.left = 0;
+    wrapperCanvas.style.height = "100%";
+    wrapperCanvas.position = "absolute";
+    document.getElementById("hide").style.opacity = 0;
+    createCanvas();
+  } else {
+    wrapperCanvas.style.display = "none";
+    document.getElementById("hide").style.opacity = 1;
+  }
+
+})
+let context = null;
+let rect = null;
+let back = document.getElementById('back');
+let viewText = false;
+let input = null;
+let elemLineWidth = document.getElementById('line-width');
+let elementValueRange = document.getElementById('valueRange');
+let lineWidth =  document.getElementById('line-width').value;
+
+elementValueRange.value = lineWidth + 'px';
+
+elemLineWidth.addEventListener('input', () => {
+  lineWidth = elemLineWidth.value;
+
+  if (tool !== 'text') {
+    elementValueRange.value = lineWidth + 'px';
+  } else {
+    elementValueRange.value = 11 + +lineWidth + 'px';
+  }
+});
+
+back.addEventListener('click', () => {
+  if (wrapperCanvas.getElementsByTagName('canvas').length > 1) {
+    wrapperCanvas.removeChild(canvas);
+    canvas = wrapperCanvas.lastChild;
+  }
+});
+
+window.addEventListener('mouseup', e => {
+  if (isDrawing === true) {
+    x = 0;
+    y = 0;
+    isDrawing = false;
+  }
+});
+
+function createCanvas() {
+  const newCanvas = document.createElement('canvas');
+  // document.getElementById("activeSnapshot").style.width = img.offsetWidth;
+  newCanvas.width = document.getElementById("activeSnapshot").offsetWidth;
+
+  // img.clientWidth;
+  newCanvas.height = document.getElementById("activeSnapshot").offsetHeight;
+  // img.clientWidth;
+
+
+  const lastChild = wrapperCanvas.lastElementChild;
+
+  if (canvas){
+    newCanvas.style.zIndex = (1 + lastChild.style.zIndex * 1).toString();
+  }
+
+  wrapperCanvas.append(newCanvas);
+
+  const newContext = newCanvas.getContext('2d');
+
+  rect = newCanvas.getBoundingClientRect();
+
+  if (!canvas) {
+    newContext.drawImage(img, 0, 0, 500, 500);
+  }
+
+  // update current canvas
+  canvas = newCanvas;
+  context = newContext;
+
+  canvas.addEventListener('mousedown', e => {
+    x = e.clientX - rect.left;
+    y = e.clientY - rect.top;
+
+    if (tool === 'text' && !viewText) {
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+
+      viewInput(x, y);
+    } else {
+      createCanvas();
+
+      startX = x;
+      startY = y;
+      isDrawing = true;
+    }
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    const width = x - startX;
+    const height = y - startY;
+
+    if (isDrawing) {
+      switch (tool) {
+        case 'line' :
+          drawLine(startX, startY, x, y);
+          break;
+        case 'rectangle':
+          drawRectangle(startX, startY, width, height);
+          break;
+        case 'circle' :
+          drawCircle(Math.abs(startX), Math.abs(startY), width, height);
+          break;
+      }
+
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    }
+  });
+
+  return canvas;
+}
+
+function drawRectangle(x, y, width, height) {
+  context.save();
+  context.translate(0, 0);
+  context.beginPath();
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = document.getElementById('color').value;
+  context.rect(x, y, width, height);
+  context.stroke();
+  context.closePath();
+  context.restore();
+}
+
+function drawCircle(x, y, width, height) {
+  const centerX = Math.abs(x + width / 2);
+  const centerY = Math.abs(y + height / 2);
+
+  width = Math.abs(width);
+  height = Math.abs(height);
+
+  const bigSemiAxis = width / 2;
+  const smallSemiAxis = height / 2;
+
+  context.save();
+  context.beginPath();
+  context.strokeStyle = document.getElementById('color').value;
+  context.lineWidth = lineWidth;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.rect(x, y, width, height);
+  drawEllipse(centerX, centerY, bigSemiAxis, smallSemiAxis);
+  context.stroke();
+  context.closePath();
+  context.restore();
+}
+
+function drawLine(x, y, x2, y2) {
+  const headlen = 10; // length of head in pixels
+  const dx = x2 - x;
+  const dy = y2 - y;
+  const angle = Math.atan2(dy, dx);
+
+  context.save();
+  context.beginPath();
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.strokeStyle = document.getElementById('color').value;
+  context.lineWidth = document.getElementById('line-width').value;
+  context.moveTo(x, y);
+  context.lineTo(x2, y2);
+  context.moveTo(x2, y2);
+  context.lineTo(x2-headlen*Math.cos(angle-Math.PI/7),y2-headlen*Math.sin(angle-Math.PI/7));
+  context.lineTo(x2-headlen*Math.cos(angle+Math.PI/7),y2-headlen*Math.sin(angle+Math.PI/7));
+  context.lineTo(x2, y2);
+  context.lineTo(x2-headlen*Math.cos(angle-Math.PI/7),y2-headlen*Math.sin(angle-Math.PI/7));
+  context.fill();
+  context.stroke();
+  context.closePath();
+  context.restore();
+}
+
+function drawText(str, x, y) {
+  createCanvas();
+
+  context.save();
+  context.textBaseline = 'middle';
+  context.font = elementValueRange.value + ' Arial';
+  context.fillStyle = document.getElementById('color').value;
+  context.fillText(str, x, y);
+  context.restore();
+}
+
+function drawEllipse(x, y, a, b) {
+  context.save();
+  context.beginPath();
+
+  context.translate(x, y);
+
+  context.scale(a / b, 1);
+
+  context.arc(0, 0, b, 0, Math.PI * 2, true);
+
+  context.restore();
+  context.closePath();
+}
+
+function viewInput(x, y) {
+  input = document.createElement('input');
+  input.type = 'text';
+  input.style.position = 'absolute';
+  input.style.left = x + 'px';
+  input.style.top = y + 'px';
+  input.style.width = 500 - x + 'px';
+  input.style.border = 'none';
+  input.style.outline = 'none';
+  input.style.position = 'absolute';
+  input.style.zIndex = wrapperCanvas.childNodes.length.toString();
+  input.style.background = 'rgba(0,0,0,0)';
+  input.style.color = document.getElementById('color').value;
+  input.style.fontSize = elementValueRange.value;
+  wrapperCanvas.prepend(input);
+
+  setTimeout(() => {
+    input.focus();
+  }, 100);
+
+  viewText = true;
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      input.blur();
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    if (input.value) {
+      drawText(input.value, x, y);
+    }
+
+    input.parentElement.removeChild(input);
+    viewText = false;
+  })
+}
 
