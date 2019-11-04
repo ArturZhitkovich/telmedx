@@ -173,7 +173,6 @@ module.exports = {
     $('#capture-button').click(function () {
       $('#downloadSnap-1').prop('disabled', false);
       $('#downloadSnap-2').prop('disabled', false);
-      $('#startDrawing').prop('disabled', false);
       _this.takeSnapshotClicked();
     });
 
@@ -270,7 +269,7 @@ module.exports = {
 
       var image = $('#activeSnapshot').attr('src');
 
-      if (startDrawing.checked) {
+      if (tool && tool.checked === true) {
         image = resultCanvas.toDataURL("image/jpeg").replace(/^data:image\/[^;]/,
           'data:application/octet-stream');
       }
@@ -318,6 +317,19 @@ module.exports = {
     $('.snapshot').removeClass('active');
     $('#' + id).toggleClass('active');
     this.$section.find('.panzoom').panzoom('reset');
+    zoomIn.disabled = false;
+    zoomOut.disabled = false;
+    if (tool) {
+      tool.checked = false;
+    };
+    wrapperCanvas.style.display = "none";
+    document.getElementById("hide").style.opacity = 1;
+
+    if (canvas) {
+	wrapperCanvas.innerHTML = "";
+        canvas = null;
+    }
+
   },
 
   /**
@@ -789,8 +801,7 @@ module.exports = {
   },
 };
 
-let startDrawing = document.getElementById('startDrawing');
-const img = document.getElementById('activeSnapshot');
+let img = document.getElementById('activeSnapshot');
 img.style.maxHeight = "500px";
 let isDrawing = false;
 let x = 0;
@@ -798,36 +809,43 @@ let y = 0;
 let id = 0;
 let startX = 0;
 let startY = 0;
-let tool = document.querySelector('.wrapper-tools input[name="tools"]:checked').value;
+
 let tools = document.getElementsByName('tools');
 let radioButtonItems = [].slice.call(tools);
+let tool;
+let zoomIn = document.querySelector('.btn-group .zoom-in');
+let zoomOut = document.querySelector('.btn-group .zoom-out');
+zoomIn.disabled = true;
+zoomOut.disabled = true;
 
 radioButtonItems.forEach((item) => {
   item.addEventListener('change', () => {
-    tool = document.querySelector('.wrapper-tools input[name="tools"]:checked').value;
-    if (tool === 'text') {
+    tool = document.querySelector('.wrapper-tools input[name="tools"]:checked');	
+    startDrawing();
+
+    if (tool && tool.value === 'text') {
       elementValueRange.value = 11 + +lineWidth + 'px';
     }
   });
 });
 
+function startDrawing () {
+  const wrapperCanvas = document.getElementById('wrapper-canvas');
+
+  zoomIn.disabled = true;
+  zoomOut.disabled = true;
+  wrapperCanvas.style.display = "block";
+  wrapperCanvas.style.top = 0;
+  wrapperCanvas.style.left = 0;
+  wrapperCanvas.style.height = "100%";
+  wrapperCanvas.position = "absolute";
+  document.getElementById("hide").style.opacity = 0;
+  createCanvas();
+}
+
 let canvas = null;
 const wrapperCanvas = document.getElementById('wrapper-canvas');
-startDrawing.addEventListener("click", () => {
-  if (startDrawing.checked) {
-    wrapperCanvas.style.display = "block";
-    wrapperCanvas.style.top = 0;
-    wrapperCanvas.style.left = 0;
-    wrapperCanvas.style.height = "100%";
-    wrapperCanvas.position = "absolute";
-    document.getElementById("hide").style.opacity = 0;
-    createCanvas();
-  } else {
-    wrapperCanvas.style.display = "none";
-    document.getElementById("hide").style.opacity = 1;
-  }
 
-})
 let context = null;
 let rect = null;
 let back = document.getElementById('back');
@@ -842,7 +860,7 @@ elementValueRange.value = lineWidth + 'px';
 elemLineWidth.addEventListener('input', () => {
   lineWidth = elemLineWidth.value;
 
-  if (tool !== 'text') {
+  if (tool && tool.value !== 'text') {
     elementValueRange.value = lineWidth + 'px';
   } else {
     elementValueRange.value = 11 + +lineWidth + 'px';
@@ -876,7 +894,7 @@ function createCanvas() {
 
   const lastChild = wrapperCanvas.lastElementChild;
 
-  if (canvas){
+  if (canvas && lastChild){
     newCanvas.style.zIndex = (1 + lastChild.style.zIndex * 1).toString();
   }
 
@@ -898,7 +916,7 @@ function createCanvas() {
     x = e.clientX - rect.left;
     y = e.clientY - rect.top;
 
-    if (tool === 'text' && !viewText) {
+    if (tool && tool.value === 'text' && !viewText) {
       x = e.clientX - rect.left;
       y = e.clientY - rect.top;
 
@@ -916,8 +934,8 @@ function createCanvas() {
     const width = x - startX;
     const height = y - startY;
 
-    if (isDrawing) {
-      switch (tool) {
+    if (isDrawing && tool) {
+      switch (tool.value) {
         case 'line' :
           drawLine(startX, startY, x, y);
           break;
