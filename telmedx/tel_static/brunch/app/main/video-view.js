@@ -905,8 +905,8 @@ function createCanvas() {
   rect = newCanvas.getBoundingClientRect();
 
   if (!canvas) {
-    newContext.drawImage(img, 0, 0, 500, 500);
-  }
+    newContext.drawImage(img, 0, 0, newCanvas.width, newCanvas.height); 
+ }
 
   // update current canvas
   canvas = newCanvas;
