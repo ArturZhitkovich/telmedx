@@ -319,9 +319,13 @@ module.exports = {
     this.$section.find('.panzoom').panzoom('reset');
     zoomIn.disabled = false;
     zoomOut.disabled = false;
+    document.getElementById('line-width').style.display = 'block';
+    document.getElementById('valueRange').style.display = 'block';
+
     if (tool) {
       tool.checked = false;
     };
+
     wrapperCanvas.style.display = "none";
     document.getElementById("hide").style.opacity = 1;
 
@@ -818,13 +822,30 @@ let zoomOut = document.querySelector('.btn-group .zoom-out');
 zoomIn.disabled = true;
 zoomOut.disabled = true;
 
+let canvas = null;
+const wrapperCanvas = document.getElementById('wrapper-canvas');
+
+let context = null;
+let rect = null;
+let back = document.getElementById('back');
+let viewText = false;
+let input = null;
+let elemLineWidth = document.getElementById('line-width');
+let elementValueRange = document.getElementById('valueRange');
+let lineWidth =  document.getElementById('line-width').value;
+const textFontSize = 14 + 'px';
+
 radioButtonItems.forEach((item) => {
   item.addEventListener('change', () => {
     tool = document.querySelector('.wrapper-tools input[name="tools"]:checked');	
     startDrawing();
 
     if (tool && tool.value === 'text') {
-      elementValueRange.value = 11 + +lineWidth + 'px';
+      document.getElementById('line-width').style.display = 'none';
+      document.getElementById('valueRange').style.display = 'none';
+    } else {
+      document.getElementById('line-width').style.display = 'block';
+      document.getElementById('valueRange').style.display = 'block';
     }
   });
 });
@@ -843,27 +864,13 @@ function startDrawing () {
   createCanvas();
 }
 
-let canvas = null;
-const wrapperCanvas = document.getElementById('wrapper-canvas');
-
-let context = null;
-let rect = null;
-let back = document.getElementById('back');
-let viewText = false;
-let input = null;
-let elemLineWidth = document.getElementById('line-width');
-let elementValueRange = document.getElementById('valueRange');
-let lineWidth =  document.getElementById('line-width').value;
-
 elementValueRange.value = lineWidth + 'px';
 
 elemLineWidth.addEventListener('input', () => {
   lineWidth = elemLineWidth.value;
 
-  if (tool && tool.value !== 'text') {
+  if (tool) {
     elementValueRange.value = lineWidth + 'px';
-  } else {
-    elementValueRange.value = 11 + +lineWidth + 'px';
   }
 });
 
@@ -905,8 +912,8 @@ function createCanvas() {
   rect = newCanvas.getBoundingClientRect();
 
   if (!canvas) {
-    newContext.drawImage(img, 0, 0, newCanvas.width, newCanvas.height); 
- }
+    newContext.drawImage(img, 0, 0, newCanvas.width, newCanvas.height);
+  }
 
   // update current canvas
   canvas = newCanvas;
@@ -1019,7 +1026,7 @@ function drawText(str, x, y) {
 
   context.save();
   context.textBaseline = 'middle';
-  context.font = elementValueRange.value + ' Arial';
+  context.font = textFontSize + ' Arial';
   context.fillStyle = document.getElementById('color').value;
   context.fillText(str, x, y);
   context.restore();
@@ -1052,7 +1059,7 @@ function viewInput(x, y) {
   input.style.zIndex = wrapperCanvas.childNodes.length.toString();
   input.style.background = 'rgba(0,0,0,0)';
   input.style.color = document.getElementById('color').value;
-  input.style.fontSize = elementValueRange.value;
+  input.style.fontSize = textFontSize;
   wrapperCanvas.prepend(input);
 
   setTimeout(() => {
