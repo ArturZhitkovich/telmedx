@@ -1,11 +1,15 @@
 // Dynamically created by video-view.js
 #hollywood {
   height: 100%;
-  width: 75%;
+  width: 100%;
   display: block;
   margin: auto auto 8px;
 }
 
+#stream {
+  padding: 0 12.5%;
+  overflow: visible; 
+}
 #device-video-page {
 
   #video-container {

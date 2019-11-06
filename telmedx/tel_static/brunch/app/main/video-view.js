@@ -153,7 +153,16 @@ module.exports = {
     });
 
     $('#rotate-right').click(function () {
-      let angle = ($hollywood.data('angle') + 90) || 90;
+      let angle = Number($hollywood.data('angle')) || 0;
+	angle += 90;
+	$stream.css('overflow','visible');
+	
+	if ((angle / 90) % 2 !== 0) {
+	  $stream.css('margin','-12.5% 0');
+	} else {
+	  $stream.css('margin','0');
+	}
+
       $hollywood.css({ transform: `rotate(${angle}deg)` });
       $hollywood.data('angle', angle);
 
@@ -162,7 +171,16 @@ module.exports = {
     });
 
     $('#rotate-left').click(function () {
-      let angle = ($hollywood.data('angle') - 90) || -90;
+      let angle = Number($hollywood.data('angle')) || 0;
+	angle -= 90;
+	$stream.css('overflow','visible');
+
+	if ((angle / 90) % 2  !== 0) {
+	  $stream.css('margin','-12.5% 0');
+	} else {
+	  $stream.css('margin','0');
+	}
+
       $hollywood.css({ transform: `rotate(${angle}deg)` });
       $hollywood.data('angle', angle);
 
