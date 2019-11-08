@@ -938,14 +938,11 @@ function createCanvas() {
   context = newContext;
 
   canvas.addEventListener('mousedown', e => {
-    x = e.clientX - rect.left;
-    y = e.clientY - rect.top;
+    x = Math.ceil(e.clientX - rect.left);
+    y = Math.ceil(e.clientY - rect.top);
 
     if (tool && tool.value === 'text' && !viewText) {
-      x = e.clientX - rect.left;
-      y = e.clientY - rect.top;
-
-      viewInput(x, y);
+      viewInput(x, y, newCanvas.width);
     } else {
       createCanvas();
 
@@ -1039,15 +1036,58 @@ function drawLine(x, y, x2, y2) {
   context.restore();
 }
 
-function drawText(str, x, y) {
+function drawText(text, x, y, width) {
   createCanvas();
 
   context.save();
   context.textBaseline = 'middle';
   context.font = textFontSize + ' Arial';
   context.fillStyle = document.getElementById('color').value;
-  context.fillText(str, x, y);
-  context.restore();
+
+  const paragraphs = text.split('\n');
+  let offset = 0; 
+
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = shareString(paragraphs[i], x, y, width);
+
+    for(let j = 0; j < paragraph.length; j++) {
+      context.fillText(paragraph[j].text, x, y + offset);
+      offset += paragraph[j].height;
+    }
+  }
+}
+
+function shareString(text, x, y, width){
+  let lines = [];
+  let line = '';
+  let currentY = 0;
+  const words = text.split(' ');
+
+  for (let i = 0; i < words.length; i++) {
+   let space = '';
+      
+    if (i > 0) {
+      space = ' ';
+    }
+
+    const measureLine = line + space + words[i];
+    const textWidth = Math.ceil(context.measureText(measureLine).width);
+    
+    if (textWidth >= width - x) {
+      currentY = lines.length * 14 + 14;
+      lines.push({ text: line, height: currentY });
+      line = words[i];
+    } else {
+      line = measureLine;
+    }
+  }
+
+  if (line.length > 0) {
+    currentY = lines.length * 14 + 14;
+    lines.push({ text: line.trim(), height: currentY });
+  }
+
+  return lines;
 }
 
 function drawEllipse(x, y, a, b) {
@@ -1064,40 +1104,33 @@ function drawEllipse(x, y, a, b) {
   context.closePath();
 }
 
-function viewInput(x, y) {
-  input = document.createElement('input');
-  input.type = 'text';
-  input.style.position = 'absolute';
-  input.style.left = x + 'px';
-  input.style.top = y + 'px';
-  input.style.width = 500 - x + 'px';
-  input.style.border = 'none';
-  input.style.outline = 'none';
-  input.style.position = 'absolute';
-  input.style.zIndex = wrapperCanvas.childNodes.length.toString();
-  input.style.background = 'rgba(0,0,0,0)';
-  input.style.color = document.getElementById('color').value;
-  input.style.fontSize = textFontSize;
-  wrapperCanvas.prepend(input);
+function viewInput(x, y, width) {
+  const textarea = document.createElement('textarea');
+  textarea.rows = '2';
+  textarea.style.position = 'absolute';
+  textarea.style.left = x + 'px';
+  textarea.style.top = y + 'px';
+  textarea.style.width = width - x + 'px';
+  textarea.style.border = 'none';
+  textarea.style.resize = 'vertical';
+  textarea.style.zIndex = wrapperCanvas.childNodes.length.toString();
+  textarea.style.background = 'rgba(0,0,0,0)';
+  textarea.style.color = document.getElementById('color').value;
+  textarea.style.fontSize = textFontSize;
+  wrapperCanvas.prepend(textarea);
 
   setTimeout(() => {
-    input.focus();
+    textarea.focus();
   }, 100);
 
   viewText = true;
+  textarea.addEventListener('blur', () => {
 
-  input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      input.blur();
-    }
-  });
-
-  input.addEventListener('blur', () => {
-    if (input.value) {
-      drawText(input.value, x, y);
+    if (textarea.value) {
+      drawText(textarea.value, x, y, width);
     }
 
-    input.parentElement.removeChild(input);
+    textarea.parentElement.removeChild(textarea);
     viewText = false;
   })
 }
