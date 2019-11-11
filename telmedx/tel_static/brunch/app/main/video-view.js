@@ -841,6 +841,7 @@ zoomIn.disabled = true;
 zoomOut.disabled = true;
 
 let canvas = null;
+let canvasCreated = false;
 const wrapperCanvas = document.getElementById('wrapper-canvas');
 
 let context = null;
@@ -852,6 +853,7 @@ let elemLineWidth = document.getElementById('line-width');
 let elementValueRange = document.getElementById('valueRange');
 let lineWidth =  document.getElementById('line-width').value;
 const textFontSize = 14 + 'px';
+let mouseType = false;
 
 radioButtonItems.forEach((item) => {
   item.addEventListener('change', () => {
@@ -879,7 +881,9 @@ function startDrawing () {
   wrapperCanvas.style.height = "100%";
   wrapperCanvas.position = "absolute";
   document.getElementById("hide").style.opacity = 0;
-  createCanvas();
+  if (!canvas) {
+    createCanvas();
+  }
 }
 
 elementValueRange.value = lineWidth + 'px';
@@ -919,10 +923,6 @@ function createCanvas() {
 
   const lastChild = wrapperCanvas.lastElementChild;
 
-  if (canvas && lastChild){
-    newCanvas.style.zIndex = (1 + lastChild.style.zIndex * 1).toString();
-  }
-
   wrapperCanvas.append(newCanvas);
 
   const newContext = newCanvas.getContext('2d');
@@ -944,11 +944,10 @@ function createCanvas() {
     if (tool && tool.value === 'text' && !viewText) {
       viewInput(x, y, newCanvas.width);
     } else {
-      createCanvas();
-
       startX = x;
       startY = y;
       isDrawing = true;
+      canvasCreated = false;
     }
   });
 
@@ -957,6 +956,10 @@ function createCanvas() {
     const height = y - startY;
 
     if (isDrawing && tool) {
+      if (!canvasCreated) {
+        createCanvas();
+        canvasCreated = true;
+      }
       switch (tool.value) {
         case 'line' :
           drawLine(startX, startY, x, y);
@@ -1113,10 +1116,10 @@ function viewInput(x, y, width) {
   textarea.style.width = width - x + 'px';
   textarea.style.border = 'none';
   textarea.style.resize = 'vertical';
-  textarea.style.zIndex = wrapperCanvas.childNodes.length.toString();
   textarea.style.background = 'rgba(0,0,0,0)';
   textarea.style.color = document.getElementById('color').value;
   textarea.style.fontSize = textFontSize;
+  textarea.style.zIndex = 1;
   wrapperCanvas.prepend(textarea);
 
   setTimeout(() => {
