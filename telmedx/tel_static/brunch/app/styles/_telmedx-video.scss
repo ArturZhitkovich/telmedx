@@ -3,12 +3,18 @@
   height: 100%;
   width: 100%;
   display: block;
-  margin: auto auto 8px;
+  margin: auto auto;
 }
 
 #stream {
-  padding: 0 12.5%;
   overflow: visible; 
+  position: relative;
+  width: 75%;
+  height: auto;
+  display: inline-block;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
 }
 #device-video-page {
 
@@ -28,6 +34,7 @@
 
   #stream-container-child {
     padding: 0;
+    position: relative;
   }
 
   #snap-container {
