@@ -162,7 +162,6 @@ module.exports = {
 	} else {
 	  $stream.css('margin','0');
 	}
-
       $hollywood.css({ transform: `rotate(${angle}deg)` });
       $hollywood.data('angle', angle);
 
@@ -512,7 +511,8 @@ module.exports = {
           _this.select(id);
         };
       } else {
-        // Canvas should not be called, so this code is executed
+
+// Canvas should not be called, so this code is executed
         const id = 'snapshot-' + new Date().getTime().toString();
         let currentRotation = _this.currentRotation;
 
@@ -524,6 +524,7 @@ module.exports = {
         let imageElement = $.parseHTML(`<img data-sid='${id}' 
             class='snap-item snapshot' id='${id}' src='${dataUri}' 
             width='75' height='50' data-snaptext="" data-rotate='${currentRotation}'>`);
+
 
         let container = document.createElement('div');
 
@@ -554,10 +555,12 @@ module.exports = {
         //$('#cap-body').css('cssText','height: auto !important');
 
         _this.select(id);
+
+
       }
     });
   },
-
+//
   /**
    * Contains the main logic for requesting and processing command and image
    * frames requested from the server.
@@ -823,6 +826,7 @@ module.exports = {
   },
 };
 
+
 let img = document.getElementById('activeSnapshot');
 img.style.maxHeight = "500px";
 let isDrawing = false;
@@ -854,7 +858,31 @@ let elementValueRange = document.getElementById('valueRange');
 let lineWidth =  document.getElementById('line-width').value;
 const textFontSize = 14 + 'px';
 let mouseType = false;
+/*
+const buttonRotateRight = document.getElementById('rotate-right');
+const buttonRotateLeft = document.getElementById('rotate-left');
 
+function rotate (angle) {
+    const image = document.getElementById('hollywood');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    [canvas.height, canvas.width] = [image.width, image.height];
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.rotate(angle * Math.PI / 180);
+    context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+    image.src = canvas.toDataURL();
+}
+
+buttonRotateRight.addEventListener('click', () => {
+    rotate(90);
+});
+
+buttonRotateLeft.addEventListener('click', () => {
+    rotate(-90);
+});
+*/
 radioButtonItems.forEach((item) => {
   item.addEventListener('change', () => {
     tool = document.querySelector('.wrapper-tools input[name="tools"]:checked');	
@@ -876,10 +904,7 @@ function startDrawing () {
   zoomIn.disabled = true;
   zoomOut.disabled = true;
   wrapperCanvas.style.display = "block";
-  wrapperCanvas.style.top = 0;
-  wrapperCanvas.style.left = 0;
   wrapperCanvas.style.height = "100%";
-  wrapperCanvas.position = "absolute";
   document.getElementById("hide").style.opacity = 0;
   if (!canvas) {
     createCanvas();
@@ -955,7 +980,7 @@ function createCanvas() {
     const width = x - startX;
     const height = y - startY;
 
-    if (isDrawing && tool) {
+    if (isDrawing && tool && e.buttons === 1) {
       if (!canvasCreated) {
         createCanvas();
         canvasCreated = true;
