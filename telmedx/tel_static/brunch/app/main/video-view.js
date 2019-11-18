@@ -510,9 +510,9 @@ module.exports = {
 
           _this.select(id);
         };
+  
       } else {
-
-// Canvas should not be called, so this code is executed
+        // Canvas should not be called, so this code is executed
         const id = 'snapshot-' + new Date().getTime().toString();
         let currentRotation = _this.currentRotation;
 
@@ -526,39 +526,55 @@ module.exports = {
             width='75' height='50' data-snaptext="" data-rotate='${currentRotation}'>`);
 
 
-        let container = document.createElement('div');
+        //rotate image
+    	const image = document.createElement('img');
 
-        // maybe make class unique, or an id via the const id above
-        container.setAttribute('class', 'container-' + id);
-        container.setAttribute('style', 'display: inline-flex;');
+    	imageElement[0].onload = function () {
+	    const canvas = document.createElement('canvas');
+	    const context = canvas.getContext('2d');
 
-        // Uncomment this line to set rotation on snapshot panel
-        //container.style.transform = 'rotate(' + currentRotation + 'deg)';
+	    [canvas.height, canvas.width] = [imageElement[0].width, imageElement[0].height];
+	    context.clearRect(0, 0, canvas.width, canvas.height);
+	    context.translate(canvas.width / 2, canvas.height / 2);
+	    context.drawImage(imageElement[0], -image.naturalWidth / 2, -image.naturalHeight / 2);
+	    context.rotate(currentRotation * Math.PI / 180);
+	    image.src = canvas.toDataURL();
 
-        // create delete icon
-        let div = document.createElement('div');
-        div.setAttribute('class', 'closeDiv');
-        div.setAttribute('id', 'delete-' + id);
+	  /*need to change it
+		let container = document.createElement('div');
 
-        const $container = $(container);
-        $container.append(imageElement);
-        $container.append(div);
+		// maybe make class unique, or an id via the const id above
+		container.setAttribute('class', 'container-' + id);
+		container.setAttribute('style', 'display: inline-flex;');
 
-        // set annotation textarea sid to this snapShot id
-        //$('#snapText').val('')
-        //$('#snapText').attr('data-sid', id);
-        _this.updateTextArea(null, '#' + id);
+		// Uncomment this line to set rotation on snapshot panel
+		//container.style.transform = 'rotate(' + currentRotation + 'deg)';
 
-        $('#pastSnapshots').append($container);
+		// create delete icon
+		let div = document.createElement('div');
+		div.setAttribute('class', 'closeDiv');
+		div.setAttribute('id', 'delete-' + id);
 
-        //$('#capture-snaper').css('cssText','height: auto !important');
-        //$('#cap-body').css('cssText','height: auto !important');
+		const $container = $(container);
+		$container.append(imageElement);
+		$container.append(div);
 
-        _this.select(id);
+		// set annotation textarea sid to this snapShot id
+		//$('#snapText').val('')
+		//$('#snapText').attr('data-sid', id);
+		_this.updateTextArea(null, '#' + id);
 
+		$('#pastSnapshots').append($container);
 
+		//$('#capture-snaper').css('cssText','height: auto !important');
+		//$('#cap-body').css('cssText','height: auto !important');
+
+		_this.select(id);
+          */
+    	};
       }
     });
+
   },
 //
   /**
