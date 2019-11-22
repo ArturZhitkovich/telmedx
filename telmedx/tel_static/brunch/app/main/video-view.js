@@ -529,8 +529,8 @@ module.exports = {
         //rotate image
     	const image = document.createElement('img');
 
-    	imageElement[0].onload = function () {
-	    const canvas = document.createElement('canvas');
+  //  	imageElement[0].onload = function () {
+	   /* const canvas = document.createElement('canvas');
 	    const context = canvas.getContext('2d');
 
 	    [canvas.height, canvas.width] = [imageElement[0].width, imageElement[0].height];
@@ -539,8 +539,9 @@ module.exports = {
 	    context.drawImage(imageElement[0], -image.naturalWidth / 2, -image.naturalHeight / 2);
 	    context.rotate(currentRotation * Math.PI / 180);
 	    image.src = canvas.toDataURL();
-
-	  /*need to change it
+	    const tempImage = document.getElementById("${id}");
+	    tempImage.src = image.src;*/
+	  /*need to change it*/
 		let container = document.createElement('div');
 
 		// maybe make class unique, or an id via the const id above
@@ -560,18 +561,18 @@ module.exports = {
 		$container.append(div);
 
 		// set annotation textarea sid to this snapShot id
-		//$('#snapText').val('')
-		//$('#snapText').attr('data-sid', id);
+		$('#snapText').val('')
+		$('#snapText').attr('data-sid', id);
 		_this.updateTextArea(null, '#' + id);
 
 		$('#pastSnapshots').append($container);
 
-		//$('#capture-snaper').css('cssText','height: auto !important');
-		//$('#cap-body').css('cssText','height: auto !important');
+		$('#capture-snaper').css('cssText','height: auto !important');
+		$('#cap-body').css('cssText','height: auto !important');
 
 		_this.select(id);
-          */
-    	};
+          
+//    	};
       }
     });
 
