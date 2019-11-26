@@ -368,7 +368,7 @@ module.exports = {
     const $currentSelected = $('#pastSnapshots').find('.active');
 
     $activeSnapshot.attr('src', $selected.attr('src'));
-    $activeSnapshot.css({ transform: `rotate(${imageRotation}deg)` });
+    //$activeSnapshot.css({ transform: `rotate(${imageRotation}deg)` });
     $activeSnapshot.data('rotate', imageRotation);
 
     this.updateTextArea($currentSelected, $selected);
@@ -515,67 +515,83 @@ module.exports = {
         // Canvas should not be called, so this code is executed
         const id = 'snapshot-' + new Date().getTime().toString();
         let currentRotation = _this.currentRotation;
+	const tempImage = document.createElement('img');
+	const image = document.createElement('img');
+    
+	tempImage.src = dataUri;
+	tempImage.height = 700;
+        tempImage.width = 700;
+	
+	tempImage.onload = function () {
+    		const canvas = document.createElement('canvas');
+    		const context = canvas.getContext('2d');
+		const image = document.createElement('img');
 
-        $activeSnapshot.attr('src', dataUri);
-        $activeSnapshot.css({ transform: `rotate(${currentRotation}deg)` });
-        $activeSnapshot.data('rotate', currentRotation);
+    [canvas.height, canvas.width] = [tempImage.width, tempImage.height];
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.translate(canvas.width / 2, canvas.height / 2 );
+    context.rotate(currentRotation * Math.PI / 180);
+    context.drawImage(tempImage, -tempImage.width / 2, -tempImage.height / 2);
+
+    image.src = canvas.toDataURL();
+
+    image.onload = function () {
+        const imageElement = $.parseHTML(`<img data-sid='${id}'
+                                            class='snap-item snapshot' id='${id}' src='${image.src}'
+                                            width='75' height='50' data-snaptext="" data-rotate='${currentRotation}'>`);
+        const container = document.createElement('div');
+
+        $activeSnapshot.attr('src', image.src);
         _this.$section.find('.panzoom').panzoom('reset');
 
-        let imageElement = $.parseHTML(`<img data-sid='${id}' 
-            class='snap-item snapshot' id='${id}' src='${dataUri}' 
-            width='75' height='50' data-snaptext="" data-rotate='${currentRotation}'>`);
+        // maybe make class unique, or an id via the const id above
+        container.setAttribute('class', 'container-' + id);
+        container.setAttribute('style', 'display: inline-flex;');
 
+        // create delete icon
+        let div = document.createElement('div');
+        div.setAttribute('class', 'closeDiv');
+        div.setAttribute('id', 'delete-' + id);
 
-        //rotate image
-    	const image = document.createElement('img');
+        const $container = $(container);
+        $container.append(imageElement);
+        //$container.append(image.src);
+        $container.append(div);
 
-  //  	imageElement[0].onload = function () {
-	   /* const canvas = document.createElement('canvas');
-	    const context = canvas.getContext('2d');
+        // set annotation textarea sid to this snapShot id
+        $('#snapText').val('')
+        $('#snapText').attr('data-sid', id);
+        _this.updateTextArea(null, '#' + id);
 
-	    [canvas.height, canvas.width] = [imageElement[0].width, imageElement[0].height];
-	    context.clearRect(0, 0, canvas.width, canvas.height);
-	    context.translate(canvas.width / 2, canvas.height / 2);
-	    context.drawImage(imageElement[0], -image.naturalWidth / 2, -image.naturalHeight / 2);
-	    context.rotate(currentRotation * Math.PI / 180);
-	    image.src = canvas.toDataURL();
-	    const tempImage = document.getElementById("${id}");
-	    tempImage.src = image.src;*/
-	  /*need to change it*/
-		let container = document.createElement('div');
+        $('#pastSnapshots').append($container);
 
-		// maybe make class unique, or an id via the const id above
-		container.setAttribute('class', 'container-' + id);
-		container.setAttribute('style', 'display: inline-flex;');
+        $('#capture-snaper').css('cssText','height: auto !important');
+        $('#cap-body').css('cssText','height: auto !important');
 
-		// Uncomment this line to set rotation on snapshot panel
-		//container.style.transform = 'rotate(' + currentRotation + 'deg)';
+        _this.select(id);
+    
+	}
+	
+	}
 
-		// create delete icon
-		let div = document.createElement('div');
-		div.setAttribute('class', 'closeDiv');
-		div.setAttribute('id', 'delete-' + id);
-
-		const $container = $(container);
-		$container.append(imageElement);
-		$container.append(div);
-
-		// set annotation textarea sid to this snapShot id
-		$('#snapText').val('')
-		$('#snapText').attr('data-sid', id);
-		_this.updateTextArea(null, '#' + id);
-
-		$('#pastSnapshots').append($container);
-
-		$('#capture-snaper').css('cssText','height: auto !important');
-		$('#cap-body').css('cssText','height: auto !important');
-
-		_this.select(id);
-          
-//    	};
       }
     });
 
+  },
+
+  getImageFile(imageDataUrl) {
+    const imageDataBase64 = atob(imageDataUrl.split(',')[1]);
+    const imageFileBuffer = [];
+    let i = 0;
+
+    while (i < imageDataBase64.length) {
+      imageFileBuffer.push(imageDataBase64.charCodeAt(i));
+      i++;
+    }
+
+    const imageFileBinary = new Uint8Array(imageFileBuffer);
+
+    return new Blob([imageFileBinary]);
   },
 //
   /**
@@ -957,7 +973,7 @@ function createCanvas() {
   const newCanvas = document.createElement('canvas');
   // document.getElementById("activeSnapshot").style.width = img.offsetWidth;
   newCanvas.width = document.getElementById("activeSnapshot").offsetWidth;
-
+ 
   // img.clientWidth;
   newCanvas.height = document.getElementById("activeSnapshot").offsetHeight;
   // img.clientWidth;
