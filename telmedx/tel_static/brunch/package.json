@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bootstrap-sass": "^3.3.7",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "jquery-ui-bundle": "^1.12.1",
     "jquery.panzoom": "^3.2.2",
     "modernizr": "^3.5.0"
